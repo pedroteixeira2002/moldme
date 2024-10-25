@@ -1,32 +1,29 @@
-﻿name: Build & Test 🧪 #Definimos o nome do nosso Workflow
+name: Build & Test 🧪 # Definimos o nome do nosso Workflow
 
 on:
   push:
     branches:
-      - master #Definimos o gatilho para nossa automação
+      - master # Definimos o gatilho para nossa automação
       - dev
-jobs:
 
-  BuildAndTestApplication: #Criamos o job de build testes
-    runs-on: ubuntu-latest #Definimos o container/virtualização
+jobs:
+  BuildAndTestApplication: # Criamos o job de build e testes
+    runs-on: ubuntu-latest # Definimos o container/virtualização
     
     steps:
-      - name: Checkout code #Etapa de checkout do repositório
+      - name: Checkout code # Etapa de checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Setup .NET Core #Etapa do setup .net core
+      - name: Setup .NET Core # Etapa do setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
-          
-      - name: Navigate to the project directory
-        run: cd moldme 
-          
-      - name: Restore dependencies #Etapa do restore
-        run: dotnet restore
+          dotnet-version: '8.0.x' 
 
-      - name: Build application #Etapa do build
-        run: dotnet build moldme --no-restore
+      - name: Restore dependencies # Etapa de restauração das dependências
+        run: dotnet restore moldme/moldme.csproj # Caminho correto para o arquivo .csproj ou .sln
 
-      - name: Test application #Etapa do teste
-        run: dotnet test moldme --no-build --verbosity normal
+      - name: Build application # Etapa de build da aplicação
+        run: dotnet build moldme/moldme.csproj --no-restore --configuration Release
+
+      - name: Test application # Etapa de testes da aplicação
+        run: dotnet test moldme/moldme.csproj --no-build --verbosity normal
