@@ -30,4 +30,3 @@ jobs:
 
       - name: Test application #Etapa do teste
         run: dotnet test moldme --no-build --verbosity normal
-
