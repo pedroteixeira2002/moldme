@@ -5,6 +5,10 @@ on:
     branches:
       - master #Definimos o gatilho para nossa automação
       - dev
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  
 jobs:
 
   BuildAndTestApplication: #Criamos o job de build testes
@@ -17,7 +21,7 @@ jobs:
       - name: Setup .NET Core #Etapa do setup .net core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Navigate to the project directory
         run: cd moldme/
