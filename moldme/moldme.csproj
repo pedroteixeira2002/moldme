@@ -18,4 +18,8 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include=".github\workflows\continuous_integration.yml" />
+    </ItemGroup>
+
 </Project>
