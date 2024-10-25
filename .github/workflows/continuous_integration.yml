@@ -19,14 +19,13 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Navigate to the project directory
-        run: cd /moldme
-
       - name: Restore dependencies #Etapa do restore
         run: dotnet restore
 
       - name: Build application #Etapa do build
+      - working-directory: moldme
         run: dotnet build moldme --no-restore
 
       - name: Test application #Etapa do teste
+      - working-directory: moldme
         run: dotnet test moldme --no-build --verbosity normal
