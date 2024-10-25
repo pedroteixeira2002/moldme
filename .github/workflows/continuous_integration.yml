@@ -20,7 +20,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Navigate to the project directory
-        run: cd moldme
+        run: cd moldme/
 
       - name: Restore dependencies #Etapa do restore
         run: dotnet restore
