@@ -20,6 +20,19 @@
 
     <ItemGroup>
       <Content Include=".github\workflows\continuous_integration.yml" />
+      <Content Remove=".github\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove=".github\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove=".github\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove=".github\**" />
     </ItemGroup>
 
 </Project>
