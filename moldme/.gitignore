@@ -1,6 +1,6 @@
-﻿bin
-obj
-.idea
+﻿/obj/
+/bin/
+/.idea/
 # Default ignored files
 /shelf/
 /workspace.xml
