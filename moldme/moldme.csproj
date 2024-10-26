@@ -42,8 +42,4 @@
       <None Remove=".github\**" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="data\" />
-    </ItemGroup>
-
 </Project>

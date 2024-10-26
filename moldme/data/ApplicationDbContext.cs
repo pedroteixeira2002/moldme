@@ -1,6 +1,12 @@
-﻿namespace moldme.data;
+﻿using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext
+namespace moldme.data;
+
+public class ApplicationDbContext : DbContext
 {
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+    {
+    }
+    
     
 }
