@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("moldme")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6a9a52a92509e80f57d90addd6d22a5d4c8a5957")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5619bb0c51f4be7d16e9eaa59ddb483fa0ebb3d")]
 [assembly: System.Reflection.AssemblyProductAttribute("moldme")]
 [assembly: System.Reflection.AssemblyTitleAttribute("moldme")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

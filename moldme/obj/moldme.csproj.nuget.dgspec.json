@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\RIBEIRO\\Documents\\ESTG\\24-25\\LDS\\moldme\\moldme\\moldme.csproj": {}
+    "C:\\Users\\abcdt\\Desktop\\LDS\\moldme\\moldme\\moldme.csproj": {}
   },
   "projects": {
-    "C:\\Users\\RIBEIRO\\Documents\\ESTG\\24-25\\LDS\\moldme\\moldme\\moldme.csproj": {
+    "C:\\Users\\abcdt\\Desktop\\LDS\\moldme\\moldme\\moldme.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\RIBEIRO\\Documents\\ESTG\\24-25\\LDS\\moldme\\moldme\\moldme.csproj",
+        "projectUniqueName": "C:\\Users\\abcdt\\Desktop\\LDS\\moldme\\moldme\\moldme.csproj",
         "projectName": "moldme",
-        "projectPath": "C:\\Users\\RIBEIRO\\Documents\\ESTG\\24-25\\LDS\\moldme\\moldme\\moldme.csproj",
-        "packagesPath": "C:\\Users\\RIBEIRO\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\RIBEIRO\\Documents\\ESTG\\24-25\\LDS\\moldme\\moldme\\obj\\",
+        "projectPath": "C:\\Users\\abcdt\\Desktop\\LDS\\moldme\\moldme\\moldme.csproj",
+        "packagesPath": "C:\\Users\\abcdt\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\abcdt\\Desktop\\LDS\\moldme\\moldme\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\RIBEIRO\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\abcdt\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -97,7 +97,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Users\\RIBEIRO\\.dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
