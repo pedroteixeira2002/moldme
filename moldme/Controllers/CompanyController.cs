@@ -15,7 +15,6 @@ public class CompanyController : Controller
     }
     
     
-    
     [HttpPost]
     public IActionResult AddProject(int companyId, Project project)
     {
