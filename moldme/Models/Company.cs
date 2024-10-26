@@ -1,4 +1,6 @@
-﻿namespace DefaultNamespace;
+﻿using System.Collections.Generic;
+
+namespace DefaultNamespace;
 
 public class Company
 {

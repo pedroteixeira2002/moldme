@@ -1,4 +1,6 @@
-﻿namespace DefaultNamespace;
+﻿using System;
+
+namespace DefaultNamespace;
 
 public class Project
 {
