@@ -15,12 +15,15 @@ public class CompanyController : Controller
     public IActionResult AddProject(int companyId, Project project)
     {
         var company = _repository.GetCompany(companyId);
-        
-        if (company == null )
+
+        if (company == null)
             return NotFound("Company not found");
+
+        _repository.AddProject(companyId, project);
+        _repository.SaveChanges();
+
+        return Ok("Project added successfully");
     }
-    //logica do genero _repository.(add project) falta a base de dados
-    company.savechanges();
     
     
     // apenas exemplo falta a db
@@ -39,6 +42,33 @@ public class CompanyController : Controller
 
         return Ok(existingProject);
     }
+    [HttpGet("ViewProject/{projectId}")]
+    public IActionResult ViewProject(int projectId)
+    {
+        var project = _repository.GetProjectById(projectId);
+
+        if (project == null)
+        {
+            return NotFound("Project not found");
+        }
+
+        return Ok(project);
+    }
+
+    [HttpDelete("RemoveProject/{projectId}")]
+    public IActionResult RemoveProject(int projectId)
+    {
+        var success = _repository.RemoveProject(projectId);
+
+        if (!success)
+        {
+            return NotFound("Project not found");
+        }
+
+        _repository.SaveChanges();
+        return Ok("Project removed successfully");
+    }
+    
 }
 
 
