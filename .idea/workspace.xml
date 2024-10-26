@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3996b379-b26f-466b-876f-b0a11a5c291c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/moldme/Controllers/CompanyController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Controllers/CompanyController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Controllers/ProjectController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Controllers/ProjectController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/moldme.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/moldme.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/Debug/net8.0/moldme.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.g.targets" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/moldme.csproj.nuget.g.targets" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/project.nuget.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/obj/rider.project.restore.info" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/moldme/Controllers/CompanyController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Controllers/ProjectController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Models/Company.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Models/Employee.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Models/Project.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/moldme/Tests/CompanyControllerTests.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2nwC026H50MLWODNtNJ07YsMmOW" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Executable.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;24-task-1-implementar-o-modelo-de-uma-empresa-e-a-lógica-de-gestão-de-pro…resas&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tiago/OneDrive/Ambiente de Trabalho/ESTG/lds/moldme&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3996b379-b26f-466b-876f-b0a11a5c291c" name="Changes" comment="" />
+      <created>1729874524989</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1729874524989</updated>
+      <workItem from="1729874526072" duration="5808000" />
+      <workItem from="1729945618992" duration="4546000" />
+      <workItem from="1729951105142" duration="38000" />
+      <workItem from="1729951505206" duration="16000" />
+      <workItem from="1729951649140" duration="55000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>
