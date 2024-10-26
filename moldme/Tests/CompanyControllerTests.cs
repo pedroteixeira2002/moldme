@@ -1,4 +1,6 @@
-﻿namespace DefaultNamespace;
+﻿using moldme.Controllers;
+
+namespace DefaultNamespace;
 
 using Xunit;
 using DefaultNamespace;
@@ -8,7 +10,7 @@ using System.Collections.Generic;
 public class CompanyControllerTests
 {
     private readonly CompanyController _controller;
-    private readonly InMemoryRepository _repository;
+    public readonly InMemoryRepository _repository;
 
     public CompanyControllerTests()
     {
@@ -17,12 +19,12 @@ public class CompanyControllerTests
 
         var initialCompany = new Company
         {
-            Name = "Test Company",
-            TaxId = 123456789,
-            Address = "123 Test Street",
-            Contact = 987654321,
-            Email = "test@company.com",
-            Sector = "IT"
+            name = "Test Company",
+            taxid = 123456789,
+            address = "123 Test Street",
+            contact = 987654321,
+            email = "test@company.com",
+            sector = "IT"
         };
 
         _repository.AddCompany(initialCompany);
@@ -33,12 +35,12 @@ public class CompanyControllerTests
     {
         var project = new Project
         {
-            Name = "Test Project",
-            Description = "A test project",
-            Budget = 1000,
-            Status = "Ongoing",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1)
+            name = "Test Project",
+            description = "A test project",
+            price = 1000,
+            status = Project.Status.Opened,
+            startDate = DateTime.Now,
+            endDate = DateTime.Now.AddMonths(1)
         };
         
         var result = _controller.AddProject(1, project) as OkObjectResult;
@@ -47,8 +49,8 @@ public class CompanyControllerTests
         Assert.Equal(200, result.StatusCode);
 
         var company = _repository.GetCompany(1);
-        Assert.Single(company.Projects);
-        Assert.Equal("Test Project", company.Projects[0].Name);
+        Assert.Single(company.projects);
+        Assert.Equal("Test Project", company.projects[0].name);
     }
 
     [Fact]
@@ -56,34 +58,34 @@ public class CompanyControllerTests
     {
         var initialProject = new Project
         {
-            Name = "Old Project Name",
-            Description = "Old Description",
-            Budget = 500,
-            Status = "Ongoing",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1)
+            name = "Old Project Name",
+            description = "Old Description",
+            price = 500,
+            status = Project.Status.Opened,
+            startDate = DateTime.Now,
+            endDate = DateTime.Now.AddMonths(1)
         };
 
         _repository.AddProject(1, initialProject);
         var updatedProject = new Project
         {
-            Name = "Updated Project Name",
-            Description = "Updated Description",
-            Budget = 2000,
-            Status = "Completed",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(2)
+            name = "Updated Project Name",
+            description = "Updated Description",
+            price = 2000,
+            status = Project.Status.Opened,
+            startDate = DateTime.Now,
+            endDate = DateTime.Now.AddMonths(2)
         };
         
         var result = _controller.EditProject(1, updatedProject) as OkObjectResult;
         Assert.NotNull(result);
         Assert.Equal(200, result.StatusCode);
         var company = _repository.GetCompany(1);
-        var project = company.Projects[0];
-        Assert.Equal("Updated Project Name", project.Name);
-        Assert.Equal("Updated Description", project.Description);
-        Assert.Equal(2000, project.Budget);
-        Assert.Equal("Completed", project.Status);
+        var project = company.projects[0];
+        Assert.Equal("Updated Project Name", project.name);
+        Assert.Equal("Updated Description", project.description);
+        Assert.Equal(2000, project.price);
+        Assert.Equal(Project.Status.Opened, project.status);
     }
 
     [Fact]
@@ -91,12 +93,12 @@ public class CompanyControllerTests
     {
         var project = new Project
         {
-            Name = "Viewable Project",
-            Description = "A project to view",
-            Budget = 1500,
-            Status = "Pending",
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1)
+            name = "Viewable Project",
+            description = "A project to view",
+            price = 1500,
+            status = Project.Status.Opened,
+            startDate = DateTime.Now, 
+            endDate= DateTime.Now.AddMonths(1)
         };
         _repository.AddProject(1, project);
         
@@ -107,9 +109,9 @@ public class CompanyControllerTests
         
         var returnedProject = result.Value as Project;
         Assert.NotNull(returnedProject);
-        Assert.Equal("Viewable Project", returnedProject.Name);
-        Assert.Equal("A project to view", returnedProject.Description);
-        Assert.Equal(1500, returnedProject.Budget);
-        Assert.Equal("Pending", returnedProject.Status);
+        Assert.Equal("Viewable Project", returnedProject.name);
+        Assert.Equal("A project to view", returnedProject.description);
+        Assert.Equal(1500, returnedProject.price);
+        Assert.Equal(Project.Status.Opened, returnedProject.status);
     }
 }

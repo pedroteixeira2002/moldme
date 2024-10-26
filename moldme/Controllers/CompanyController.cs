@@ -1,7 +1,10 @@
-﻿namespace DefaultNamespace;
+﻿using Microsoft.AspNetCore.Mvc;
+using moldme.Controllers;
+
+namespace DefaultNamespace;
 
 [ApiController]
-[Rout("api/[controller]")]
+[Route("api/[controller]")]
 public class CompanyController : Controller
 {
     private readonly InMemoryRepository _repository;
@@ -72,4 +75,3 @@ public class CompanyController : Controller
 }
 
 
-}

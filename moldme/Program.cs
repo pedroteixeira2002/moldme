@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Moldme.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
