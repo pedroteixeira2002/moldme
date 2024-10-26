@@ -14,6 +14,7 @@ public class CompanyController : Controller
         _repository = repository;
     }
     
+    
     [HttpPost]
     public IActionResult AddProject(int companyId, Project project)
     {

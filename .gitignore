@@ -1,15 +1,31 @@
-﻿# Default ignored files
-/shelf/
-/workspace.xml
-# Rider ignored files
-/projectSettingsUpdater.xml
-/.idea.moldme.iml
-/modules.xml
-/contentModel.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-/obj/
-/bin/
+﻿# Ignore build output directories
+moldme/bin/
+moldme/obj/
+
+# Ignore Rider/JetBrains specific files
+moldme/.idea/
+*.iml
+
+# Ignore user-specific files and OS-generated files
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# Ignore other common directories and files
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+*.log
+logs/
+*.tlog
+*.cache
+.vscode/
+.vs/
+
+# Ignore ASP.NET Core specific files
+moldme/Properties/launchSettings.json
+moldme/appsettings.Development.json
+moldme/appsettings.Local.json
+moldme/wwwroot/lib/
