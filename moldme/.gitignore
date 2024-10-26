@@ -1,6 +1,6 @@
-﻿moldme/bin/
-moldme/obj/
-moldme/.idea/
+﻿bin
+obj
+.idea
 # Default ignored files
 /shelf/
 /workspace.xml
