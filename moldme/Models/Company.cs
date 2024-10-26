@@ -9,6 +9,8 @@ public class Company
     public int contact { get; set; }
     public string email { get; set; }
     public string sector { get; set; }
+    
+    
 
     public enum Plan
     {
