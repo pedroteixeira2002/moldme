@@ -10,11 +10,18 @@ namespace moldme.data
         {
             
         }
+        
 
         public DbSet<Company> Companies { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         
         public DbSet<TodoTask> Tasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
+       
+        
     }
+    
+    
 }
