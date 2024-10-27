@@ -1,31 +1,55 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using moldme.Models;
 
 namespace DefaultNamespace;
 
 public class Company
 {
-    public int companyId { get; set; }
-    public string name { get; set; }
-    public int taxid { get; set; }
-    public string address { get; set; }
-    public int contact { get; set; }
-    public string email { get; set; }
-    public string sector { get; set; }
+    
+    [Key]
+    [StringLength(6)]
+    public string CompanyID { get; set; }
+    [Required]
+    [StringLength(64)]
+    public string Name { get; set; }
+        
+    [Required]
+    [Range(100000000, 999999999)] 
+    public int TaxId { get; set; }
+        
+    [Required]
+    [StringLength(64)]
+    public string Address { get; set; }
+        
+    [Required]
+    [Range(100000000, 999999999)] 
+    public int Contact { get; set; }
+        
+    [Required]
+    [StringLength(64)]
+    public string Email { get; set; }
+        
+    [Required]
+    [StringLength(64)]
+    public string Sector { get; set; }
+        
+    [Required]
+    [StringLength(20)]
+    [Column("subscriptionPlan")]
+    public SubscriptionPlan Plan { get; set; }
 
-    public enum Plan
-    {
-        Basic,
-        Pro,
-        Premium,
-    }
-
-    public Plan plan { get; set; }
-    public string password { get; set; }
-    public List<Project> projects { get; set; } = new List<Project>();
-    public List<Employee> employees { get; set; }
-
-
+    [Required]
+    [StringLength(64)] 
+    public string Password { get; set; }
+    
+    public List<Project> Projects { get; set; } = new List<Project>();
+    public List<Employee> Employees { get; set; }
 }
+
+
+
 
 
 

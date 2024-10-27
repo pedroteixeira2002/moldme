@@ -1,29 +1,23 @@
-using System.Collections.Immutable;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using moldme.data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adiciona serviços ao contêiner.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<MoldmeContext>(Options => Options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options => 
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
+// Configuração do pipeline de requisições HTTP.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // O valor padrão do HSTS é 30 dias. Para ambientes de produção, veja: https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
