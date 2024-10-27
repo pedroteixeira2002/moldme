@@ -8,6 +8,7 @@ namespace DefaultNamespace;
 public class Company
 {
     
+    
     [Key]
     [StringLength(6)]
     public string CompanyID { get; set; }
