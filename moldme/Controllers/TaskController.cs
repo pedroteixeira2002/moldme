@@ -1,75 +1,91 @@
 using Microsoft.AspNetCore.Mvc;
-using Task = moldme.Models.Task;
+using moldme.data;
+using moldme.Models;
 
-namespace moldme.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class TaskController : Controller
+namespace moldme.Controllers // Change from DefaultNamespace to your actual namespace
 {
-    private readonly MoldmeContext _context;
-
-    public TaskController(MoldmeContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TaskController : ControllerBase // Inherit from ControllerBase
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    // Create
-    [HttpPost]
-    public IActionResult Create([FromBody] Task task)
-    {
-        _context.Taskings.Add(task);
-        _context.SaveChanges();
-        return CreatedAtAction(nameof(GetById), new { id = task.TaskId }, task);
-    }
-
-    // Read all
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(_context.Taskings.ToList());
-    }
-
-    // Read by ID
-    [HttpGet("{id}")]
-    public IActionResult GetById(int id)
-    {
-        var tasking = _context.Taskings.Find(id);
-        if (tasking == null)
+        public TaskController(ApplicationDbContext context)
         {
-            return NotFound();
-        }
-        return Ok(tasking);
-    }
-    // Update
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] Task updatedTask)
-    {
-        var tasking = _context.Taskings.Find(id);
-        if (tasking == null)
-        {
-            return NotFound();
+            _context = context;
         }
 
-        tasking.TitleName = updatedTask.TitleName;
-        tasking.Description = updatedTask.Description;
-        tasking.Status = updatedTask.Status;
-
-        _context.SaveChanges();
-        return NoContent();
-    }
-
-    // Delete
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        var tasking = _context.Taskings.Find(id);
-        if (tasking == null)
+        // Create
+        [HttpPost("addtask")]
+        public IActionResult Create([FromBody] TodoTask todoTask) // Use the renamed class
         {
-            return NotFound();
+            if (!ModelState.IsValid) // Validate the model
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Tasks.Add(todoTask); // Use the correct DbSet
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new { id = todoTask.TaskId }, todoTask);
         }
-        _context.Taskings.Remove(tasking);
-        _context.SaveChanges();
-        return NoContent();
+
+        // Read all
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var tasks = _context.Tasks.ToList(); // Ensure to use the correct DbSet
+            return Ok(tasks);
+        }
+
+        // Read by ID
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            if (task == null)
+            {
+                return NotFound();
+            }
+            return Ok(task);
+        }
+
+        // Update
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] TodoTask updatedTodoTask) // Ensure updated type is correct
+        {
+            if (!ModelState.IsValid) // Validate the model
+            {
+                return BadRequest(ModelState);
+            }
+
+            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            // Update properties
+            task.TitleName = updatedTodoTask.TitleName;
+            task.Description = updatedTodoTask.Description;
+            task.Date = updatedTodoTask.Date; // Ensure Date is updated
+            task.Status = updatedTodoTask.Status;
+
+            _context.SaveChanges();
+            return NoContent(); // 204 No Content
+        }
+
+        // Delete
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            if (task == null)
+            {
+                return NotFound();
+            }
+            _context.Tasks.Remove(task); // Use the correct DbSet
+            _context.SaveChanges();
+            return NoContent(); // 204 No Content
+        }
     }
 }

@@ -31,21 +31,21 @@ public class CompanyController : Controller
     }
     
         [HttpPut("EditProject/{projectID}")]
-        public IActionResult EditProject(string projectID, Project updatedProject) 
+        public IActionResult EditProject(string ProjectId, Project updatedProject) 
         {
-            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+            var existingProject = _context.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
             if (existingProject == null)
             {
                 return NotFound("Project not found");
             }
 
-            existingProject.name = updatedProject.name;
-            existingProject.description = updatedProject.description;
-            existingProject.budget = updatedProject.budget;
-            existingProject.status = updatedProject.status;
-            existingProject.startDate = updatedProject.startDate;
-            existingProject.endDate = updatedProject.endDate;
+            existingProject.Name = updatedProject.Name;
+            existingProject.Description = updatedProject.Description;
+            existingProject.Budget = updatedProject.Budget;
+            existingProject.Status = updatedProject.Status;
+            existingProject.StartDate = updatedProject.StartDate;
+            existingProject.EndDate = updatedProject.EndDate;
 
             _context.SaveChanges();
 
@@ -53,9 +53,9 @@ public class CompanyController : Controller
         }
         
         [HttpGet("ViewProject/{projectID}")]
-        public IActionResult ViewProject(string projectID)
+        public IActionResult ViewProject(string ProjectId)
         {
-            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+            var existingProject = _context.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
             if (existingProject == null)
             {
@@ -66,9 +66,9 @@ public class CompanyController : Controller
         }
         
         [HttpDelete("RemoveProject/{projectID}")]
-        public IActionResult RemoveProject(string projectID) // Mudado para string se for VARCHAR no DB
+        public IActionResult RemoveProject(string ProjectId) // Mudado para string se for VARCHAR no DB
         {
-            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+            var existingProject = _context.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
             if (existingProject == null)
             {

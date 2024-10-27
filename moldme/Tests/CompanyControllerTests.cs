@@ -5,6 +5,7 @@ using moldme.data;
 using Xunit;
 using System;
 using System.Linq;
+using moldme.Models;
 
 public class CompanyControllerTests
 {
@@ -13,7 +14,7 @@ public class CompanyControllerTests
 
     public CompanyControllerTests()
     {
-        // Configurando o InMemoryDatabase
+        // Configuring the InMemoryDatabase for tests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
@@ -21,16 +22,17 @@ public class CompanyControllerTests
         _context = new ApplicationDbContext(options);
         _controller = new CompanyController(_context);
         
-        // Criando uma empresa inicial para teste
+        // Creating an initial company for testing
         var initialCompany = new Company
         {
-            CompanyID = "1",  // Ajustado para string, alinhando com VARCHAR(6)
+            CompanyID = "1",  // Set to string, aligning with VARCHAR(6)
             Name = "Test Company",
-            taxid = 123456789,
+            TaxId = 123456789,
             Address = "123 Test Street",
             Contact = 987654321,
             Email = "test@company.com",
             Sector = "IT",
+            Plan = SubscriptionPlan.Basic, // Set a valid subscription plan
             Password = "password"
         };
 
@@ -43,14 +45,14 @@ public class CompanyControllerTests
     {
         var project = new Project
         {
-            projectID = "PR001",  // Ajustado para string
-            name = "Test Project",
-            description = "A test project",
-            budget = 1000,
-            status = "Open",
-            startDate = DateTime.Now,
-            endDate = DateTime.Now.AddMonths(1),
-            companyID = "1"  // Certifique-se de que o ID da empresa seja igual ao da empresa inicial
+            ProjectId = "PR001",  // Set to string
+            Name = "Test Project",
+            Description = "A test project",
+            Budget = 1000,
+            Status = Status.ACCEPTED,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddMonths(1),
+            CompanyId = "1"  // Ensure the company ID matches the initial company
         };
         
         var result = _controller.AddProject("1", project) as OkObjectResult;
@@ -58,11 +60,11 @@ public class CompanyControllerTests
         Assert.NotNull(result);
         Assert.Equal(200, result.StatusCode);
 
-        // Incluindo projetos para verificar se foi adicionado corretamente
+        // Check if the project was added correctly
         var company = _context.Companies.Include(c => c.Projects).FirstOrDefault(c => c.CompanyID == "1");
         Assert.NotNull(company);
         Assert.Single(company.Projects);
-        Assert.Equal("Test Project", company.Projects[0].name);
+        Assert.Equal("Test Project", company.Projects[0].Name); // Adjust for casing
     }
 
     [Fact]
@@ -70,42 +72,42 @@ public class CompanyControllerTests
     {
         var initialProject = new Project
         {
-            projectID = "PR002",  // Ajustado para string
-            name = "Old Project Name",
-            description = "Old Description",
-            budget = 500,
-            status = "Open",
-            startDate = DateTime.Now,
-            endDate = DateTime.Now.AddMonths(1),
-            companyID = "1"
+            ProjectId = "PR002",  // Set to string
+            Name = "Old Project Name",
+            Description = "Old Description",
+            Budget = 500,
+            Status = Status.ACCEPTED,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddMonths(1),
+            CompanyId = "1"
         };
 
         _context.Projects.Add(initialProject);
         _context.SaveChanges();
 
-        // Criando um projeto atualizado com o mesmo ID
+        // Creating an updated project with the same ID
         var updatedProject = new Project
         {
-            projectID = initialProject.projectID, // Garantir que é o mesmo ID
-            name = "Updated Project Name",
-            description = "Updated Description",
-            budget = 2000,
-            status = "Open",
-            startDate = DateTime.Now,
-            endDate = DateTime.Now.AddMonths(2)
+            ProjectId = initialProject.ProjectId, // Ensure it matches
+            Name = "Updated Project Name",
+            Description = "Updated Description",
+            Budget = 2000,
+            Status = Status.ACCEPTED,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddMonths(2)
         };
         
-        var result = _controller.EditProject(initialProject.projectID, updatedProject) as OkObjectResult;
+        var result = _controller.EditProject(initialProject.ProjectId, updatedProject) as OkObjectResult;
 
         Assert.NotNull(result);
         Assert.Equal(200, result.StatusCode);
 
-        var project = _context.Projects.FirstOrDefault(p => p.projectID == initialProject.projectID);
+        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == initialProject.ProjectId);
         Assert.NotNull(project);
-        Assert.Equal("Updated Project Name", project.name);
-        Assert.Equal("Updated Description", project.description);
-        Assert.Equal(2000, project.budget);
-        Assert.Equal("Open", project.status);
+        Assert.Equal("Updated Project Name", project.Name); // Adjust for casing
+        Assert.Equal("Updated Description", project.Description);
+        Assert.Equal(2000, project.Budget);
+        Assert.Equal(Status.ACCEPTED, project.Status);
     }
 
     [Fact]
@@ -113,29 +115,29 @@ public class CompanyControllerTests
     {
         var project = new Project
         {
-            projectID = "PR003",  // Ajustado para string
-            name = "Viewable Project",
-            description = "A project to view",
-            budget = 1500,
-            status = "Open",
-            startDate = DateTime.Now,
-            endDate = DateTime.Now.AddMonths(1),
-            companyID = "1"
+            ProjectId = "PR003",  // Set to string
+            Name = "Viewable Project",
+            Description = "A project to view",
+            Budget = 1500,
+            Status = Status.ACCEPTED,
+            StartDate = DateTime.Now,
+            EndDate = DateTime.Now.AddMonths(1),
+            CompanyId = "C001"
         };
 
         _context.Projects.Add(project);
         _context.SaveChanges();
         
-        var result = _controller.ViewProject(project.projectID) as OkObjectResult;
+        var result = _controller.ViewProject(project.ProjectId) as OkObjectResult;
         
         Assert.NotNull(result);
         Assert.Equal(200, result.StatusCode);
         
         var returnedProject = result.Value as Project;
         Assert.NotNull(returnedProject);
-        Assert.Equal("Viewable Project", returnedProject.name);
-        Assert.Equal("A project to view", returnedProject.description);
-        Assert.Equal(1500, returnedProject.budget);
-        Assert.Equal("Open", returnedProject.status);
+        Assert.Equal("Viewable Project", returnedProject.Name); // Adjust for casing
+        Assert.Equal("A project to view", returnedProject.Description);
+        Assert.Equal(1500, returnedProject.Budget);
+        Assert.Equal(Status.ACCEPTED, returnedProject.Status);
     }
 }
