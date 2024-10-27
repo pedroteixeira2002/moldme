@@ -1,18 +1,33 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using moldme.Models;
 
 namespace DefaultNamespace;
 
 public class Project
 {
-    public string projectID { get; set; } 
-    public string name { get; set; } 
-    public string description { get; set; }
+    [Key, StringLength(6)]
+    public string ProjectId { get; set; }
+    
+    [Required, StringLength(64)]
+    public string Name { get; set; }
+    
+    [Required, StringLength(256)]
+    public string Description { get; set; }
 
-    public string status { get; set; }
-    public decimal budget { get; set; } 
+    [Required, EnumDataType(typeof(Status))]
+    public Status Status { get; set; }
+    
+    [Required]
+    public decimal Budget { get; set; } 
+    
+    [Required, DataType(DataType.DateTime)]
+    public DateTime StartDate { get; set; }
+    
+    [Required, DataType(DataType.DateTime)]
+    public DateTime EndDate { get; set; }
 
-    public string startDate { get; set; }
-    public string endDate { get; set; }
-
-    public string companyID { get; set; } 
+    [ForeignKey("Company"), Required]
+    public string CompanyId { get; set; } 
 }
