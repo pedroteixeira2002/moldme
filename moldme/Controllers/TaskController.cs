@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.Models;
+using Task = moldme.Models.Task;
 
 namespace moldme.Controllers // Change from DefaultNamespace to your actual namespace
 {
@@ -17,16 +18,16 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
 
         // Create
         [HttpPost("addtask")]
-        public IActionResult Create([FromBody] TodoTask todoTask) // Use the renamed class
+        public IActionResult Create([FromBody] Task task) // Use the renamed class
         {
             if (!ModelState.IsValid) // Validate the model
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Tasks.Add(todoTask); // Use the correct DbSet
+            _context.Tasks.Add(task); // Use the correct DbSet
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = todoTask.TaskId }, todoTask);
+            return CreatedAtAction(nameof(GetById), new { id = task.TaskId }, task);
         }
 
         // Read all
@@ -51,7 +52,7 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
 
         // Update
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] TodoTask updatedTodoTask) // Ensure updated type is correct
+        public IActionResult Update(int id, [FromBody] Task updatedTask) // Ensure updated type is correct
         {
             if (!ModelState.IsValid) // Validate the model
             {
@@ -65,10 +66,10 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
             }
 
             // Update properties
-            task.TitleName = updatedTodoTask.TitleName;
-            task.Description = updatedTodoTask.Description;
-            task.Date = updatedTodoTask.Date; // Ensure Date is updated
-            task.Status = updatedTodoTask.Status;
+            task.TitleName = updatedTask.TitleName;
+            task.Description = updatedTask.Description;
+            task.Date = updatedTask.Date; // Ensure Date is updated
+            task.Status = updatedTask.Status;
 
             _context.SaveChanges();
             return NoContent(); // 204 No Content

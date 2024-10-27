@@ -1,6 +1,7 @@
 ﻿using DefaultNamespace;
 using Microsoft.EntityFrameworkCore;
 using moldme.Models;
+using Task = moldme.Models.Task;
 
 namespace moldme.data
 {
@@ -16,8 +17,7 @@ namespace moldme.data
         public DbSet<Project> Projects { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        
-        public DbSet<TodoTask> Tasks { get; set; }
+        public DbSet<Task> Tasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
        
         

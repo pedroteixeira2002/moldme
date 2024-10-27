@@ -2,7 +2,7 @@
 
 namespace moldme.Models;
 
-public class TodoTask
+public class Task
 {
     [Key, MaxLength(6)]
     public int TaskId { get; set; }
