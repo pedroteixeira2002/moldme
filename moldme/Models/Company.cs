@@ -4,15 +4,13 @@ namespace DefaultNamespace;
 
 public class Company
 {
-    public int companyId { get; set; }
+    public string companyID { get; set; } 
     public string name { get; set; }
     public int taxid { get; set; }
     public string address { get; set; }
     public int contact { get; set; }
     public string email { get; set; }
     public string sector { get; set; }
-    
-    
 
     public enum Plan
     {
@@ -23,6 +21,8 @@ public class Company
 
     public Plan plan { get; set; }
     public string password { get; set; }
+
+    // Mantenha a lista de projetos
     public List<Project> projects { get; set; } = new List<Project>();
     public List<Employee> employees { get; set; }
 

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
+using moldme.data;
 
 namespace DefaultNamespace;
 
@@ -7,72 +10,80 @@ namespace DefaultNamespace;
 [Route("api/[controller]")]
 public class CompanyController : Controller
 {
-    private readonly InMemoryRepository _repository;
-    //isto é só para simular uma db 
-    public CompanyController(InMemoryRepository repository)
+    private readonly ApplicationDbContext _context;
+    public CompanyController(ApplicationDbContext context)
     {
-        _repository = repository;
+        _context = context;
     }
     
     
-    [HttpPost]
-    public IActionResult AddProject(int companyId, Project project)
+    [HttpPost("addProject")]
+    public IActionResult AddProject(string companyID, [FromBody] Project project)
     {
-        var company = _repository.GetCompany(companyId);
+        var company = _context.Companies.FirstOrDefault(c => c.companyID == companyID);
 
         if (company == null)
             return NotFound("Company not found");
 
-        _repository.AddProject(companyId, project);
-        _repository.SaveChanges();
+        // Adiciona o projeto à empresa
+        company.projects.Add(project);
+        _context.SaveChanges();
 
         return Ok("Project added successfully");
     }
-    
-    
-    // apenas exemplo falta a db
-    [HttpPut("EditProject/{projectId}")]
-    public IActionResult EditProject(int projectId, Project updatedProject)
-    {
-        var existingProject = _repository.GetProjectById(projectId);
-
-        if (existingProject == null)
+        
+        // Método para editar um projeto existente
+        [HttpPut("EditProject/{projectID}")]
+        public IActionResult EditProject(string projectID, Project updatedProject) // Mudado para string se for VARCHAR no DB
         {
-            return NotFound("Project not found");
+            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+
+            if (existingProject == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            existingProject.name = updatedProject.name;
+            existingProject.description = updatedProject.description;
+            existingProject.budget = updatedProject.budget;
+            existingProject.status = updatedProject.status;
+            existingProject.startDate = updatedProject.startDate;
+            existingProject.endDate = updatedProject.endDate;
+
+            _context.SaveChanges();
+
+            return Ok(existingProject);
+        }
+        
+        // Método para visualizar os detalhes de um projeto
+        [HttpGet("ViewProject/{projectID}")]
+        public IActionResult ViewProject(string projectID) // Mudado para string se for VARCHAR no DB
+        {
+            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+
+            if (existingProject == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            return Ok(existingProject);
         }
 
-        _repository.EditProject(projectId, updatedProject);
-        _repository.SaveChanges();
-
-        return Ok(existingProject);
-    }
-    [HttpGet("ViewProject/{projectId}")]
-    public IActionResult ViewProject(int projectId)
-    {
-        var project = _repository.GetProjectById(projectId);
-
-        if (project == null)
+        // Método para remover um projeto existente
+        [HttpDelete("RemoveProject/{projectID}")]
+        public IActionResult RemoveProject(string projectID) // Mudado para string se for VARCHAR no DB
         {
-            return NotFound("Project not found");
+            var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
+
+            if (existingProject == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            _context.Projects.Remove(existingProject);
+            _context.SaveChanges();
+            return Ok("Project removed successfully");
         }
-
-        return Ok(project);
     }
-
-    [HttpDelete("RemoveProject/{projectId}")]
-    public IActionResult RemoveProject(int projectId)
-    {
-        var success = _repository.RemoveProject(projectId);
-
-        if (!success)
-        {
-            return NotFound("Project not found");
-        }
-
-        _repository.SaveChanges();
-        return Ok("Project removed successfully");
-    }
-    
-}
 
 
