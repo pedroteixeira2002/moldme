@@ -15,26 +15,23 @@ public class CompanyController : Controller
     {
         _context = context;
     }
-    
-    
+
     [HttpPost("addProject")]
     public IActionResult AddProject(string companyID, [FromBody] Project project)
     {
-        var company = _context.Companies.FirstOrDefault(c => c.companyID == companyID);
+        var company = _context.Companies.FirstOrDefault(c => c.CompanyID == companyID);
 
         if (company == null)
             return NotFound("Company not found");
-
-        // Adiciona o projeto à empresa
-        company.projects.Add(project);
+        
+        company.Projects.Add(project);
         _context.SaveChanges();
 
         return Ok("Project added successfully");
     }
-        
-        // Método para editar um projeto existente
+    
         [HttpPut("EditProject/{projectID}")]
-        public IActionResult EditProject(string projectID, Project updatedProject) // Mudado para string se for VARCHAR no DB
+        public IActionResult EditProject(string projectID, Project updatedProject) 
         {
             var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
 
@@ -55,9 +52,8 @@ public class CompanyController : Controller
             return Ok(existingProject);
         }
         
-        // Método para visualizar os detalhes de um projeto
         [HttpGet("ViewProject/{projectID}")]
-        public IActionResult ViewProject(string projectID) // Mudado para string se for VARCHAR no DB
+        public IActionResult ViewProject(string projectID)
         {
             var existingProject = _context.Projects.FirstOrDefault(p => p.projectID == projectID);
 
@@ -68,8 +64,7 @@ public class CompanyController : Controller
 
             return Ok(existingProject);
         }
-
-        // Método para remover um projeto existente
+        
         [HttpDelete("RemoveProject/{projectID}")]
         public IActionResult RemoveProject(string projectID) // Mudado para string se for VARCHAR no DB
         {

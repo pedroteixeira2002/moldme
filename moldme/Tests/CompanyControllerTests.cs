@@ -24,14 +24,14 @@ public class CompanyControllerTests
         // Criando uma empresa inicial para teste
         var initialCompany = new Company
         {
-            companyID = "1",  // Ajustado para string, alinhando com VARCHAR(6)
-            name = "Test Company",
+            CompanyID = "1",  // Ajustado para string, alinhando com VARCHAR(6)
+            Name = "Test Company",
             taxid = 123456789,
-            address = "123 Test Street",
-            contact = 987654321,
-            email = "test@company.com",
-            sector = "IT",
-            password = "password"
+            Address = "123 Test Street",
+            Contact = 987654321,
+            Email = "test@company.com",
+            Sector = "IT",
+            Password = "password"
         };
 
         _context.Companies.Add(initialCompany);
@@ -59,10 +59,10 @@ public class CompanyControllerTests
         Assert.Equal(200, result.StatusCode);
 
         // Incluindo projetos para verificar se foi adicionado corretamente
-        var company = _context.Companies.Include(c => c.projects).FirstOrDefault(c => c.companyID == "1");
+        var company = _context.Companies.Include(c => c.Projects).FirstOrDefault(c => c.CompanyID == "1");
         Assert.NotNull(company);
-        Assert.Single(company.projects);
-        Assert.Equal("Test Project", company.projects[0].name);
+        Assert.Single(company.Projects);
+        Assert.Equal("Test Project", company.Projects[0].name);
     }
 
     [Fact]
