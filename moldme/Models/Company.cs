@@ -1,4 +1,6 @@
-﻿namespace DefaultNamespace;
+﻿using moldme.data;
+
+namespace DefaultNamespace;
 
 public class Company
 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
 
 namespace DefaultNamespace;
@@ -7,12 +8,16 @@ namespace DefaultNamespace;
 [Route("api/[controller]")]
 public class CompanyController : Controller
 {
-    private readonly InMemoryRepository _repository;
-    //isto é só para simular uma db 
-    public CompanyController(InMemoryRepository repository)
+    //Conexão com a base de dados
+    private readonly DbContextOptions _repository;
+    
+    public CompanyController(DbContextOptions repository)
     {
         _repository = repository;
     }
+    
+    // public async 
+    
     
     
     [HttpPost]
