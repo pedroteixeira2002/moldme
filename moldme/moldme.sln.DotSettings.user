@@ -8,6 +8,11 @@
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::CompanyControllerTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=697dc037_002D4f3e_002D479b_002D813d_002D41827f5f2d5b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="OfferControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::OfferControllerTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8863e071_002Df2da_002D4aaa_002Dbb0c_002Dee30052c373f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CompanyControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::CompanyControllerTests&lt;/TestId&gt;&#xD;
