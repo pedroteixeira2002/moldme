@@ -43,9 +43,6 @@ public class Company
     [Required]
     [StringLength(64)] 
     public string Password { get; set; }
-    
-    public List<Project> Projects { get; set; } = new List<Project>();
-    public List<Employee> Employees { get; set; }
 }
 
 

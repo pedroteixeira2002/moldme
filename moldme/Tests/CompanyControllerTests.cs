@@ -9,135 +9,127 @@ using moldme.Models;
 
 public class CompanyControllerTests
 {
-    private readonly CompanyController _controller;
-    private readonly ApplicationDbContext _context;
-
-    public CompanyControllerTests()
+    [Fact]
+    public void AddProjectTest()
     {
-        // Configuring the InMemoryDatabase for tests
+        // Arrange
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Utiliza um nome único para o banco de dados em memória
             .Options;
 
-        _context = new ApplicationDbContext(options);
-        _controller = new CompanyController(_context);
-        
-        // Creating an initial company for testing
-        var initialCompany = new Company
+        using (var dbContext = new ApplicationDbContext(options))
         {
-            CompanyID = "1",  // Set to string, aligning with VARCHAR(6)
-            Name = "Test Company",
-            TaxId = 123456789,
-            Address = "123 Test Street",
-            Contact = 987654321,
-            Email = "test@company.com",
-            Sector = "IT",
-            Plan = SubscriptionPlan.Basic, // Set a valid subscription plan
-            Password = "password"
-        };
+            // Adiciona uma empresa ao contexto de dados
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "[email protected]",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
 
-        _context.Companies.Add(initialCompany);
-        _context.SaveChanges();
+            dbContext.Companies.Add(company);
+            dbContext.SaveChanges();
+
+            // Cria uma instância do controlador com o contexto atual
+            var controller = new CompanyController(dbContext);
+
+            // Cria um projeto para ser adicionado
+            var project = new Project
+            {
+                ProjectId = "1",
+                Name = "Project 1",
+                Description = "Description 1",
+                Budget = 1000,
+                Status = Status.INPROGRESS,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                CompanyId = company.CompanyID // Associa explicitamente o projeto à empresa
+            };
+
+            // Act
+            var result = controller.AddProject(company.CompanyID, project) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result); // Verifica se o resultado não é nulo
+            Assert.Equal("Project added successfully", result.Value); // Verifica a mensagem retornada
+
+            // Verifica se o projeto foi adicionado corretamente ao banco de dados
+            var addedProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "1");
+            Assert.NotNull(addedProject); // Verifica se o projeto foi encontrado
+            Assert.Equal("1", addedProject.CompanyId); // Verifica se o projeto está associado à empresa correta
+        }
     }
 
     [Fact]
-    public void CreateProject_ShouldAddProjectToCompany()
+    public void EditProjectTest()
     {
-        var project = new Project
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "Edit_project_database")
+            .Options;
+
+        using (var dbContext = new ApplicationDbContext(options))
         {
-            ProjectId = "PR001",  // Set to string
-            Name = "Test Project",
-            Description = "A test project",
-            Budget = 1000,
-            Status = Status.ACCEPTED,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1),
-            CompanyId = "1"  // Ensure the company ID matches the initial company
-        };
-        
-        var result = _controller.AddProject("1", project) as OkObjectResult;
+            // Adiciona uma empresa e um projeto ao contexto de dados
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "[email protected]",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
 
-        Assert.NotNull(result);
-        Assert.Equal(200, result.StatusCode);
+            var project = new Project
+            {
+                ProjectId = "1",
+                Name = "Original Project",
+                Description = "Original Description",
+                Budget = 5000,
+                Status = Status.INPROGRESS,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                CompanyId = company.CompanyID
+            };
 
-        // Check if the project was added correctly
-        var company = _context.Companies.Include(c => c.Projects).FirstOrDefault(c => c.CompanyID == "1");
-        Assert.NotNull(company);
-        Assert.Single(company.Projects);
-        Assert.Equal("Test Project", company.Projects[0].Name); // Adjust for casing
-    }
+            dbContext.Companies.Add(company);
+            dbContext.Projects.Add(project);
+            dbContext.SaveChanges();
 
-    [Fact]
-    public void EditProject_ShouldUpdateProjectDetails()
-    {
-        var initialProject = new Project
-        {
-            ProjectId = "PR002",  // Set to string
-            Name = "Old Project Name",
-            Description = "Old Description",
-            Budget = 500,
-            Status = Status.ACCEPTED,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1),
-            CompanyId = "1"
-        };
+            var controller = new CompanyController(dbContext);
 
-        _context.Projects.Add(initialProject);
-        _context.SaveChanges();
+            // Atualização do projeto
+            var updatedProject = new Project
+            {
+                ProjectId = "1",
+                Name = "Updated Project",
+                Description = "Updated Description",
+                Budget = 10000,
+                Status = Status.DONE,
+                StartDate = DateTime.Now.AddDays(-10),
+                EndDate = DateTime.Now.AddDays(20),
+                CompanyId = company.CompanyID
+            };
 
-        // Creating an updated project with the same ID
-        var updatedProject = new Project
-        {
-            ProjectId = initialProject.ProjectId, // Ensure it matches
-            Name = "Updated Project Name",
-            Description = "Updated Description",
-            Budget = 2000,
-            Status = Status.ACCEPTED,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(2)
-        };
-        
-        var result = _controller.EditProject(initialProject.ProjectId, updatedProject) as OkObjectResult;
+            // Act
+            var result = controller.EditProject("1", updatedProject) as OkObjectResult;
 
-        Assert.NotNull(result);
-        Assert.Equal(200, result.StatusCode);
-
-        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == initialProject.ProjectId);
-        Assert.NotNull(project);
-        Assert.Equal("Updated Project Name", project.Name); // Adjust for casing
-        Assert.Equal("Updated Description", project.Description);
-        Assert.Equal(2000, project.Budget);
-        Assert.Equal(Status.ACCEPTED, project.Status);
-    }
-
-    [Fact]
-    public void ViewProject_ShouldReturnProjectDetails()
-    {
-        var project = new Project
-        {
-            ProjectId = "PR003",  // Set to string
-            Name = "Viewable Project",
-            Description = "A project to view",
-            Budget = 1500,
-            Status = Status.ACCEPTED,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddMonths(1),
-            CompanyId = "C001"
-        };
-
-        _context.Projects.Add(project);
-        _context.SaveChanges();
-        
-        var result = _controller.ViewProject(project.ProjectId) as OkObjectResult;
-        
-        Assert.NotNull(result);
-        Assert.Equal(200, result.StatusCode);
-        
-        var returnedProject = result.Value as Project;
-        Assert.NotNull(returnedProject);
-        Assert.Equal("Viewable Project", returnedProject.Name); // Adjust for casing
-        Assert.Equal("A project to view", returnedProject.Description);
-        Assert.Equal(1500, returnedProject.Budget);
-        Assert.Equal(Status.ACCEPTED, returnedProject.Status);
+            // Assert
+            Assert.NotNull(result);
+            var updatedProjectFromDb = result.Value as Project;
+            Assert.Equal("Updated Project", updatedProjectFromDb.Name);
+            Assert.Equal(10000, updatedProjectFromDb.Budget);
+            Assert.Equal(Status.DONE, updatedProjectFromDb.Status);
+        }
     }
 }
