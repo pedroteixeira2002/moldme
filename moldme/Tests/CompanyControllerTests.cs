@@ -18,6 +18,7 @@ public class CompanyControllerTests
 
         using (var dbContext = new ApplicationDbContext(options))
         {
+            
             var company = new Company
             {
                 CompanyID = "1",
