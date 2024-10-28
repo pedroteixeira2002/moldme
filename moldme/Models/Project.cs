@@ -19,7 +19,7 @@ public class Project
     [Required, EnumDataType(typeof(Status))]
     public Status Status { get; set; }
     
-    [Required]
+    [Required, Column(TypeName = "decimal(18, 2)")]
     public decimal Budget { get; set; } 
     
     [Required, DataType(DataType.DateTime)]
