@@ -30,7 +30,7 @@ namespace DefaultNamespace
             _context.Employees.Add(employee); 
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetEmployeeById), new { employeeId = employee.StaffID }, employee);
+            return CreatedAtAction(nameof(GetEmployeeById), new { employeeId = employee.EmployeeID }, employee);
         }
 
         

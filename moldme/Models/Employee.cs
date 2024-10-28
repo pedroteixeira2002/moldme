@@ -7,7 +7,8 @@ public class Employee
 {
     [Key]
     [StringLength(6)]
-    public string StaffID { get; set; }
+    [Required]
+    public string EmployeeID { get; set; }
         
     [Required]
     [StringLength(64)]
