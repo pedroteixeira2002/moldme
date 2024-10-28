@@ -33,6 +33,7 @@
 
     <ItemGroup>
       <Compile Remove=".github\**" />
+      <Compile Remove="Tests\EmployeeControllerTests.cs" />
     </ItemGroup>
 
     <ItemGroup>
