@@ -8,6 +8,7 @@ using System.Linq;
 using System.Collections.Generic;
 using DefaultNamespace;
 using Microsoft.EntityFrameworkCore;
+namespace moldme.Tests;
 
 public class OfferControllerTests
 {

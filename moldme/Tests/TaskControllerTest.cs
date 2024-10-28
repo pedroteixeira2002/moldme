@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
-using System.Linq;
 using Task = moldme.Models.Task;
 
 namespace moldme.Tests
