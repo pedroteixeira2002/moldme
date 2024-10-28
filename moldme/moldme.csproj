@@ -34,6 +34,7 @@
     <ItemGroup>
       <Compile Remove=".github\**" />
       <Compile Remove="Tests\EmployeeControllerTests.cs" />
+      <Compile Remove="data\MoldmeContext.cs" />
     </ItemGroup>
 
     <ItemGroup>
