@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master # Definimos o gatilho para nossa automação
-      - dev
+      - dev/*
 
 jobs:
   BuildAndTestApplication: # Criamos o job de build e testes
