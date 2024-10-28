@@ -30,9 +30,8 @@ namespace moldme.Tests
             // Arrange
             var employeeId = "EMP001";
             var projectId = "PROJ01";
-            var companyId = "1"; // Adicionando o CompanyId que é requerido
-
-            // Adicionar Employee com CompanyId
+            var companyId = "1";
+            
             dbContext.Employees.Add(new Employee
             {
                 EmployeeID = employeeId,
@@ -41,10 +40,8 @@ namespace moldme.Tests
                 NIF = 123456789,
                 Email = "john.doe@example.com",
                 Password = "password123",
-                CompanyID = companyId // Preencher o CompanyId
+                CompanyID = companyId 
             });
-
-            // Adicionar Projeto com CompanyId
             dbContext.Projects.Add(new Project
             {
                 ProjectId = projectId,
@@ -167,11 +164,11 @@ namespace moldme.Tests
             var projectId = "PROJ06"; // ID de projeto
 
             // Act
-            var result = projectController.RemoveEmployee(null, projectId); // Passando employeeId como null
+            var result = projectController.RemoveEmployee(null, projectId);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result); // Verificando se o resultado é BadRequest
-            Assert.Equal("Employee ID cannot be null or empty.", badRequestResult.Value); // Verificando a mensagem
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result); 
+            Assert.Equal("Employee ID cannot be null or empty.", badRequestResult.Value);
         }
         
 

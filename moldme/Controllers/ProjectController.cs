@@ -56,11 +56,9 @@ namespace DefaultNamespace
         [HttpDelete("remove-employee")]
         public IActionResult RemoveEmployee(string employeeId, string projectId)
         {
-            // Verificar se o employeeId é nulo ou vazio
             if (string.IsNullOrWhiteSpace(employeeId))
                 return BadRequest("Employee ID cannot be null or empty.");
-
-            // Verificar se o projectId é nulo ou vazio
+            
             if (string.IsNullOrWhiteSpace(projectId))
                 return BadRequest("Project ID cannot be null or empty.");
 
