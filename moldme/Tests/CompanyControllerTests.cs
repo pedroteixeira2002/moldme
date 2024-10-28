@@ -66,9 +66,6 @@ public class CompanyControllerTests
         }
     }
 
-    
-    
-    
     [Fact]
     public void EditProjectTest()
     {
@@ -371,4 +368,71 @@ public class CompanyControllerTests
             Assert.Equal(2, employees.Count);
         }
     }
-}
+
+    [Fact]
+    public void ViewProjectTest()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "View_project_database")
+                .Options;
+
+            using (var dbContext = new ApplicationDbContext(options))
+            {
+                var project = new Project
+                {
+                    ProjectId = "1",
+                    Name = "View Project",
+                    Description = "View Description",
+                    Budget = 3000,
+                    Status = Status.INPROGRESS,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(60),
+                    CompanyId = "1"
+                };
+
+                dbContext.Projects.Add(project);
+                dbContext.SaveChanges();
+
+                var controller = new CompanyController(dbContext);
+                
+                var result = controller.ViewProject("1") as OkObjectResult;
+                Assert.NotNull(result);
+                var projectFromDb = result.Value as Project;
+                Assert.Equal("View Project", projectFromDb.Name);
+                Assert.Equal("View Description", projectFromDb.Description);
+            }
+        }
+
+        [Fact]
+        public void RemoveProjectTest()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "Remove_project_database")
+                .Options;
+
+            using (var dbContext = new ApplicationDbContext(options))
+            {
+                var project = new Project
+                {
+                    ProjectId = "1",
+                    Name = "Remove Project",
+                    Description = "To be removed",
+                    Budget = 4000,
+                    Status = Status.INPROGRESS,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(45),
+                    CompanyId = "1"
+                };
+
+                dbContext.Projects.Add(project);
+                dbContext.SaveChanges();
+
+                var controller = new CompanyController(dbContext);
+                var result = controller.RemoveProject("1") as OkObjectResult;
+                Assert.NotNull(result);
+                Assert.Equal("Project removed successfully", result.Value);
+                var removedProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "1");
+                Assert.Null(removedProject);
+            }
+        }
+    }

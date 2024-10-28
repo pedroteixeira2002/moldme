@@ -10,7 +10,6 @@ namespace DefaultNamespace;
 [Route("api/[controller]")]
 public class CompanyController : ControllerBase
 {
-    // Access to the database context
     private readonly ApplicationDbContext dbContext; 
     public CompanyController(ApplicationDbContext companyContext)
     {
@@ -20,19 +19,14 @@ public class CompanyController : ControllerBase
     [HttpPost("addProject")]
     public IActionResult AddProject(string companyID, [FromBody] Project project)
     {
-        // Search for the companyID in the database
         var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
         
         
         if (company == null)
             return NotFound("Company not found");
         
-        // Associa o projeto à empresa através da chave estrangeira
         project.CompanyId = company.CompanyID;
-        
-        // Query the database
         dbContext.Projects.Add(project);
-        // Save changes to the database
         dbContext.SaveChanges();
 
         return Ok("Project added successfully");
@@ -45,12 +39,10 @@ public class CompanyController : ControllerBase
 
         if (existingProject == null) 
             return NotFound("Project not found");
-
-        // Verifica se o projeto pertence à empresa correta (caso seja necessário)
+        
         if (existingProject.CompanyId != updatedProject.CompanyId)
             return BadRequest("Project does not belong to the specified company.");
-
-        // Atualiza os campos do projeto
+        
         existingProject.Name = updatedProject.Name;
         existingProject.Description = updatedProject.Description;
         existingProject.Budget = updatedProject.Budget;
@@ -77,7 +69,7 @@ public class CompanyController : ControllerBase
         }
         
     [HttpDelete("RemoveProject/{projectID}")]
-    public IActionResult RemoveProject(string ProjectId) // Mudado para string se for VARCHAR no DB
+    public IActionResult RemoveProject(string ProjectId)
         {
             var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
