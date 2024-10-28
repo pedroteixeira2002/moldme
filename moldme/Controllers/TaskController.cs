@@ -3,11 +3,11 @@ using moldme.data;
 using moldme.Models;
 using Task = moldme.Models.Task;
 
-namespace moldme.Controllers // Change from DefaultNamespace to your actual namespace
+namespace moldme.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TaskController : ControllerBase // Inherit from ControllerBase
+    public class TaskController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -18,23 +18,24 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
 
         // Create
         [HttpPost("addtask")]
-        public IActionResult Create([FromBody] Task task) // Use the renamed class
+        public IActionResult Create(Task task)
         {
-            if (!ModelState.IsValid) // Validate the model
+            if (task == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Task is null");
             }
-
-            _context.Tasks.Add(task); // Use the correct DbSet
+            
+            _context.Tasks.Add(task);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = task.TaskId }, task);
+
+            return Ok("Task created successfully");
         }
 
         // Read all
         [HttpGet]
         public IActionResult GetAll()
         {
-            var tasks = _context.Tasks.ToList(); // Ensure to use the correct DbSet
+            var tasks = _context.Tasks.ToList(); 
             return Ok(tasks);
         }
 
@@ -42,7 +43,7 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            var task = _context.Tasks.Find(id); 
             if (task == null)
             {
                 return NotFound();
@@ -52,41 +53,41 @@ namespace moldme.Controllers // Change from DefaultNamespace to your actual name
 
         // Update
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Task updatedTask) // Ensure updated type is correct
+        public IActionResult Update(int id, [FromBody] Task updatedTask)
         {
-            if (!ModelState.IsValid) // Validate the model
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            var task = _context.Tasks.Find(id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            // Update properties
             task.TitleName = updatedTask.TitleName;
-            task.Description = updatedTask.Description;
-            task.Date = updatedTask.Date; // Ensure Date is updated
+            task.Description = updatedTask.Description; 
             task.Status = updatedTask.Status;
+            task.Date = updatedTask.Date;
+            task.FilePath = updatedTask.FilePath;
 
             _context.SaveChanges();
-            return NoContent(); // 204 No Content
+            return Ok("Task updated successfully");
         }
 
         // Delete
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var task = _context.Tasks.Find(id); // Use the correct DbSet
+            var task = _context.Tasks.Find(id);
             if (task == null)
             {
                 return NotFound();
             }
-            _context.Tasks.Remove(task); // Use the correct DbSet
+            _context.Tasks.Remove(task);
             _context.SaveChanges();
-            return NoContent(); // 204 No Content
+            return Ok("Task deleted successfully");
         }
     }
 }
