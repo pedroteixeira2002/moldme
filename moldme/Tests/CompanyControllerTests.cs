@@ -73,7 +73,7 @@ public class CompanyControllerTests
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "Edit_project_database")
             .Options;
-
+ 
         using (var dbContext = new ApplicationDbContext(options))
         {
             // Adiciona uma empresa e um projeto ao contexto de dados
