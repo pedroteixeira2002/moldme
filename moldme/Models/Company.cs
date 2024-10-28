@@ -38,7 +38,7 @@ public class Company
         
     [Required]
     [StringLength(20)]
-    [Column("subscriptionPlan")]
+    [Column("SubscriptionPlan")]
     public SubscriptionPlan Plan { get; set; }
 
     [Required]

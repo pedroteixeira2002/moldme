@@ -12,14 +12,12 @@ public class CompanyControllerTests
     [Fact]
     public void AddProjectTest()
     {
-        // Arrange
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Utiliza um nome único para o banco de dados em memória
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) 
             .Options;
 
         using (var dbContext = new ApplicationDbContext(options))
         {
-            // Adiciona uma empresa ao contexto de dados
             var company = new Company
             {
                 CompanyID = "1",
@@ -35,11 +33,9 @@ public class CompanyControllerTests
 
             dbContext.Companies.Add(company);
             dbContext.SaveChanges();
-
-            // Cria uma instância do controlador com o contexto atual
+            
             var controller = new CompanyController(dbContext);
-
-            // Cria um projeto para ser adicionado
+            
             var project = new Project
             {
                 ProjectId = "1",
@@ -49,34 +45,28 @@ public class CompanyControllerTests
                 Status = Status.INPROGRESS,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(30),
-                CompanyId = company.CompanyID // Associa explicitamente o projeto à empresa
+                CompanyId = company.CompanyID
             };
-
-            // Act
+            
             var result = controller.AddProject(company.CompanyID, project) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result); // Verifica se o resultado não é nulo
-            Assert.Equal("Project added successfully", result.Value); // Verifica a mensagem retornada
-
-            // Verifica se o projeto foi adicionado corretamente ao banco de dados
+            Assert.NotNull(result); 
+            Assert.Equal("Project added successfully", result.Value);
+            
             var addedProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "1");
-            Assert.NotNull(addedProject); // Verifica se o projeto foi encontrado
-            Assert.Equal("1", addedProject.CompanyId); // Verifica se o projeto está associado à empresa correta
+            Assert.NotNull(addedProject);
+            Assert.Equal("1", addedProject.CompanyId);
         }
     }
 
     [Fact]
     public void EditProjectTest()
     {
-        // Arrange
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "Edit_project_database")
             .Options;
 
         using (var dbContext = new ApplicationDbContext(options))
         {
-            // Adiciona uma empresa e um projeto ao contexto de dados
             var company = new Company
             {
                 CompanyID = "1",
@@ -107,8 +97,7 @@ public class CompanyControllerTests
             dbContext.SaveChanges();
 
             var controller = new CompanyController(dbContext);
-
-            // Atualização do projeto
+            
             var updatedProject = new Project
             {
                 ProjectId = "1",
@@ -120,11 +109,9 @@ public class CompanyControllerTests
                 EndDate = DateTime.Now.AddDays(20),
                 CompanyId = company.CompanyID
             };
-
-            // Act
+            
             var result = controller.EditProject("1", updatedProject) as OkObjectResult;
-
-            // Assert
+            
             Assert.NotNull(result);
             var updatedProjectFromDb = result.Value as Project;
             Assert.Equal("Updated Project", updatedProjectFromDb.Name);
@@ -132,4 +119,71 @@ public class CompanyControllerTests
             Assert.Equal(Status.DONE, updatedProjectFromDb.Status);
         }
     }
-}
+    [Fact]
+    public void ViewProjectTest()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "View_project_database")
+                .Options;
+
+            using (var dbContext = new ApplicationDbContext(options))
+            {
+                var project = new Project
+                {
+                    ProjectId = "1",
+                    Name = "View Project",
+                    Description = "View Description",
+                    Budget = 3000,
+                    Status = Status.INPROGRESS,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(60),
+                    CompanyId = "1"
+                };
+
+                dbContext.Projects.Add(project);
+                dbContext.SaveChanges();
+
+                var controller = new CompanyController(dbContext);
+                
+                var result = controller.ViewProject("1") as OkObjectResult;
+                Assert.NotNull(result);
+                var projectFromDb = result.Value as Project;
+                Assert.Equal("View Project", projectFromDb.Name);
+                Assert.Equal("View Description", projectFromDb.Description);
+            }
+        }
+
+        [Fact]
+        public void RemoveProjectTest()
+        {
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "Remove_project_database")
+                .Options;
+
+            using (var dbContext = new ApplicationDbContext(options))
+            {
+                var project = new Project
+                {
+                    ProjectId = "1",
+                    Name = "Remove Project",
+                    Description = "To be removed",
+                    Budget = 4000,
+                    Status = Status.INPROGRESS,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now.AddDays(45),
+                    CompanyId = "1"
+                };
+
+                dbContext.Projects.Add(project);
+                dbContext.SaveChanges();
+
+                var controller = new CompanyController(dbContext);
+                var result = controller.RemoveProject("1") as OkObjectResult;
+                Assert.NotNull(result);
+                Assert.Equal("Project removed successfully", result.Value);
+
+                var removedProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "1");
+                Assert.Null(removedProject);
+            }
+        }
+    }
