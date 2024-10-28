@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - master
-      - dev/*
+      - dev
+      - dev-*  # Captura branches que começam com 'dev-'
+  pull_request:
+    branches:
+      - master
+      - dev
+      - dev-*  # Captura pull requests para essas branches
 
 jobs:
   BuildAndTestApplication:
@@ -26,7 +32,7 @@ jobs:
         run: dotnet clean moldme/moldme.csproj
 
       - name: Build application
-        run: dotnet build moldme/moldme.csproj --configuration Debug # Use Debug for more detailed output during development
+        run: dotnet build moldme/moldme.csproj --configuration Debug
 
       - name: Test application
-        run: dotnet test moldme/moldme.csproj --verbosity detailed # Increased verbosity for better logging
+        run: dotnet test moldme/moldme.csproj --verbosity detailed
