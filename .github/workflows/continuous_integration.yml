@@ -12,6 +12,7 @@ on:
       - dev
       - dev-*  # Captura pull requests para essas branches
 
+
 jobs:
   BuildAndTestApplication:
     runs-on: ubuntu-latest

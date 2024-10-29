@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
 using Xunit;
-using System;
-using System.Linq;
 using moldme.Models;
-
+namespace moldme.Tests;
 public class CompanyControllerTests
 {
     [Fact]
