@@ -12,8 +12,7 @@
 &lt;/SessionState&gt;</s:String>
 	
 
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=276dcf35_002D2f5c_002D42c0_002Dae3d_002De57a5ba47417/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="CompanyControllerTests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=276dcf35_002D2f5c_002D42c0_002Dae3d_002De57a5ba47417/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CompanyControllerTests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::moldme.Tests.TaskControllerTest.UpdateTask_ReturnsNotFoundResult_WhenTaskNotFound&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
@@ -27,7 +26,7 @@
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::CompanyControllerTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e498df96_002Df1c6_002D4020_002Da68f_002D408837928fa6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="AddEmployeeTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e498df96_002Df1c6_002D4020_002Da68f_002D408837928fa6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="AddEmployeeTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::CompanyControllerTests.AddEmployeeTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
