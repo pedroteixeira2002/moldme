@@ -3,60 +3,63 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
 using moldme.data;
+using moldme.Models;
 
-namespace DefaultNamespace;
-
-[ApiController]
-[Route("api/[controller]")]
-public class CompanyController : ControllerBase
+namespace moldme.Controllers
 {
-    private readonly ApplicationDbContext dbContext; 
-    public CompanyController(ApplicationDbContext companyContext)
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CompanyController : ControllerBase
     {
-        dbContext = companyContext;
-    }
+        private readonly ApplicationDbContext dbContext;
 
-    [HttpPost("addProject")]
-    public IActionResult AddProject(string companyID, [FromBody] Project project)
-    {
-        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
-        
-        
-        if (company == null)
-            return NotFound("Company not found");
-        
-        project.CompanyId = company.CompanyID;
-        dbContext.Projects.Add(project);
-        dbContext.SaveChanges();
+        public CompanyController(ApplicationDbContext companyContext)
+        {
+            dbContext = companyContext;
+        }
 
-        return Ok("Project added successfully");
-    }
-    
-    [HttpPut("EditProject/{projectID}")]
-    public IActionResult EditProject(string ProjectId, [FromBody] Project updatedProject) 
-    {
-        var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
+        [HttpPost("addProject")]
+        public IActionResult AddProject(string companyID, [FromBody] Project project)
+        {
+            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
 
-        if (existingProject == null) 
-            return NotFound("Project not found");
-        
-        if (existingProject.CompanyId != updatedProject.CompanyId)
-            return BadRequest("Project does not belong to the specified company.");
-        
-        existingProject.Name = updatedProject.Name;
-        existingProject.Description = updatedProject.Description;
-        existingProject.Budget = updatedProject.Budget;
-        existingProject.Status = updatedProject.Status;
-        existingProject.StartDate = updatedProject.StartDate;
-        existingProject.EndDate = updatedProject.EndDate;
 
-        dbContext.SaveChanges();
+            if (company == null)
+                return NotFound("Company not found");
 
-        return Ok(existingProject);
-    }
-        
-    [HttpGet("ViewProject/{projectID}")]
-    public IActionResult ViewProject(string ProjectId)
+            project.CompanyId = company.CompanyID;
+            dbContext.Projects.Add(project);
+            dbContext.SaveChanges();
+
+            return Ok("Project added successfully");
+        }
+
+        [HttpPut("EditProject/{projectID}")]
+        public IActionResult EditProject(string ProjectId, [FromBody] Project updatedProject)
+        {
+            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
+
+            if (existingProject == null)
+                return NotFound("Project not found");
+
+            if (existingProject.CompanyId != updatedProject.CompanyId)
+                return BadRequest("Project does not belong to the specified company.");
+
+            existingProject.Name = updatedProject.Name;
+            existingProject.Description = updatedProject.Description;
+            existingProject.Budget = updatedProject.Budget;
+            existingProject.Status = updatedProject.Status;
+            existingProject.StartDate = updatedProject.StartDate;
+            existingProject.EndDate = updatedProject.EndDate;
+
+            dbContext.SaveChanges();
+
+            return Ok(existingProject);
+        }
+
+        [HttpGet("ViewProject/{projectID}")]
+        public IActionResult ViewProject(string ProjectId)
         {
             var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
@@ -67,9 +70,9 @@ public class CompanyController : ControllerBase
 
             return Ok(existingProject);
         }
-        
-    [HttpDelete("RemoveProject/{projectID}")]
-    public IActionResult RemoveProject(string ProjectId)
+
+        [HttpDelete("RemoveProject/{projectID}")]
+        public IActionResult RemoveProject(string ProjectId)
         {
             var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
 
@@ -82,52 +85,53 @@ public class CompanyController : ControllerBase
             dbContext.SaveChanges();
             return Ok("Project removed successfully");
         }
-    
-    //criar um employee, editar , remover e listar todos os employees
-    
-    [HttpPost("createEmployee")]
-    public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
-    {
-        if (string.IsNullOrWhiteSpace(employee.EmployeeID))
-            return BadRequest("EmployeeID is required and cannot be empty or whitespace");
 
-        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+        //criar um employee, editar , remover e listar todos os employees
 
-        if (company == null)
-            return NotFound("Company not found");
+        [HttpPost("createEmployee")]
+        public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
+        {
+            if (string.IsNullOrWhiteSpace(employee.EmployeeID))
+                return BadRequest("EmployeeID is required and cannot be empty or whitespace");
 
-        employee.CompanyID = company.CompanyID;
+            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
 
-        dbContext.Employees.Add(employee);
-        dbContext.SaveChanges();
+            if (company == null)
+                return NotFound("Company not found");
 
-        return Ok("Employee created successfully");
-    }
-    
-    [HttpPut("EditEmployee/{employeeID}")]
-    public IActionResult EditEmployee(string employeeId, [FromBody] Employee updatedEmployee)
-    {
-        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+            employee.CompanyID = company.CompanyID;
 
-        if (existingEmployee == null)
-            return NotFound("Employee not found");
+            dbContext.Employees.Add(employee);
+            dbContext.SaveChanges();
 
-        if (existingEmployee.CompanyID != updatedEmployee.CompanyID)
-            return BadRequest("Employee does not belong to the specified company.");
+            return Ok("Employee created successfully");
+        }
 
-        existingEmployee.Name = updatedEmployee.Name;
-        existingEmployee.Profession = updatedEmployee.Profession;
-        existingEmployee.NIF = updatedEmployee.NIF;
-        existingEmployee.Email = updatedEmployee.Email;
-        existingEmployee.Contact = updatedEmployee.Contact;
-        existingEmployee.Password = updatedEmployee.Password;
-        existingEmployee.CompanyID = updatedEmployee.CompanyID;
+        [HttpPut("EditEmployee/{employeeID}")]
+        public IActionResult EditEmployee(string employeeId, [FromBody] Employee updatedEmployee)
+        {
+            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
 
-        dbContext.SaveChanges();
+            if (existingEmployee == null)
+                return NotFound("Employee not found");
 
-        return Ok(existingEmployee);
-    }
-    [HttpDelete("RemoveEmployee/{employeeID}")]
+            if (existingEmployee.CompanyID != updatedEmployee.CompanyID)
+                return BadRequest("Employee does not belong to the specified company.");
+
+            existingEmployee.Name = updatedEmployee.Name;
+            existingEmployee.Profession = updatedEmployee.Profession;
+            existingEmployee.NIF = updatedEmployee.NIF;
+            existingEmployee.Email = updatedEmployee.Email;
+            existingEmployee.Contact = updatedEmployee.Contact;
+            existingEmployee.Password = updatedEmployee.Password;
+            existingEmployee.CompanyID = updatedEmployee.CompanyID;
+
+            dbContext.SaveChanges();
+
+            return Ok(existingEmployee);
+        }
+
+        [HttpDelete("RemoveEmployee/{employeeID}")]
         public IActionResult RemoveEmployee(string employeeId)
         {
             var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
@@ -142,12 +146,13 @@ public class CompanyController : ControllerBase
 
             return Ok("Employee removed successfully");
         }
-        
-    [HttpGet("ListAllEmployees")]
-    public IActionResult ListAllEmployees()
-    {
-        var employees = dbContext.Employees.ToList();
-        return Ok(employees);
+
+        [HttpGet("ListAllEmployees")]
+        public IActionResult ListAllEmployees()
+        {
+            var employees = dbContext.Employees.ToList();
+            return Ok(employees);
+        }
     }
 }
 

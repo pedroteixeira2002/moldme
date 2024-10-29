@@ -1,6 +1,6 @@
-﻿using DefaultNamespace;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using moldme.Controllers;
 using moldme.data;
 using Xunit;
 using moldme.Models;

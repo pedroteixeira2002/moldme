@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using DefaultNamespace;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
 using moldme.data;

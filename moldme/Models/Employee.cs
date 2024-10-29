@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using moldme.Models;
 
-namespace DefaultNamespace;
+namespace moldme.Models;
 
 public class Employee
 {

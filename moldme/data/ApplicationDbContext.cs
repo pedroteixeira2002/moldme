@@ -1,5 +1,4 @@
-﻿using DefaultNamespace;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using moldme.Models;
 using Task = moldme.Models.Task;
 
