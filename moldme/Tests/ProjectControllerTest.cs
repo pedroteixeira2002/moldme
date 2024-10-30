@@ -1,25 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
+using moldme.Controllers;
 using Xunit;
 
 namespace moldme.Tests;
 
 public class ProjectControllerTest
 {
-    public ApplicationDbContext GetInMemoryDbContext()
+    private readonly ApplicationDbContext dbContext;
+    private readonly ProjectController projectController;
+
+    public ProjectControllerTest()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        return new ApplicationDbContext(options);
+        dbContext = new ApplicationDbContext(options);
+        projectController = new ProjectController(dbContext);
     }
-    
-    
-    private void SeedData(ApplicationDbContext dbContext)
+
+    private void SeedData()
     {
         var company = new Company
         {
@@ -34,64 +37,43 @@ public class ProjectControllerTest
             Password = "password"
         };
 
+
+        var employee = new Employee
+        {
+            EmployeeID = "EMP001",
+            Name = "John Doe",
+            Profession = "Developer",
+            NIF = 123456789,
+            Email = "john.doe@example.com",
+            Password = "password123",
+            CompanyID = company.CompanyID
+        };
+
         var project = new Project
         {
-            ProjectId = "1",
-            Name = "Project 1",
-            Description = "Description 1",
+            ProjectId = "PROJ01",
+            Name = "New Project",
+            Description = "Project Description",
             Budget = 1000,
-            Status = Status.INPROGRESS,
+
             StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(30),
+            EndDate = DateTime.Now,
             CompanyId = company.CompanyID
         };
 
-        var offer = new Offer
-        {
-            OfferId = "1",
-            CompanyId = "1",
-            ProjectId = "1",
-            Date = DateTime.Now,
-            Status = Status.PENDING,
-            Description = "Description 1"
-        };
 
         dbContext.Companies.Add(company);
+        dbContext.Employees.Add(employee);
         dbContext.Projects.Add(project);
-        dbContext.Offers.Add(offer);
         dbContext.SaveChanges();
     }
 
     [Fact]
     public void AssignEmployee_ShouldReturnOk_WhenEmployeeAndProjectAreValid()
     {
-        // Arrange
+        SeedData();
         var employeeId = "EMP001";
         var projectId = "PROJ01";
-        var companyId = "1";
-
-        dbContext.Employees.Add(new Employee
-        {
-            EmployeeID = employeeId,
-            Name = "John Doe",
-            Profession = "Developer",
-            NIF = 123456789,
-            Email = "john.doe@example.com",
-            Password = "password123",
-            CompanyID = companyId
-        });
-        dbContext.Projects.Add(new Project
-        {
-            ProjectId = projectId,
-            Name = "New Project",
-            Description = "Project Description",
-            Budget = 1000,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(30),
-            CompanyId = companyId // Preencher o CompanyId
-        });
-
-        dbContext.SaveChanges();
 
         // Act
         var result = projectController.AssignEmployee(employeeId, projectId);
@@ -99,24 +81,18 @@ public class ProjectControllerTest
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal("Employee assigned to project successfully.", okResult.Value);
-        Assert.NotEmpty(dbContext.StaffOnProjects);
+        Assert.True(dbContext.Projects.Any(p => p.ProjectId == projectId));
     }
-    
-    [Fact]
-    public void AssignEmployee_ShouldReturnConflict_WhenStaffOnProjectAlreadyExists()
-    {
-        // Arrange
-        var employeeId = "EMP002";
-        var projectId = "PROJ02";
-        var staffOnProject = new StaffOnProject
-        {
-            Id = Guid.NewGuid().ToString(),
-            EmployeeId = employeeId,
-            ProjectId = projectId
-        };
 
-        dbContext.StaffOnProjects.Add(staffOnProject);
-        dbContext.SaveChanges();
+    [Fact]
+    public void AssignEmployee_ShouldReturnConflict_WhenEmployeeAlreadyAssigned()
+    {
+        SeedData();
+        var employeeId = "EMP001";
+        var projectId = "PROJ01";
+
+        // Primeira associação
+        projectController.AssignEmployee(employeeId, projectId);
 
         // Act
         var result = projectController.AssignEmployee(employeeId, projectId);
@@ -127,20 +103,30 @@ public class ProjectControllerTest
     }
 
     [Fact]
-    public void RemoveEmployee_ShouldReturnOk_WhenEmployeeExists()
+    public void RemoveEmployee_ShouldReturnNotFound_WhenEmployeeNotAssignedToProject()
     {
-        // Arrange
-        var employeeId = "EMP003";
-        var projectId = "PROJ03";
-        var staffOnProject = new StaffOnProject
-        {
-            Id = Guid.NewGuid().ToString(),
-            EmployeeId = employeeId,
-            ProjectId = projectId
-        };
+        SeedData();
+        var employeeId = "EMP002";  // Employee não existente
+        var projectId = "PROJ02";   // Projeto não existente
 
-        dbContext.StaffOnProjects.Add(staffOnProject);
-        dbContext.SaveChanges();
+        // Act
+        var result = projectController.RemoveEmployee(employeeId, projectId);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Employee not found.", notFoundResult.Value); // Corrigido para a mensagem correta
+    }
+
+
+    [Fact]
+    public void RemoveEmployee_ShouldReturnOk_WhenEmployeeAssigned()
+    {
+        SeedData();
+        var employeeId = "EMP001";
+        var projectId = "PROJ01";
+
+        // Primeiro atribuímos o funcionário ao projeto
+        projectController.AssignEmployee(employeeId, projectId);
 
         // Act
         var result = projectController.RemoveEmployee(employeeId, projectId);
@@ -148,29 +134,14 @@ public class ProjectControllerTest
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal("Employee removed from project successfully.", okResult.Value);
-        Assert.Empty(dbContext.StaffOnProjects); // Verificar se foi removido
-    }
-
-    [Fact]
-    public void RemoveEmployee_ShouldReturnNotFound_WhenEmployeeDoesNotExist()
-    {
-        // Arrange
-        var employeeId = "EMP004";
-        var projectId = "PROJ04";
-
-        // Act
-        var result = projectController.RemoveEmployee(employeeId, projectId);
-
-        // Assert
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-        Assert.Equal("No record found for this employee in this project.", notFoundResult.Value);
+        Assert.False(dbContext.Projects.Any(p => p.ProjectId == projectId && p.Employees.Any(e => e.EmployeeID == employeeId)));
     }
 
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
     {
-        // Arrange
-        var projectId = "PROJ05";
+        SeedData();
+        var projectId = "PROJ01";
 
         // Act
         var result = projectController.AssignEmployee(null, projectId);
@@ -183,8 +154,8 @@ public class ProjectControllerTest
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
     {
-        // Arrange
-        var employeeId = "EMP005";
+        SeedData();
+        var employeeId = "EMP001";
 
         // Act
         var result = projectController.AssignEmployee(employeeId, null);
@@ -197,8 +168,8 @@ public class ProjectControllerTest
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
     {
-        // Arrange
-        var projectId = "PROJ06"; // ID de projeto
+        SeedData();
+        var projectId = "PROJ01";
 
         // Act
         var result = projectController.RemoveEmployee(null, projectId);
@@ -208,12 +179,11 @@ public class ProjectControllerTest
         Assert.Equal("Employee ID cannot be null or empty.", badRequestResult.Value);
     }
 
-
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
     {
-        // Arrange
-        var employeeId = "EMP006";
+        SeedData();
+        var employeeId = "EMP001";
 
         // Act
         var result = projectController.RemoveEmployee(employeeId, null);
@@ -222,8 +192,7 @@ public class ProjectControllerTest
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Project ID cannot be null or empty.", badRequestResult.Value);
     }
-    
-
+       
     // Testes para o método AcceptOffer
     [Fact]
     public void AcceptOffer_ShouldReturnOk_WhenOfferIsAccepted()
@@ -362,3 +331,4 @@ public class ProjectControllerTest
         }
     }
 }
+

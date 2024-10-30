@@ -24,29 +24,25 @@ namespace moldme.Controllers
                 return BadRequest("Employee ID cannot be null or empty.");
             if (string.IsNullOrWhiteSpace(projectId))
                 return BadRequest("Project ID cannot be null or empty.");
-
-            var existingAssociation = dbContext.StaffOnProjects
-                .FirstOrDefault(s => s.EmployeeId == employeeId && s.ProjectId == projectId);
-
-            if (existingAssociation != null)
-                return Conflict("Employee is already assigned to this project.");
-
-            var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+            
+            var employee = dbContext.Employees
+                .Include(e => e.Projects)
+                .FirstOrDefault(e => e.EmployeeID == employeeId);
+            
             if (employee == null)
                 return NotFound("Employee not found.");
 
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+            var project = dbContext.Projects
+                .Include(p => p.Employees)
+                .FirstOrDefault(p => p.ProjectId == projectId);
+            
             if (project == null)
                 return NotFound("Project not found.");
-
-            var staffOnProject = new StaffOnProject
-            {
-                Id = Guid.NewGuid().ToString(),
-                EmployeeId = employeeId,
-                ProjectId = projectId
-            };
-
-            dbContext.StaffOnProjects.Add(staffOnProject);
+            
+            if (employee.Projects.Contains(project))
+                return Conflict("Employee is already assigned to this project.");
+            
+            employee.Projects.Add(project);
             dbContext.SaveChanges();
 
             return Ok("Employee assigned to project successfully.");
@@ -62,13 +58,24 @@ namespace moldme.Controllers
             if (string.IsNullOrWhiteSpace(projectId))
                 return BadRequest("Project ID cannot be null or empty.");
 
-            var staffOnProject = dbContext.StaffOnProjects
-                .FirstOrDefault(s => s.EmployeeId == employeeId && s.ProjectId == projectId);
+            var employee = dbContext.Employees
+                .Include(e => e.Projects)
+                .FirstOrDefault(e => e.EmployeeID == employeeId);
+            
+            if (employee == null)
+                return NotFound("Employee not found.");
 
-            if (staffOnProject == null)
+            var project = dbContext.Projects
+                .Include(p => p.Employees)
+                .FirstOrDefault(p => p.ProjectId == projectId);
+            
+            if (project == null)
+                return NotFound("Project not found.");
+
+            if (!employee.Projects.Contains(project))
                 return NotFound("No record found for this employee in this project.");
 
-            dbContext.StaffOnProjects.Remove(staffOnProject);
+            employee.Projects.Remove(project);
             dbContext.SaveChanges();
 
             return Ok("Employee removed from project successfully.");

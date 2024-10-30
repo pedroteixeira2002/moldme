@@ -8,14 +8,19 @@ public class Payment
     [Key]
     [StringLength(6)]
     public string PaymentID { get; set; }
-
+    
     [Required]
-    public float Value { get; set; }
-
+    [StringLength(6)]
+    [ForeignKey("Company")]
+    public string companyId { get; set; }
+    
     [Required]
     [DataType(DataType.Date)]
     public DateTime Date { get; set; }
-
+    
+    [Required]
+    public float Value { get; set; }
+    
     [Required]
     public SubscriptionPlan Plan { get; set; }
 }
