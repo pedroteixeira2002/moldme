@@ -34,8 +34,8 @@
 
     <ItemGroup>
       <Compile Remove=".github\**" />
-      <Compile Remove="Tests\EmployeeControllerTests.cs" />
       <Compile Remove="data\MoldmeContext.cs" />
+      <Compile Remove="Models\StaffOnProject.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -44,6 +44,7 @@
 
     <ItemGroup>
       <None Remove=".github\**" />
+      <None Remove="Tests\NewFile1.txt" />
     </ItemGroup>
 
     <ItemGroup>

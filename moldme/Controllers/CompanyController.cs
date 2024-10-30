@@ -86,73 +86,71 @@ namespace moldme.Controllers
             return Ok("Project removed successfully");
         }
 
-        //criar um employee, editar , remover e listar todos os employees
-
-        [HttpPost("createEmployee")]
-        public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
-        {
-            if (string.IsNullOrWhiteSpace(employee.EmployeeID))
-                return BadRequest("EmployeeID is required and cannot be empty or whitespace");
+    
+    //criar um employee, editar , remover e listar todos os employees   
+    [HttpPost("AddEmployee/{companyID}")]
+    public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
+    {
+        if (string.IsNullOrWhiteSpace(employee.EmployeeID))
+            return BadRequest("EmployeeID is required and cannot be empty or whitespace");
 
             var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
 
             if (company == null)
                 return NotFound("Company not found");
-
+            
             employee.CompanyID = company.CompanyID;
 
             dbContext.Employees.Add(employee);
             dbContext.SaveChanges();
 
-            return Ok("Employee created successfully");
-        }
 
-        [HttpPut("EditEmployee/{employeeID}")]
-        public IActionResult EditEmployee(string employeeId, [FromBody] Employee updatedEmployee)
+        return Ok("Employee created successfully");
+    }
+    
+    [HttpPut("EditEmployee/{companyID}/{employeeID}")]
+    public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] Employee updatedEmployee)
+    {
+        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+
+        if (existingEmployee == null)
+            return NotFound("Employee not found or does not belong to the specified company.");
+
+        existingEmployee.Name = updatedEmployee.Name;
+        existingEmployee.Profession = updatedEmployee.Profession;
+        existingEmployee.NIF = updatedEmployee.NIF;
+        existingEmployee.Email = updatedEmployee.Email;
+        existingEmployee.Contact = updatedEmployee.Contact;
+        existingEmployee.Password = updatedEmployee.Password;
+        
+        dbContext.SaveChanges();
+
+        return Ok(existingEmployee);
+    }
+    
+    [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
+    public IActionResult RemoveEmployee(string companyID, string employeeId)
+    {
+        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+
+        if (existingEmployee == null)
         {
-            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
-
-            if (existingEmployee == null)
-                return NotFound("Employee not found");
-
-            if (existingEmployee.CompanyID != updatedEmployee.CompanyID)
-                return BadRequest("Employee does not belong to the specified company.");
-
-            existingEmployee.Name = updatedEmployee.Name;
-            existingEmployee.Profession = updatedEmployee.Profession;
-            existingEmployee.NIF = updatedEmployee.NIF;
-            existingEmployee.Email = updatedEmployee.Email;
-            existingEmployee.Contact = updatedEmployee.Contact;
-            existingEmployee.Password = updatedEmployee.Password;
-            existingEmployee.CompanyID = updatedEmployee.CompanyID;
-
-            dbContext.SaveChanges();
-
-            return Ok(existingEmployee);
+            return NotFound("Employee not found or does not belong to the specified company.");
         }
 
-        [HttpDelete("RemoveEmployee/{employeeID}")]
-        public IActionResult RemoveEmployee(string employeeId)
-        {
-            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+        dbContext.Employees.Remove(existingEmployee);
+        dbContext.SaveChanges();
 
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found");
-            }
+        return Ok("Employee removed successfully");
+    }
+        
+    [HttpGet("ListAllEmployees/{companyID}")]
+    public IActionResult ListAllEmployees(string companyID)
+    {
+        var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
+        return Ok(employees);
+    }
 
-            dbContext.Employees.Remove(existingEmployee);
-            dbContext.SaveChanges();
-
-            return Ok("Employee removed successfully");
-        }
-
-        [HttpGet("ListAllEmployees")]
-        public IActionResult ListAllEmployees()
-        {
-            var employees = dbContext.Employees.ToList();
-            return Ok(employees);
-        }
 
         [HttpGet("ListPaymentHistory/{companyID}")]
         public IActionResult ListPaymentHistory(string companyID)
@@ -168,9 +166,7 @@ namespace moldme.Controllers
                 {
                     return NotFound("No payment history found for this company.");
                 }
-                return Ok(payments);
-            
-            
+                return Ok(payments);  
         }
 
         [HttpPut("UpgradePlan/{companyID}")]

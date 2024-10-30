@@ -4,23 +4,20 @@ using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
 using Xunit;
+namespace moldme.Tests;
 
 public class CompanyControllerTests
-{
-    private readonly ApplicationDbContext dbContext;
-    private readonly CompanyController companyController;
-
-    public CompanyControllerTests()
+{ 
+    public ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        dbContext = new ApplicationDbContext(options);
-        companyController = new CompanyController(dbContext);
+        return new ApplicationDbContext(options);
     }
 
-    private void SeedData()
+    private void SeedData(ApplicationDbContext dbContext)
     {
         var company = new Company
         {
@@ -65,7 +62,7 @@ public class CompanyControllerTests
             Value = 500,
             Plan = SubscriptionPlan.Premium
         };
-        dbContext.Projects.RemoveRange(dbContext.Projects);
+        //dbContext.Projects.RemoveRange(dbContext.Projects);
 
         dbContext.Companies.Add(company);
         dbContext.Employees.Add(employee);
@@ -77,7 +74,11 @@ public class CompanyControllerTests
     [Fact]
     public void AddProjectTest_ShouldReturnOk_WhenProjectIsValid()
     {
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
         var project = new Project
         {
             ProjectId = "PROJ02",
@@ -102,7 +103,11 @@ public class CompanyControllerTests
     {
         {
             // Arrange
-            SeedData();
+            var dbContext = GetInMemoryDbContext();
+            SeedData(dbContext);
+            
+            var companyController = new CompanyController(dbContext);
+            
             var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "PROJ01");
             Assert.NotNull(existingProject); // Ensure the project exists
 
@@ -134,54 +139,248 @@ public class CompanyControllerTests
     }
 
     [Fact]
-    public void AddEmployeeTest_ShouldReturnOk_WhenEmployeeIsValid()
+    public void AddEmployeeTest()
     {
-        SeedData();
-        var employee = new Employee
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        using (var dbContext = new ApplicationDbContext(options))
         {
-            EmployeeID = "EMP002",
-            Name = "Jane Smith",
-            Profession = "Designer",
-            NIF = 987654321,
-            Email = "jane.smith@example.com",
-            Contact = 123456789,
-            Password = "password",
-            CompanyID = "1"
-        };
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
 
-        var result = companyController.AddEmployee("1", employee) as OkObjectResult;
+            dbContext.Companies.Add(company);
+            dbContext.SaveChanges();
 
-        Assert.NotNull(result);
-        Assert.Equal("Employee created successfully", result.Value);
-        Assert.True(dbContext.Employees.Any(e => e.EmployeeID == "EMP002"));
+            var controller = new CompanyController(dbContext);
+
+            var employee = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Employee 1",
+                Profession = "Profession 1",
+                NIF = 123456789,
+                Email = "employee@example.com",
+                Contact = 987654321,
+                Password = "password"
+            };
+
+            // Act
+            var result = controller.AddEmployee(company.CompanyID, employee) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Employee created successfully", result.Value);
+
+            var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == "1");
+            Assert.NotNull(addedEmployee);
+            Assert.Equal("1", addedEmployee.CompanyID);
+        }
     }
+
 
     [Fact]
-    public void RemoveEmployeeTest_ShouldReturnOk_WhenEmployeeExists()
+    public void RemoveEmployeeTest()
     {
-        SeedData();
-        var result = companyController.RemoveEmployee("EMP001") as OkObjectResult;
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "Remove_employee_database")
+            .Options;
 
-        Assert.NotNull(result);
-        Assert.Equal("Employee removed successfully", result.Value);
-        Assert.False(dbContext.Employees.Any(e => e.EmployeeID == "EMP001"));
+        using (var dbContext = new ApplicationDbContext(options))
+        {
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
+
+            var employee = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Employee 1",
+                Profession = "Profession 1",
+                NIF = 123456789,
+                Email = "employee@example.com",
+                Contact = 987654321,
+                Password = "password",
+                CompanyID = company.CompanyID
+            };
+
+            dbContext.Companies.Add(company);
+            dbContext.Employees.Add(employee);
+            dbContext.SaveChanges();
+
+            var controller = new CompanyController(dbContext);
+
+            // Act
+            var result = controller.RemoveEmployee(company.CompanyID, employee.EmployeeID) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Employee removed successfully", result.Value);
+
+            var removedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == "1");
+            Assert.Null(removedEmployee);
+        }
     }
 
-    [Fact]
-    public void ListAllEmployeesTest_ShouldReturnOk_WhenEmployeesExist()
+[Fact]
+    public void EditEmployeeTest()
     {
-        SeedData();
-        var result = companyController.ListAllEmployees() as OkObjectResult;
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "Edit_employee_database")
+            .Options;
 
-        Assert.NotNull(result);
-        var employees = result.Value as List<Employee>;
-        Assert.Equal(1, employees.Count);
+        using (var dbContext = new ApplicationDbContext(options))
+        {
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
+
+            var employee = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Original Employee",
+                Profession = "Original Profession",
+                NIF = 123456789,
+                Email = "employee@example.com",
+                Contact = 987654321,
+                Password = "password",
+                CompanyID = company.CompanyID
+            };
+
+            dbContext.Companies.Add(company);
+            dbContext.Employees.Add(employee);
+            dbContext.SaveChanges();
+
+            var controller = new CompanyController(dbContext);
+
+            var updatedEmployee = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Updated Employee",
+                Profession = "Updated Profession",
+                NIF = 987654321,
+                Email = "updated@example.com",
+                Contact = 123456789,
+                Password = "newpassword",
+                CompanyID = company.CompanyID
+            };
+
+            // Act
+            var result = controller.EditEmployee(company.CompanyID, "1", updatedEmployee) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            var updatedEmployeeFromDb = result.Value as Employee;
+            Assert.Equal("Updated Employee", updatedEmployeeFromDb.Name);
+            Assert.Equal(987654321, updatedEmployeeFromDb.NIF);
+        }
     }
+
+ [Fact]
+    public void ListAllEmployeesTest()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: "List_all_employees_database")
+            .Options;
+
+        using (var dbContext = new ApplicationDbContext(options))
+        {
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
+
+            var employee1 = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Employee 1",
+                Profession = "Profession 1",
+                NIF = 123456789,
+                Email = "employee1@example.com",
+                Contact = 987654321,
+                Password = "password",
+                CompanyID = company.CompanyID
+            };
+
+            var employee2 = new Employee
+            {
+                EmployeeID = "2",
+                Name = "Employee 2",
+                Profession = "Profession 2",
+                NIF = 987654321,
+                Email = "employee2@example.com",
+                Contact = 123456789,
+                Password = "password",
+                CompanyID = company.CompanyID
+            };
+
+            dbContext.Companies.Add(company);
+            dbContext.Employees.Add(employee1);
+            dbContext.Employees.Add(employee2);
+            dbContext.SaveChanges();
+
+            var controller = new CompanyController(dbContext);
+
+            // Act
+            var result = controller.ListAllEmployees(company.CompanyID) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            var employees = result.Value as List<Employee>;
+            Assert.Equal(2, employees.Count);
+        }
+    }
+
 
     [Fact]
     public void ViewProjectTest_ShouldReturnOk_WhenProjectExists()
     {
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
         var result = companyController.ViewProject("PROJ01") as OkObjectResult;
 
         Assert.NotNull(result);
@@ -192,9 +391,13 @@ public class CompanyControllerTests
     [Fact]
     public void RemoveProjectTest_ShouldReturnOk_WhenProjectExists()
     {
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
         var result = companyController.RemoveProject("PROJ01") as OkObjectResult;
-
+        
         Assert.NotNull(result);
         Assert.Equal("Project removed successfully", result.Value);
         Assert.False(dbContext.Projects.Any(p => p.ProjectId == "PROJ01"));
@@ -204,11 +407,15 @@ public class CompanyControllerTests
     public void ListPaymentHistory_ShouldReturnOk_WhenPaymentsExist()
     {
         // Arrange
-        SeedData(); // Seed the initial data
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext); // Seed the initial data
+        
+        var companyController = new CompanyController(dbContext);
 
         // Clear existing payments to isolate the test
         dbContext.Payments.RemoveRange(dbContext.Payments);
         dbContext.SaveChanges();
+
 
         // Adding a payment to ensure there is data to retrieve
         var payment = new Payment
@@ -233,13 +440,17 @@ public class CompanyControllerTests
         Assert.NotNull(payments); // Ensure the payments list is not null
         Assert.Single(payments); // Assert that there's exactly one payment in the list
         Assert.Equal("PAY002", payments[0].PaymentID);
+
     }
 
     [Fact]
     public void UpgradePlan_ShouldReturnOk_WhenPlanIsUpgraded()
     {
         // Arrange: Seed the data with a specific initial plan
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
     
         // Ensure the company has an initial plan that is different from the new plan
         var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
@@ -251,6 +462,7 @@ public class CompanyControllerTests
 
         // Act: Attempt to upgrade to a new plan
         var newPlan = SubscriptionPlan.Premium; // New plan to upgrade to
+
 
         var result = companyController.UpgradePlan("1", newPlan) as OkObjectResult;
 
@@ -266,7 +478,11 @@ public class CompanyControllerTests
     [Fact]
     public void UpgradePlan_ShouldReturnBadRequest_WhenPlanIsSame()
     {
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
         var result = companyController.UpgradePlan("1", SubscriptionPlan.Premium) as BadRequestObjectResult;
 
         Assert.NotNull(result);
@@ -276,6 +492,11 @@ public class CompanyControllerTests
     [Fact]
     public void UpgradePlan_ShouldReturnNotFound_WhenCompanyDoesNotExist()
     {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
         var result = companyController.UpgradePlan("999", SubscriptionPlan.Premium) as NotFoundObjectResult;
 
         Assert.NotNull(result);
