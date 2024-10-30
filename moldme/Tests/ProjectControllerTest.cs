@@ -6,6 +6,7 @@ using moldme.Controllers;
 using Xunit;
 
 namespace moldme.Tests;
+
 public class ProjectControllerTest
 {
     private readonly ApplicationDbContext dbContext;
@@ -36,6 +37,7 @@ public class ProjectControllerTest
             Password = "password"
         };
 
+
         var employee = new Employee
         {
             EmployeeID = "EMP001",
@@ -53,10 +55,12 @@ public class ProjectControllerTest
             Name = "New Project",
             Description = "Project Description",
             Budget = 1000,
+
             StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(30),
+            EndDate = DateTime.Now,
             CompanyId = company.CompanyID
         };
+
 
         dbContext.Companies.Add(company);
         dbContext.Employees.Add(employee);
@@ -188,7 +192,143 @@ public class ProjectControllerTest
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Project ID cannot be null or empty.", badRequestResult.Value);
     }
-    
-}
+       
+    // Testes para o método AcceptOffer
+    [Fact]
+    public void AcceptOffer_ShouldReturnOk_WhenOfferIsAccepted()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
 
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.AcceptOffer("1", "1", "1") as OkObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Offer accepted successfully", result.Value);
+
+            var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+            Assert.NotNull(acceptedOffer);
+            Assert.Equal(Status.ACCEPTED, acceptedOffer.Status);
+        }
+    }
+    
+    [Fact]
+    public void AcceptOffer_InvalidCompany_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.AcceptOffer("invalid", "1", "1") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Company not found", result.Value);
+        }
+    }
+    
+    [Fact]
+    public void AcceptOffer_InvalidProject_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.AcceptOffer("1", "invalid", "1") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Project not found", result.Value);
+        }
+    }
+    
+    [Fact]
+    public void AcceptOffer_InvalidOffer_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.AcceptOffer("1", "1", "invalid") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Offer not found", result.Value);
+        }
+    }
+    
+    // Testes para o método RejectOffer
+    [Fact]
+    public void RejectOffer_ShouldReturnOk_WhenOfferIsRejected()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.RejectOffer("1", "1", "1") as OkObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Offer rejected successfully", result.Value);
+
+            var rejectedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+            Assert.NotNull(rejectedOffer);
+            Assert.Equal(Status.DENIED, rejectedOffer.Status);
+        }
+    }
+    
+    [Fact]
+    public void RejectOffer_InvalidCompany_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.RejectOffer("invalid", "1", "1") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Company not found", result.Value);
+        }
+    }
+    
+    [Fact]
+    public void RejectOffer_InvalidProject_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.RejectOffer("1", "invalid", "1") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Project not found", result.Value);
+        }
+    }
+    
+    [Fact]
+    public void RejectOffer_InvalidOffer_ReturnsNotFound()
+    {
+        using (var dbContext = GetInMemoryDbContext())
+        {
+            SeedData(dbContext);
+
+            var controller = new ProjectController(dbContext);
+
+            var result = controller.RejectOffer("1", "1", "invalid") as NotFoundObjectResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Offer not found", result.Value);
+        }
+    }
+}
 
