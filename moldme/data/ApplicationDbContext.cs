@@ -19,7 +19,6 @@ namespace moldme.data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
-       
         
     }
     
