@@ -9,17 +9,18 @@ namespace moldme.Tests
 {
     public class ProjectControllerTest
     {
-        private readonly ApplicationDbContext dbContext;
-        private readonly ProjectController projectController;
+        //private readonly ApplicationDbContext dbContext;
+        //private readonly ProjectController projectController;
 
         public ProjectControllerTest()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            dbContext = new ApplicationDbContext(options);
-            projectController = new ProjectController(dbContext);
+            //dbContext = new ApplicationDbContext(options);
+            //projectController = new ProjectController(dbContext);
+            return new ApplicationDbContext(options);
         }
         [Fact]
         public void AssignEmployee_ShouldReturnOk_WhenEmployeeAndProjectAreValid()
@@ -181,6 +182,72 @@ namespace moldme.Tests
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("Project ID cannot be null or empty.", badRequestResult.Value);
+        }
+        
+        
+        private void SeedData(ApplicationDbContext dbContext)
+        {
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
+
+            var project = new Project
+            {
+                ProjectId = "1",
+                Name = "Project 1",
+                Description = "Description 1",
+                Budget = 1000,
+                Status = Status.INPROGRESS,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                CompanyId = company.CompanyID
+            };
+            
+            var offer = new Offer
+            {
+                OfferId = "1",
+                CompanyId = "1",
+                ProjectId = "1",
+                Date = DateTime.Now,
+                Status = Status.PENDING,
+                Description = "Description 1"
+            };
+
+            dbContext.Companies.Add(company);
+            dbContext.Projects.Add(project);
+            dbContext.Offers.Add(offer);
+            dbContext.SaveChanges();
+        }
+        
+        // Testes para o método AcceptOffer
+        [Fact]
+        public void AcceptOffer_ShouldReturnOk_WhenOfferIsAccepted()
+        {
+            using (var dbContext = GetInMemoryDbContext())
+            {
+                SeedData(dbContext);
+
+                var controller = new ProjectController(dbContext);
+
+                var result = controller.AcceptOffer("1", "1", "1") as OkObjectResult;
+
+                Assert.NotNull(result);
+                Assert.Equal("Offer accepted successfully", result.Value);
+
+                var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+                Assert.NotNull(acceptedOffer);
+                Assert.Equal(Status.ACCEPTED, acceptedOffer.Status);
+            }
+
         }
     }
 }
