@@ -1,14 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moq;
+using moldme.Controllers;
 using Xunit;
-using DefaultNamespace;
 using moldme.data;
 using moldme.Models;
-using Task = moldme.Models.Task;
 
 public class EmployeeControllerTests
 {
@@ -94,7 +89,7 @@ public class EmployeeControllerTests
         // insere dados teste no DbContext em memória
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-
+        
         // Configura o controller
         var controller = new EmployeeController(dbContext);
 
