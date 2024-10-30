@@ -30,4 +30,9 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::CompanyControllerTests.AddEmployeeTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ff537cb3_002Dd1b9_002D4375_002D8800_002D159768797fa4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ProjectControllerTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0BD58E5C-1B71-41DF-96A3-A93669CD9C55::net8.0::moldme.Tests.ProjectControllerTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

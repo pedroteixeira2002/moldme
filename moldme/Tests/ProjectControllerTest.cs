@@ -9,20 +9,16 @@ namespace moldme.Tests;
 
 public class ProjectControllerTest
 {
-    private readonly ApplicationDbContext dbContext;
-    private readonly ProjectController projectController;
-
-    public ProjectControllerTest()
+    public ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        dbContext = new ApplicationDbContext(options);
-        projectController = new ProjectController(dbContext);
+        return new ApplicationDbContext(options);
     }
 
-    private void SeedData()
+    private void SeedData(ApplicationDbContext dbContext)
     {
         var company = new Company
         {
@@ -55,28 +51,42 @@ public class ProjectControllerTest
             Name = "New Project",
             Description = "Project Description",
             Budget = 1000,
-
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
             CompanyId = company.CompanyID
+        };
+        
+        var offer = new Offer
+        {
+            OfferId = "OFFER01",
+            CompanyId = "1",
+            ProjectId = "PROJ01",
+            Date = DateTime.Now,
+            Status = Status.PENDING,
+            Description = "Description 1"
         };
 
 
         dbContext.Companies.Add(company);
         dbContext.Employees.Add(employee);
         dbContext.Projects.Add(project);
+        dbContext.Offers.Add(offer);
         dbContext.SaveChanges();
     }
 
     [Fact]
     public void AssignEmployee_ShouldReturnOk_WhenEmployeeAndProjectAreValid()
     {
-        SeedData();
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
         // Act
-        var result = projectController.AssignEmployee(employeeId, projectId);
+        var result = controller.AssignEmployee(employeeId, projectId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -86,16 +96,20 @@ public class ProjectControllerTest
 
     [Fact]
     public void AssignEmployee_ShouldReturnConflict_WhenEmployeeAlreadyAssigned()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
         // Primeira associação
-        projectController.AssignEmployee(employeeId, projectId);
+        controller.AssignEmployee(employeeId, projectId);
 
         // Act
-        var result = projectController.AssignEmployee(employeeId, projectId);
+        var result = controller.AssignEmployee(employeeId, projectId);
 
         // Assert
         var conflictResult = Assert.IsType<ConflictObjectResult>(result);
@@ -104,13 +118,17 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnNotFound_WhenEmployeeNotAssignedToProject()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP002";  // Employee não existente
         var projectId = "PROJ02";   // Projeto não existente
 
         // Act
-        var result = projectController.RemoveEmployee(employeeId, projectId);
+        var result = controller.RemoveEmployee(employeeId, projectId);
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -120,16 +138,20 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnOk_WhenEmployeeAssigned()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
         // Primeiro atribuímos o funcionário ao projeto
-        projectController.AssignEmployee(employeeId, projectId);
+        controller.AssignEmployee(employeeId, projectId);
 
         // Act
-        var result = projectController.RemoveEmployee(employeeId, projectId);
+        var result = controller.RemoveEmployee(employeeId, projectId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -139,12 +161,16 @@ public class ProjectControllerTest
 
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var projectId = "PROJ01";
 
         // Act
-        var result = projectController.AssignEmployee(null, projectId);
+        var result = controller.AssignEmployee(null, projectId);
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -153,12 +179,16 @@ public class ProjectControllerTest
 
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP001";
 
         // Act
-        var result = projectController.AssignEmployee(employeeId, null);
+        var result = controller.AssignEmployee(employeeId, null);
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -167,12 +197,16 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var projectId = "PROJ01";
 
         // Act
-        var result = projectController.RemoveEmployee(null, projectId);
+        var result = controller.RemoveEmployee(null, projectId);
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -181,12 +215,16 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
-    {
-        SeedData();
+    {   
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new ProjectController(dbContext);
+        
         var employeeId = "EMP001";
 
         // Act
-        var result = projectController.RemoveEmployee(employeeId, null);
+        var result = controller.RemoveEmployee(employeeId, null);
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -203,12 +241,12 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "1", "1") as OkObjectResult;
+            var result = controller.AcceptOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer accepted successfully", result.Value);
 
-            var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+            var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(acceptedOffer);
             Assert.Equal(Status.ACCEPTED, acceptedOffer.Status);
         }
@@ -223,7 +261,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("invalid", "1", "1") as NotFoundObjectResult;
+            var result = controller.AcceptOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
@@ -239,7 +277,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "invalid", "1") as NotFoundObjectResult;
+            var result = controller.AcceptOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Project not found", result.Value);
@@ -255,7 +293,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "1", "invalid") as NotFoundObjectResult;
+            var result = controller.AcceptOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer not found", result.Value);
@@ -272,12 +310,12 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "1", "1") as OkObjectResult;
+            var result = controller.RejectOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer rejected successfully", result.Value);
 
-            var rejectedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+            var rejectedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(rejectedOffer);
             Assert.Equal(Status.DENIED, rejectedOffer.Status);
         }
@@ -292,7 +330,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("invalid", "1", "1") as NotFoundObjectResult;
+            var result = controller.RejectOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
@@ -308,7 +346,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "invalid", "1") as NotFoundObjectResult;
+            var result = controller.RejectOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Project not found", result.Value);
@@ -324,7 +362,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "1", "invalid") as NotFoundObjectResult;
+            var result = controller.RejectOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer not found", result.Value);
