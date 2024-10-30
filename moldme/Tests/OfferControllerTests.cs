@@ -42,7 +42,7 @@ public class OfferControllerTests
             Budget = 1000,
             Status = Status.INPROGRESS,
             StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(30),
+            EndDate = DateTime.Now,
             CompanyId = company.CompanyID
         };
 
