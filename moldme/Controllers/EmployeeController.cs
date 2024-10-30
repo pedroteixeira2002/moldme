@@ -106,6 +106,7 @@ namespace DefaultNamespace
 
             return Ok(employee);
         }
+        
         [HttpGet("{employeeId}/projects")]
         public async Task<IActionResult> GetEmployeeProjects(string employeeId)
         {

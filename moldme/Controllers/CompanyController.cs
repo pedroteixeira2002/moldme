@@ -85,7 +85,7 @@ public class CompanyController : ControllerBase
     
     //criar um employee, editar , remover e listar todos os employees
     
-    [HttpPost("createEmployee")]
+    [HttpPost("AddEmployee/{companyID}")]
     public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
     {
         if (string.IsNullOrWhiteSpace(employee.EmployeeID))
@@ -104,16 +104,13 @@ public class CompanyController : ControllerBase
         return Ok("Employee created successfully");
     }
     
-    [HttpPut("EditEmployee/{employeeID}")]
-    public IActionResult EditEmployee(string employeeId, [FromBody] Employee updatedEmployee)
+    [HttpPut("EditEmployee/{companyID}/{employeeID}")]
+    public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] Employee updatedEmployee)
     {
-        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
 
         if (existingEmployee == null)
-            return NotFound("Employee not found");
-
-        if (existingEmployee.CompanyID != updatedEmployee.CompanyID)
-            return BadRequest("Employee does not belong to the specified company.");
+            return NotFound("Employee not found or does not belong to the specified company.");
 
         existingEmployee.Name = updatedEmployee.Name;
         existingEmployee.Profession = updatedEmployee.Profession;
@@ -121,32 +118,32 @@ public class CompanyController : ControllerBase
         existingEmployee.Email = updatedEmployee.Email;
         existingEmployee.Contact = updatedEmployee.Contact;
         existingEmployee.Password = updatedEmployee.Password;
-        existingEmployee.CompanyID = updatedEmployee.CompanyID;
 
         dbContext.SaveChanges();
 
         return Ok(existingEmployee);
     }
-    [HttpDelete("RemoveEmployee/{employeeID}")]
-        public IActionResult RemoveEmployee(string employeeId)
-        {
-            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
-
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found");
-            }
-
-            dbContext.Employees.Remove(existingEmployee);
-            dbContext.SaveChanges();
-
-            return Ok("Employee removed successfully");
-        }
-        
-    [HttpGet("ListAllEmployees")]
-    public IActionResult ListAllEmployees()
+    
+    [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
+    public IActionResult RemoveEmployee(string companyID, string employeeId)
     {
-        var employees = dbContext.Employees.ToList();
+        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+
+        if (existingEmployee == null)
+        {
+            return NotFound("Employee not found or does not belong to the specified company.");
+        }
+
+        dbContext.Employees.Remove(existingEmployee);
+        dbContext.SaveChanges();
+
+        return Ok("Employee removed successfully");
+    }
+        
+    [HttpGet("ListAllEmployees/{companyID}")]
+    public IActionResult ListAllEmployees(string companyID)
+    {
+        var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
         return Ok(employees);
     }
 }

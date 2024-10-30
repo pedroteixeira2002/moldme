@@ -37,12 +37,12 @@ public class EmployeeControllerTests
             Password = "123456"
         };
 
-        var employee = new Employee
+        var employeeWithProjects = new Employee
         {
             EmployeeID = "1",
             Name = "John Doe",
             Profession = "Software Developer",
-            CompanyID = company.CompanyID, 
+            CompanyID = company.CompanyID,
             Email = "johndoe@example.com",
             Password = "password123",
             Projects = new List<Project>
@@ -55,7 +55,7 @@ public class EmployeeControllerTests
                     Budget = 1000,
                     Status = Status.INPROGRESS,
                     StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(30),
+                    EndDate = DateTime.Now,
                     CompanyId = company.CompanyID
                 },
                 new Project
@@ -65,15 +65,26 @@ public class EmployeeControllerTests
                     Description = "Description 2",
                     Budget = 2000,
                     Status = Status.DONE,
-                    StartDate = DateTime.Now.AddMonths(-2),
-                    EndDate = DateTime.Now.AddMonths(-1),
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
                     CompanyId = company.CompanyID
                 }
             }
         };
 
+        var employeeWithoutProjects = new Employee
+        {
+            EmployeeID = "2",
+            Name = "Jane Doe",
+            Profession = "QA Engineer",
+            CompanyID = company.CompanyID,
+            Email = "janedoe@example.com",
+            Password = "password123"
+        };
+
         dbContext.Companies.Add(company);
-        dbContext.Employees.Add(employee);
+        dbContext.Employees.Add(employeeWithProjects);
+        dbContext.Employees.Add(employeeWithoutProjects);
         dbContext.SaveChanges();
     }
     
@@ -102,5 +113,39 @@ public class EmployeeControllerTests
         Assert.Contains(projects, p => p.ProjectId == "2" && p.Name == "Project 2");
     }
     
+    [Fact]
+    public void GetEmployeeProjects_EmployeeDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.GetEmployeeProjects("999").Result; // Non-existent employee ID
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Employee with ID 999 not found.", notFoundResult.Value);
+    }
+
+    [Fact]
+    public void GetEmployeeProjects_EmployeeExistsButNoProjects_ReturnsEmptyList()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.GetEmployeeProjects("2").Result; // Employee with no projects
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var projects = Assert.IsType<List<Project>>(okResult.Value);
+        Assert.Empty(projects);
+    }
 
 }

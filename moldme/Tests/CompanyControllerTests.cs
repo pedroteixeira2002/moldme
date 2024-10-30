@@ -171,8 +171,7 @@ public class CompanyControllerTests
                 NIF = 123456789,
                 Email = "employee@example.com",
                 Contact = 987654321,
-                Password = "password",
-                CompanyID = company.CompanyID
+                Password = "password"
             };
 
             // Act
@@ -242,7 +241,7 @@ public class CompanyControllerTests
             };
 
             // Act
-            var result = controller.EditEmployee("1", updatedEmployee) as OkObjectResult;
+            var result = controller.EditEmployee(company.CompanyID, "1", updatedEmployee) as OkObjectResult;
 
             // Assert
             Assert.NotNull(result);
@@ -294,7 +293,7 @@ public class CompanyControllerTests
             var controller = new CompanyController(dbContext);
 
             // Act
-            var result = controller.RemoveEmployee("1") as OkObjectResult;
+            var result = controller.RemoveEmployee(company.CompanyID, employee.EmployeeID) as OkObjectResult;
 
             // Assert
             Assert.NotNull(result);
@@ -360,7 +359,7 @@ public class CompanyControllerTests
             var controller = new CompanyController(dbContext);
 
             // Act
-            var result = controller.ListAllEmployees() as OkObjectResult;
+            var result = controller.ListAllEmployees(company.CompanyID) as OkObjectResult;
 
             // Assert
             Assert.NotNull(result);
