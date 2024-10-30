@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using moldme.Models;
 
-namespace DefaultNamespace;
+namespace moldme.Models;
 
 public class Project
 {

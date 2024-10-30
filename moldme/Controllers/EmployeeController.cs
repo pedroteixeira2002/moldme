@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
+using moldme.Models;
 
-namespace DefaultNamespace
+namespace moldme.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
