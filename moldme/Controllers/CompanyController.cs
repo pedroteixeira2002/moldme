@@ -153,6 +153,45 @@ namespace moldme.Controllers
             var employees = dbContext.Employees.ToList();
             return Ok(employees);
         }
+
+        [HttpGet("ListPaymentHistory/{companyID}")]
+        public IActionResult ListPaymentHistory(string companyID)
+        {
+            var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+                if (existingCompany == null)
+                {
+                    return NotFound("Company not found");
+                }
+
+                var payments = dbContext.Payments.Where(c => c.companyId == companyID).ToList();
+                if (!payments.Any())
+                {
+                    return NotFound("No payment history found for this company.");
+                }
+                return Ok(payments);
+            
+            
+        }
+
+        [HttpPut("UpgradePlan/{companyID}")]
+        public IActionResult UpgradePlan(string companyID,SubscriptionPlan subscriptionPlan)
+        {
+            var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+            var atualPlan = existingCompany.Plan;
+            if (subscriptionPlan == atualPlan)
+            {
+                return BadRequest("Subscription plan already upgraded");
+            }
+            existingCompany.Plan = subscriptionPlan;
+            dbContext.SaveChanges();
+
+            return Ok($"Subscription plan updated to {subscriptionPlan}");
+
+        }
     }
 }
 

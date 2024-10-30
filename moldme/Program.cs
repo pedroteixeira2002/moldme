@@ -1,7 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer();
+
 
 // Adiciona serviços ao contêiner.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
