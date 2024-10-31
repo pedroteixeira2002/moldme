@@ -23,7 +23,6 @@ namespace moldme.data
         public DbSet<Offer> Offers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuração opcional para o relacionamento muitos-para-muitos
             modelBuilder.Entity<Employee>()
                 .HasMany(e => e.Projects)
                 .WithMany(p => p.Employees);

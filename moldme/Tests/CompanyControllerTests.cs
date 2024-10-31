@@ -1,13 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using moldme.Auth;
 using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
+using Moq;
 using Xunit;
 namespace moldme.Tests;
 
 public class CompanyControllerTests
-{ 
+
+{
+    private readonly IConfiguration _configuration;
+    public CompanyControllerTests()
+    {
+        // Initialize your configuration here
+        _configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "Jwt:Key", "ThisIsASecretKeyThatIsAtLeast32CharactersLong123!" }, // 32+ characters
+                { "Jwt:Issuer", "" },
+                { "Jwt:Audience", "" }
+            })
+            .Build();
+    }
+
     public ApplicationDbContext GetInMemoryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -76,9 +94,11 @@ public class CompanyControllerTests
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
-        
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
         var project = new Project
         {
             ProjectId = "PROJ02",
@@ -105,9 +125,11 @@ public class CompanyControllerTests
             // Arrange
             var dbContext = GetInMemoryDbContext();
             SeedData(dbContext);
-            
-            var companyController = new CompanyController(dbContext);
-            
+
+            var tokenGenerator = new TokenGenerator(_configuration);
+            var passwordHasher = new PasswordHasher<Company>();
+            var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
             var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "PROJ01");
             Assert.NotNull(existingProject); // Ensure the project exists
 
@@ -142,52 +164,59 @@ public class CompanyControllerTests
     public void AddEmployeeTest()
     {
         // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        var dbContext = GetInMemoryDbContext(); // Get a new DbContext for the test
+        SeedData(dbContext); // Seed any necessary data (if applicable)
 
-        using (var dbContext = new ApplicationDbContext(options))
+        // Assuming _configuration is already defined in your test class and contains your JWT key
+        var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
+        var passwordHasher = new PasswordHasher<Company>();
+
+        // Create and add a company only if it doesn't exist in the in-memory database
+        Company company = new Company
         {
-            var company = new Company
-            {
-                CompanyID = "1",
-                Name = "Company 1",
-                Address = "Address 1",
-                Email = "email@example.com",
-                Contact = 123456789,
-                TaxId = 123456789,
-                Sector = "Sector 1",
-                Plan = SubscriptionPlan.Premium,
-                Password = "password"
-            };
+            CompanyID = "1",
+            Name = "Company 1",
+            Address = "Address 1",
+            Email = "email@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector 1",
+            Plan = SubscriptionPlan.Premium,
+            Password = "password"
+        };
 
+        // Only add the company if it doesn't exist
+        if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
+        {
             dbContext.Companies.Add(company);
-            dbContext.SaveChanges();
-
-            var controller = new CompanyController(dbContext);
-
-            var employee = new Employee
-            {
-                EmployeeID = "1",
-                Name = "Employee 1",
-                Profession = "Profession 1",
-                NIF = 123456789,
-                Email = "employee@example.com",
-                Contact = 987654321,
-                Password = "password"
-            };
-
-            // Act
-            var result = controller.AddEmployee(company.CompanyID, employee) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Employee created successfully", result.Value);
-
-            var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == "1");
-            Assert.NotNull(addedEmployee);
-            Assert.Equal("1", addedEmployee.CompanyID);
+            dbContext.SaveChanges(); // Save the company first
         }
+
+        // Create the employee to be added
+        var employee = new Employee
+        {
+            EmployeeID = "E1", // Ensure a unique ID for the employee
+            Name = "Employee 1",
+            Profession = "Profession 1",
+            NIF = 123456789,
+            Email = "employee@example.com",
+            Contact = 987654321,
+            Password = "password",
+            CompanyID = company.CompanyID // Reference the existing company
+        };
+
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        // Act
+        var result = companyController.AddEmployee(company.CompanyID, employee) as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Employee created successfully", result.Value);
+
+        var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+        Assert.NotNull(addedEmployee);
+        Assert.Equal(company.CompanyID, addedEmployee.CompanyID);
     }
 
 
@@ -195,191 +224,202 @@ public class CompanyControllerTests
     public void RemoveEmployeeTest()
     {
         // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: "Remove_employee_database")
-            .Options;
+        // Use a fresh instance of the DbContext for this test
+        var dbContext = GetInMemoryDbContext(); // Create a new in-memory DbContext for testing
 
-        using (var dbContext = new ApplicationDbContext(options))
+        // Seed any necessary data (if applicable)
+        var company = new Company
         {
-            var company = new Company
-            {
-                CompanyID = "1",
-                Name = "Company 1",
-                Address = "Address 1",
-                Email = "email@example.com",
-                Contact = 123456789,
-                TaxId = 123456789,
-                Sector = "Sector 1",
-                Plan = SubscriptionPlan.Premium,
-                Password = "password"
-            };
+            CompanyID = "1",
+            Name = "Company 1",
+            Address = "Address 1",
+            Email = "email@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector 1",
+            Plan = SubscriptionPlan.Premium,
+            Password = "password"
+        };
 
-            var employee = new Employee
-            {
-                EmployeeID = "1",
-                Name = "Employee 1",
-                Profession = "Profession 1",
-                NIF = 123456789,
-                Email = "employee@example.com",
-                Contact = 987654321,
-                Password = "password",
-                CompanyID = company.CompanyID
-            };
-
-            dbContext.Companies.Add(company);
-            dbContext.Employees.Add(employee);
-            dbContext.SaveChanges();
-
-            var controller = new CompanyController(dbContext);
-
-            // Act
-            var result = controller.RemoveEmployee(company.CompanyID, employee.EmployeeID) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("Employee removed successfully", result.Value);
-
-            var removedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == "1");
-            Assert.Null(removedEmployee);
-        }
-    }
-
-[Fact]
-    public void EditEmployeeTest()
-    {
-        // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: "Edit_employee_database")
-            .Options;
-
-        using (var dbContext = new ApplicationDbContext(options))
+        var employee = new Employee
         {
-            var company = new Company
-            {
-                CompanyID = "1",
-                Name = "Company 1",
-                Address = "Address 1",
-                Email = "email@example.com",
-                Contact = 123456789,
-                TaxId = 123456789,
-                Sector = "Sector 1",
-                Plan = SubscriptionPlan.Premium,
-                Password = "password"
-            };
+            EmployeeID = "E1", // Ensure a unique ID for the employee
+            Name = "Employee 1",
+            Profession = "Profession 1",
+            NIF = 123456789,
+            Email = "employee@example.com",
+            Contact = 987654321,
+            Password = "password",
+            CompanyID = company.CompanyID
+        };
 
-            var employee = new Employee
-            {
-                EmployeeID = "1",
-                Name = "Original Employee",
-                Profession = "Original Profession",
-                NIF = 123456789,
-                Email = "employee@example.com",
-                Contact = 987654321,
-                Password = "password",
-                CompanyID = company.CompanyID
-            };
+        // Add company and employee to the context and save changes
+        dbContext.Companies.Add(company);
+        dbContext.Employees.Add(employee);
+        dbContext.SaveChanges();
 
-            dbContext.Companies.Add(company);
-            dbContext.Employees.Add(employee);
-            dbContext.SaveChanges();
+        // Create an instance of the CompanyController
+        var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
+        var passwordHasher = new PasswordHasher<Company>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
-            var controller = new CompanyController(dbContext);
+        // Act
+        var result = controller.RemoveEmployee(company.CompanyID, employee.EmployeeID) as OkObjectResult;
 
-            var updatedEmployee = new Employee
-            {
-                EmployeeID = "1",
-                Name = "Updated Employee",
-                Profession = "Updated Profession",
-                NIF = 987654321,
-                Email = "updated@example.com",
-                Contact = 123456789,
-                Password = "newpassword",
-                CompanyID = company.CompanyID
-            };
+        // Assert
+        Assert.NotNull(result); // Ensure that the result is not null
+        Assert.Equal("Employee removed successfully", result.Value); // Check that the response message is correct
 
-            // Act
-            var result = controller.EditEmployee(company.CompanyID, "1", updatedEmployee) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            var updatedEmployeeFromDb = result.Value as Employee;
-            Assert.Equal("Updated Employee", updatedEmployeeFromDb.Name);
-            Assert.Equal(987654321, updatedEmployeeFromDb.NIF);
-        }
-    }
-
- [Fact]
-    public void ListAllEmployeesTest()
-    {
-        // Arrange
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(databaseName: "List_all_employees_database")
-            .Options;
-
-        using (var dbContext = new ApplicationDbContext(options))
-        {
-            var company = new Company
-            {
-                CompanyID = "1",
-                Name = "Company 1",
-                Address = "Address 1",
-                Email = "email@example.com",
-                Contact = 123456789,
-                TaxId = 123456789,
-                Sector = "Sector 1",
-                Plan = SubscriptionPlan.Premium,
-                Password = "password"
-            };
-
-            var employee1 = new Employee
-            {
-                EmployeeID = "1",
-                Name = "Employee 1",
-                Profession = "Profession 1",
-                NIF = 123456789,
-                Email = "employee1@example.com",
-                Contact = 987654321,
-                Password = "password",
-                CompanyID = company.CompanyID
-            };
-
-            var employee2 = new Employee
-            {
-                EmployeeID = "2",
-                Name = "Employee 2",
-                Profession = "Profession 2",
-                NIF = 987654321,
-                Email = "employee2@example.com",
-                Contact = 123456789,
-                Password = "password",
-                CompanyID = company.CompanyID
-            };
-
-            dbContext.Companies.Add(company);
-            dbContext.Employees.Add(employee1);
-            dbContext.Employees.Add(employee2);
-            dbContext.SaveChanges();
-
-            var controller = new CompanyController(dbContext);
-
-            // Act
-            var result = controller.ListAllEmployees(company.CompanyID) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            var employees = result.Value as List<Employee>;
-            Assert.Equal(2, employees.Count);
-        }
+        // Verify that the employee was actually removed from the database
+        var removedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+        Assert.Null(removedEmployee); // Assert that the removed employee is null
     }
 
 
     [Fact]
+    public void EditEmployeeTest()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext(); // Create a new DbContext for the test
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        // Create and add a company
+        var company = new Company
+        {
+            CompanyID = "1",
+            Name = "Company 1",
+            Address = "Address 1",
+            Email = "email@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector 1",
+            Plan = SubscriptionPlan.Premium,
+            Password = "password"
+        };
+
+        // Create and add an employee
+        var employee = new Employee
+        {
+            EmployeeID = "1", // Unique ID
+            Name = "Original Employee",
+            Profession = "Original Profession",
+            NIF = 123456789,
+            Email = "employee@example.com",
+            Contact = 987654321,
+            Password = "password",
+            CompanyID = company.CompanyID
+        };
+
+        // Persist changes to the database
+        dbContext.Companies.Add(company);
+        dbContext.Employees.Add(employee);
+        dbContext.SaveChanges(); // This is crucial to persist the data
+
+        // Create an updated employee object
+        var updatedEmployee = new Employee
+        {
+            EmployeeID = "1", // Same ID for updating
+            Name = "Updated Employee",
+            Profession = "Updated Profession",
+            NIF = 987654321,
+            Email = "updated@example.com",
+            Contact = 123456789,
+            Password = "newpassword" // Assuming the controller handles hashing
+        };
+
+        // Act
+        var result = controller.EditEmployee(company.CompanyID, employee.EmployeeID, updatedEmployee) as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result); // Check that the result is not null
+        Assert.Equal("Employee updated successfully", result.Value); // Verify the success message
+
+        // Fetch the updated employee from the database
+        var updatedEmployeeFromDb = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+        Assert.NotNull(updatedEmployeeFromDb); // Ensure the employee exists
+        Assert.Equal("Updated Employee", updatedEmployeeFromDb.Name); // Check updated name
+        Assert.Equal(987654321, updatedEmployeeFromDb.NIF); // Check updated NIF
+    }
+
+
+    [Fact]
+    public void ListAllEmployeesTest()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext(); // Ensure a new DbContext for this test
+        SeedData(dbContext); // Seed data only if necessary
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        var company = new Company
+        {
+            CompanyID = "2", // Use a unique ID
+            Name = "Company 2",
+            Address = "Address 2",
+            Email = "email2@example.com",
+            Contact = 123456788,
+            TaxId = 987654321,
+            Sector = "Sector 2",
+            Plan = SubscriptionPlan.Premium,
+            Password = "password"
+        };
+
+        var employee1 = new Employee
+        {
+            EmployeeID = "1",
+            Name = "Employee 1",
+            Profession = "Profession 1",
+            NIF = 123456789,
+            Email = "employee1@example.com",
+            Contact = 987654321,
+            Password = "password",
+            CompanyID = company.CompanyID
+        };
+
+        var employee2 = new Employee
+        {
+            EmployeeID = "2",
+            Name = "Employee 2",
+            Profession = "Profession 2",
+            NIF = 987654321,
+            Email = "employee2@example.com",
+            Contact = 123456789,
+            Password = "password",
+            CompanyID = company.CompanyID
+        };
+
+        // Add the company and employees to the context
+        dbContext.Companies.Add(company);
+        dbContext.Employees.Add(employee1);
+        dbContext.Employees.Add(employee2);
+        dbContext.SaveChanges();
+
+        // Act
+        var result = controller.ListAllEmployees(company.CompanyID) as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<OkObjectResult>(result);
+    
+        var employees = result.Value as List<Employee>;
+        Assert.NotNull(employees);
+        Assert.Equal(2, employees.Count);
+    }
+
+
+[Fact]
     public void ViewProjectTest_ShouldReturnOk_WhenProjectExists()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
+
+        var tokenGenerator = new TokenGenerator( _configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
         
         var result = companyController.ViewProject("PROJ01") as OkObjectResult;
 
@@ -393,8 +433,10 @@ public class CompanyControllerTests
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
         
         var result = companyController.RemoveProject("PROJ01") as OkObjectResult;
         
@@ -408,9 +450,11 @@ public class CompanyControllerTests
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
-        SeedData(dbContext); // Seed the initial data
-        
-        var companyController = new CompanyController(dbContext);
+        SeedData(dbContext);
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
         // Clear existing payments to isolate the test
         dbContext.Payments.RemoveRange(dbContext.Payments);
@@ -449,8 +493,10 @@ public class CompanyControllerTests
         // Arrange: Seed the data with a specific initial plan
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
     
         // Ensure the company has an initial plan that is different from the new plan
         var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
@@ -480,8 +526,10 @@ public class CompanyControllerTests
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
         
         var result = companyController.UpgradePlan("1", SubscriptionPlan.Premium) as BadRequestObjectResult;
 
@@ -494,12 +542,156 @@ public class CompanyControllerTests
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
-        var companyController = new CompanyController(dbContext);
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
         
         var result = companyController.UpgradePlan("999", SubscriptionPlan.Premium) as NotFoundObjectResult;
 
         Assert.NotNull(result);
         Assert.Equal("Company not found", result.Value);
     }
+    [Fact]
+    public void RegisterCompany_Success()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        var passwordHasher = new PasswordHasher<Company>();
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        var company = new Company
+        {
+            CompanyID = "1",
+            Name = "New Company",
+            Address = "123 Street",
+            Email = "newcompany@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector",
+            Plan = SubscriptionPlan.Premium,
+            Password = "SecurePassword123"
+        };
+
+        // Act
+        var result = controller.RegisterCompany(company) as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("Company registered successfully", ((dynamic)result.Value).Message);
+        Assert.NotNull(((dynamic)result.Value).Token);
+    }
+
+    [Fact]
+    public void RegisterCompany_DuplicateEmail()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        var passwordHasher = new PasswordHasher<Company>();
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        var existingCompany = new Company
+        {
+            CompanyID = "1",
+            Name = "Existing Company",
+            Address = "123 Street",
+            Email = "duplicate@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector",
+            Plan = SubscriptionPlan.Premium,
+            Password = "SecurePassword123"
+        };
+        
+        dbContext.Companies.Add(existingCompany);
+        dbContext.SaveChanges();
+
+        var newCompany = new Company
+        {
+            CompanyID = "2",
+            Name = "New Company",
+            Address = "456 Avenue",
+            Email = "duplicate@example.com", // Duplicate email
+            Contact = 987654321,
+            TaxId = 987654321,
+            Sector = "Sector",
+            Plan = SubscriptionPlan.Premium,
+            Password = "SecurePassword456"
+        };
+
+        // Act
+        var result = controller.RegisterCompany(newCompany) as BadRequestObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("A company with this email already exists.", result.Value);
+    }
+
+    [Fact]
+    public void RegisterCompany_MissingInformation()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        var passwordHasher = new PasswordHasher<Company>();
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        var company = new Company
+        {
+            CompanyID = "3",
+            Name = "Invalid Subscription Plan Company",
+            Address = "123 Street",
+            Email = "invalidplan@example.com",
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector",
+            Plan = (SubscriptionPlan)999, // Invalid plan
+            Password = "SecurePassword123"
+        };
+
+        // Act
+        var result = controller.RegisterCompany(company) as BadRequestObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Invalid subscription plan.", result.Value); // Verificando a string diretamente
+
+    }
+
+    [Fact]
+    public void RegisterCompany_InvalidEmailFormat()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        var passwordHasher = new PasswordHasher<Company>();
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        var company = new Company
+        {
+            CompanyID = "4",
+            Name = "Invalid Email Company",
+            Address = "789 Boulevard",
+            Email = "invalid-email", // Invalid email format
+            Contact = 123456789,
+            TaxId = 123456789,
+            Sector = "Sector",
+            Plan = SubscriptionPlan.Premium,
+            Password = "SecurePassword123"
+        };
+
+        // Act
+        var result = controller.RegisterCompany(company) as BadRequestObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Invalid email format.", result.Value);
+    }
 }
+

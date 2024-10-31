@@ -1,33 +1,61 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using moldme.Auth;
+using moldme.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+// Adicione os serviços antes de construir a aplicação
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer();
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"])),
+        ValidIssuer = config["Jwt:Issuer"],
+        ValidAudience = config["Jwt:Audience"],
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+    };
+});
 
+// Adicione o TokenGenerator
+builder.Services.AddSingleton<TokenGenerator>();
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+builder.Services.AddScoped<IPasswordHasher<Company>, PasswordHasher<Company>>();
 
-// Adiciona serviços ao contêiner.
+// Configuração do DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
     options.UseSqlServer(connectionString));
 
+// Adiciona controllers
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+// Adiciona políticas de autorização
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CompanyOrEmployee", policy => policy.RequireRole("Company", "Employee"));
+    options.AddPolicy("CompanyOnly", policy => policy.RequireRole("Company"));
+});
 
 // Configuração do pipeline de requisições HTTP.
+var app = builder.Build(); // Construa a aplicação após adicionar todos os serviços
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // O valor padrão do HSTS é 30 dias. Para ambientes de produção, veja: https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -35,8 +63,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-app.UseAuthorization();
+app.UseAuthentication(); // O middleware de autenticação deve ser chamado aqui
 
 app.MapControllerRoute(
     name: "default",

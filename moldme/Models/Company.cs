@@ -33,8 +33,7 @@ public class Company
     [StringLength(64)]
     public string Sector { get; set; }
         
-    [Required]
-    [StringLength(20)]
+    
     [Column("SubscriptionPlan")]
     public SubscriptionPlan Plan { get; set; }
 
