@@ -38,7 +38,7 @@ public class Company
     public SubscriptionPlan Plan { get; set; }
 
     [Required]
-    [StringLength(64)] 
+    [StringLength(256)] 
     public string Password { get; set; }
 }
 
