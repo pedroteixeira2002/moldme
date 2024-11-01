@@ -502,4 +502,56 @@ public class CompanyControllerTests
         Assert.NotNull(result);
         Assert.Equal("Company not found", result.Value);
     }
+    
+    //testes para o ListAllProjectsFromCompany
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenProjectsExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
+        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+
+        Assert.NotNull(result);
+        var projects = result.Value as List<Project>;
+        Assert.Equal(1, projects.Count);
+    }
+    
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);  // Ensure no company with ID "999" is seeded
+
+        var companyController = new CompanyController(dbContext);
+
+        // Act
+        var result = companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Company not found", result?.Value);
+    }
+    
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenNoProjectsExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+    
+        var companyController = new CompanyController(dbContext);
+    
+        // Remove todos os projetos para simular
+        dbContext.Projects.RemoveRange(dbContext.Projects);
+        dbContext.SaveChanges();
+
+        // Act
+        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("No projects found for this company", result.Value);
+    }
 }
