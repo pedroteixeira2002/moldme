@@ -9,8 +9,12 @@ using moldme.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+var jwtKey = config["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    throw new InvalidOperationException("JWT Key is not configured properly in appsettings.json.");
+}
 
-// Adicione os serviços antes de construir a aplicação
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
