@@ -202,7 +202,7 @@ namespace moldme.Controllers
 
         }
         [HttpPost("register")]
-        public IActionResult RegisterCompany([FromBody] Company company)
+        public IActionResult CreateCompany([FromBody] Company company)
         {   if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

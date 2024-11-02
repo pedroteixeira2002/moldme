@@ -18,9 +18,8 @@ namespace moldme.data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
-
-        
         public DbSet<Offer> Offers { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Employee>()

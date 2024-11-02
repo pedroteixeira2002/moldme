@@ -575,7 +575,7 @@ public class CompanyControllerTests
         };
 
         // Act
-        var result = controller.RegisterCompany(company) as OkObjectResult;
+        var result = controller.CreateCompany(company) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -623,7 +623,7 @@ public class CompanyControllerTests
         };
 
         // Act
-        var result = controller.RegisterCompany(newCompany) as BadRequestObjectResult;
+        var result = controller.CreateCompany(newCompany) as BadRequestObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -654,7 +654,7 @@ public class CompanyControllerTests
         };
 
         // Act
-        var result = controller.RegisterCompany(company) as BadRequestObjectResult;
+        var result = controller.CreateCompany(company) as BadRequestObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -686,7 +686,7 @@ public class CompanyControllerTests
         };
 
         // Act
-        var result = controller.RegisterCompany(company) as BadRequestObjectResult;
+        var result = controller.CreateCompany(company) as BadRequestObjectResult;
 
         // Assert
         Assert.NotNull(result);

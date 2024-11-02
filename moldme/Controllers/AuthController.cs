@@ -32,8 +32,6 @@ public class AuthController : ControllerBase
                    dbContext.Employees.FirstOrDefault(e => e.Email == request.Email) as dynamic;
 
         if (user == null) return Unauthorized("Invalid credentials.");
-
-        // Check type and use appropriate PasswordHasher
         var isPasswordValid = user is Company 
             ? companyPasswordHasher.VerifyHashedPassword((Company)user, user.Password, request.Password)
             : employeePasswordHasher.VerifyHashedPassword((Employee)user, user.Password, request.Password);
