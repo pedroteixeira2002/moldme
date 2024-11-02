@@ -16,7 +16,7 @@ namespace moldme.Controllers
             _context = context;
         }
         
-        [HttpPost]
+        [HttpPost ("AddEmployee")]
         public IActionResult AddEmployee([FromBody] Employee employee)
         {
             if (employee == null)
@@ -70,18 +70,28 @@ namespace moldme.Controllers
             return Ok(existingEmployee);
         }
 
-        // Remove an employee
+// Remove an employee
         [HttpDelete("RemoveEmployee/{employeeId}")]
         public IActionResult RemoveEmployee(string employeeId)
         {
-            var existingEmployee = _context.Employees.Find(employeeId);
+            // Find the employee and include related projects to handle the join table
+            var existingEmployee = _context.Employees
+                .Include(e => e.Projects) // Include related projects (handled by EmployeeProject)
+                .SingleOrDefault(e => e.EmployeeID == employeeId);
 
             if (existingEmployee == null)
             {
                 return NotFound("Employee not found");
             }
 
-            _context.Employees.Remove(existingEmployee); // Remove the employee
+            // Remove entries in the EmployeeProject join table for this employee
+            var employeeProjects = _context.Set<Dictionary<string, object>>("EmployeeProject")
+                .Where(ep => ep["EmployeesEmployeeId"].ToString() == employeeId);
+
+            _context.RemoveRange(employeeProjects);
+
+            // Remove the employee itself
+            _context.Employees.Remove(existingEmployee);
             _context.SaveChanges();
 
             return Ok($"Employee with ID {employeeId} removed successfully");
@@ -96,7 +106,7 @@ namespace moldme.Controllers
         }
 
         // Get employee by ID
-        [HttpGet("{employeeId}")]
+        [HttpGet("GetEmployeeById/{employeeId}")]
         public IActionResult GetEmployeeById(string employeeId)
         {
             var employee = _context.Employees.Find(employeeId); // Adjust to your DbSet
@@ -108,7 +118,8 @@ namespace moldme.Controllers
             return Ok(employee);
         }
         
-        [HttpGet("{employeeId}/projects")]
+        // Get employee projects
+        [HttpGet("GetEmployeeProjects/{employeeId}")]
         public async Task<IActionResult> GetEmployeeProjects(string employeeId)
         {
             // Verifica se o funcionário existe
