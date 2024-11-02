@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.data;
 using moldme.Models;
 
@@ -106,5 +107,21 @@ namespace moldme.Controllers
 
             return Ok(employee);
         }
+        
+        [HttpGet("{employeeId}/projects")]
+        public async Task<IActionResult> GetEmployeeProjects(string employeeId)
+        {
+            // Verifica se o funcionário existe
+            var employee = await _context.Employees
+                .Include(e => e.Projects)
+                .FirstOrDefaultAsync(e => e.EmployeeID == employeeId);
+
+            if (employee == null)
+                return NotFound($"Employee with ID {employeeId} not found.");
+
+            // Retorna a lista de projetos do funcionário
+            return Ok(employee.Projects);
+        }
     }
-}
+    }
+
