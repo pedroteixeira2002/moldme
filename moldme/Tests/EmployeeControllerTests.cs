@@ -39,7 +39,7 @@ public class EmployeeControllerTests
             EmployeeID = "1",
             Name = "John Doe",
             Profession = "Software Developer",
-            CompanyID = company.CompanyID,
+            CompanyId = company.CompanyID,
             Email = "johndoe@example.com",
             Password = "password123",
             Projects = new List<Project>
@@ -74,7 +74,7 @@ public class EmployeeControllerTests
             EmployeeID = "2",
             Name = "Jane Doe",
             Profession = "QA Engineer",
-            CompanyID = company.CompanyID,
+            CompanyId = company.CompanyID,
             Email = "janedoe@example.com",
             Password = "password123"
         };

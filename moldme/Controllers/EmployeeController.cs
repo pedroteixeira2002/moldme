@@ -63,7 +63,7 @@ namespace moldme.Controllers
             existingEmployee.Email = updatedEmployee.Email;
             existingEmployee.Contact = updatedEmployee.Contact;
             existingEmployee.Password = updatedEmployee.Password;
-            existingEmployee.CompanyID = updatedEmployee.CompanyID;
+            existingEmployee.CompanyId = updatedEmployee.CompanyId;
 
             _context.SaveChanges(); 
 

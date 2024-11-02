@@ -106,7 +106,7 @@ namespace moldme.Controllers
             if (company == null)
                 return NotFound("Company not found");
 
-            employee.CompanyID = company.CompanyID;
+            employee.CompanyId = company.CompanyID;
 
             dbContext.Employees.Add(employee);
             dbContext.SaveChanges();
@@ -119,7 +119,7 @@ namespace moldme.Controllers
         public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] Employee updatedEmployee)
         {
             var existingEmployee =
-                dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+                dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
 
             if (existingEmployee == null)
                 return NotFound("Employee not found or does not belong to the specified company.");
@@ -141,7 +141,7 @@ namespace moldme.Controllers
         [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
         public IActionResult RemoveEmployee(string companyID, string employeeId)
         {
-            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
 
                 if (existingEmployee == null)
                 {
@@ -157,7 +157,7 @@ namespace moldme.Controllers
         [HttpGet("ListAllEmployees/{companyID}")]
         public IActionResult ListAllEmployees(string companyID)
         {
-            var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
+            var employees = dbContext.Employees.Where(e => e.CompanyId == companyID).ToList();
             if (!employees.Any())
             {
                 return NotFound("No employees found for this company.");
@@ -174,7 +174,7 @@ namespace moldme.Controllers
                 return NotFound("Company not found");
             }
 
-            var payments = dbContext.Payments.Where(c => c.companyId == companyID).ToList();
+            var payments = dbContext.Payments.Where(c => c.CompanyId == companyID).ToList();
             if (!payments.Any())
             {
                 return NotFound("No payment history found for this company.");

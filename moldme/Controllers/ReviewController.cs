@@ -35,7 +35,7 @@ public class ReviewController : ControllerBase
         
         
         // Associa o Reviewer e o ReviewedEmployee à avaliação
-        review.ReviewerID = _reviewer.EmployeeID;
+        review.ReviewerId = _reviewer.EmployeeID;
         review.ReviewedId = _reviewedEmployee.EmployeeID;
         
         // Adiciona a avaliação ao banco de dados
