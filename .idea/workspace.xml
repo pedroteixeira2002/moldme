@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="62ef8036-fafc-499f-ad0c-498871b0b820" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/moldme/Controllers/ReviewController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/moldme/Tests/ReviewControllerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Models/Employee.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Models/Employee.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Models/Offer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Models/Offer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Models/Payment.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Models/Payment.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Models/Project.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Models/Project.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Models/Review.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Models/Review.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/Tests/EmployeeControllerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/Tests/EmployeeControllerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/moldme/moldme.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/moldme/moldme.sln.DotSettings.user" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2oI9kWRQV1ZuKCkxoaOO0oWeEXC" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "dev-17-7-user-story---como-utilizador-quero-avaliar-um-colega-com-quem-tr…udvel",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="62ef8036-fafc-499f-ad0c-498871b0b820" name="Changes" comment="" />
+      <created>1730546365540</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1730546365540</updated>
+      <workItem from="1730546366572" duration="6000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+</project>

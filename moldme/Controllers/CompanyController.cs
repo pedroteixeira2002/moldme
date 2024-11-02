@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using moldme.Controllers;
+using moldme.Auth;
 using moldme.data;
 using moldme.Models;
 
@@ -13,10 +13,17 @@ namespace moldme.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly TokenGenerator tokenGenerator;
+        private readonly IPasswordHasher<Company> passwordHasher;
+        private readonly IPasswordHasher<Company> companyPasswordHasher;
+        
 
-        public CompanyController(ApplicationDbContext companyContext)
+        public CompanyController(ApplicationDbContext dbContext, TokenGenerator tokenGenerator,IPasswordHasher<Company> companyPasswordHasher, IPasswordHasher<Company> passwordHasher)
         {
-            dbContext = companyContext;
+            this.dbContext = dbContext;
+            this.tokenGenerator = tokenGenerator;
+            this.passwordHasher = passwordHasher;
+            this.companyPasswordHasher = companyPasswordHasher;
         }
 
         [HttpPost("addProject")]
@@ -117,42 +124,46 @@ namespace moldme.Controllers
             if (existingEmployee == null)
                 return NotFound("Employee not found or does not belong to the specified company.");
 
+            // Update the employee properties
             existingEmployee.Name = updatedEmployee.Name;
             existingEmployee.Profession = updatedEmployee.Profession;
             existingEmployee.NIF = updatedEmployee.NIF;
             existingEmployee.Email = updatedEmployee.Email;
             existingEmployee.Contact = updatedEmployee.Contact;
-            existingEmployee.Password = updatedEmployee.Password;
+            existingEmployee.Password = updatedEmployee.Password; // Ensure this is hashed if needed
 
             dbContext.SaveChanges();
 
-            return Ok(existingEmployee);
+            // Return a success message instead of the employee object
+            return Ok("Employee updated successfully");
         }
-
+    
         [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
         public IActionResult RemoveEmployee(string companyID, string employeeId)
         {
-            var existingEmployee =
-                dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
+            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
 
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found or does not belong to the specified company.");
-            }
+                if (existingEmployee == null)
+                {
+                    return NotFound("Employee not found or does not belong to the specified company.");
+                }
 
-            dbContext.Employees.Remove(existingEmployee);
-            dbContext.SaveChanges();
+                dbContext.Employees.Remove(existingEmployee);
+                dbContext.SaveChanges();
 
             return Ok("Employee removed successfully");
         }
-
+        
         [HttpGet("ListAllEmployees/{companyID}")]
         public IActionResult ListAllEmployees(string companyID)
         {
             var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
+            if (!employees.Any())
+            {
+                return NotFound("No employees found for this company.");
+            }
             return Ok(employees);
         }
-
 
         [HttpGet("ListPaymentHistory/{companyID}")]
         public IActionResult ListPaymentHistory(string companyID)
@@ -231,6 +242,45 @@ namespace moldme.Controllers
                 return NotFound("Project not found or does not belong to the specified company.");
             }
             return Ok(project);
+        }
+
+        [HttpPost("register")]
+        public IActionResult CreateCompany([FromBody] Company company)
+        {   if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            // Validate email format
+            if (!new EmailAddressAttribute().IsValid(company.Email))
+            {
+                
+                return BadRequest("Invalid email format.");
+            }
+
+            // Check if the email already exists
+            if (dbContext.Companies.Any(c => c.Email == company.Email))
+            {
+                return BadRequest("A company with this email already exists.");
+            }
+
+            // Validate Subscription Plan
+            if (!Enum.IsDefined(typeof(SubscriptionPlan), company.Plan))
+            {
+                return BadRequest("Invalid subscription plan.");
+            }
+
+            company.Password = companyPasswordHasher.HashPassword(company, company.Password);
+
+            dbContext.Companies.Add(company);
+            dbContext.SaveChanges();
+
+            // Generate JWT Token with role
+            var token = tokenGenerator.GenerateToken(company.Email, "Company");
+            
+
+            return Ok(new { Token = token, Message = "Company registered successfully" });
+            
         }
     }
 }
