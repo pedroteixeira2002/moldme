@@ -242,9 +242,42 @@ public class EmployeeControllerTests
         Assert.Contains(employees, e => e.EmployeeID == "2" && e.Name == "Jane Doe");
     }
     
-  
+    //GetEmployeeById
+    [Fact]
+    public void GetEmployeeById_ReturnsEmployee()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.GetEmployeeById("1");
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var employee = Assert.IsType<Employee>(okResult.Value);
+        Assert.Equal("1", employee.EmployeeID);
+        Assert.Equal("John Doe", employee.Name);
+    }
     
-    
+    [Fact]
+    public void GetEmployeeById_EmployeeDoesNotExist_ReturnsNotFound()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.GetEmployeeById("999"); // Non-existent employee ID
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Employee not found", notFoundResult.Value);
+    }
     
     
     [Fact]
