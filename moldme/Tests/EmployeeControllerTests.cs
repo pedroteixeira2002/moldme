@@ -85,6 +85,168 @@ public class EmployeeControllerTests
         dbContext.SaveChanges();
     }
     
+    // Testa o método AddEmploye
+    [Fact]
+    public void AddEmployee_AddsNewEmployeeToDatabase()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+        var newEmployee = new Employee
+        {
+            EmployeeID = "3",
+            Name = "New Employee",
+            Profession = "Designer",
+            CompanyId = "1",
+            Email = "newemployee@example.com",
+            Password = "newpassword123"
+        };
+
+        // Act
+        var result = controller.AddEmployee(newEmployee);
+
+        // Assert
+        var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
+        var addedEmployee = Assert.IsType<Employee>(createdAtActionResult.Value);
+        Assert.Equal("3", addedEmployee.EmployeeID);
+        Assert.Equal("New Employee", addedEmployee.Name);
+        Assert.Equal("Designer", addedEmployee.Profession);
+        Assert.Equal("1", addedEmployee.CompanyId);
+        Assert.Equal("newemployee@example.com", addedEmployee.Email);
+
+        // Verify the employee was added to the database
+        var employeeInDb = dbContext.Employees.Find("3");
+        Assert.NotNull(employeeInDb);
+        Assert.Equal("New Employee", employeeInDb.Name);
+    }
+    //AddEmployeeShouldReturnBadRequestWhenEmployeeIsNull
+    [Fact]
+    public void AddEmployee_ShouldReturnBadRequestWhenEmployeeIsNull()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.AddEmployee(null);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Employee data is required", badRequestResult.Value);
+    }
+    
+    //EditEmployee
+    [Fact]
+    public void EditEmployee_UpdatesEmployeeInDatabase()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+        var updatedEmployee = new Employee
+        {
+            EmployeeID = "1",
+            Name = "John Smith",
+            Profession = "Senior Software Developer",
+            CompanyId = "1",
+            Email = "johnsmith@example.com",
+            Password = "newpassword123"
+        };
+
+        // Act
+        var result = controller.EditEmployee("1", updatedEmployee);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var employeeInDb = dbContext.Employees.Find("1");
+        Assert.NotNull(employeeInDb);
+        Assert.Equal("John Smith", employeeInDb.Name);
+        Assert.Equal("Senior Software Developer", employeeInDb.Profession);
+        Assert.Equal("johnsmith@example.com", employeeInDb.Email);
+    }
+    
+    //EditEmployeeShouldReturnBadRequestWhenEmployeeDoesNotExist
+    [Fact]
+    public void EditEmployee_ShouldReturnBadRequestWhenEmployeeDoesNotExist()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+        var updatedEmployee = new Employee
+        {
+            EmployeeID = "999", // Non-existent employee ID
+            Name = "Non Existent",
+            Profession = "Non Existent Profession",
+            CompanyId = "1",
+            Email = "nonexistent@example.com",
+            Password = "nonexistentpassword"
+        };
+
+        // Act
+        var result = controller.EditEmployee("999", updatedEmployee);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Equal("Employee not found", notFoundResult.Value);
+    }
+    
+    //RemoveEmployee
+    
+    // RemoveEmployeebyId
+    [Fact]
+    public void RemoveEmployeeById_RemovesEmployeeFromDatabase()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.RemoveEmployee("1");
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal("Employee with ID 1 removed successfully", okResult.Value);
+
+        // Verify the employee was removed from the database
+        var employeeInDb = dbContext.Employees.Find("1");
+        Assert.Null(employeeInDb);
+    }
+    
+    //ListAllEmployees
+    [Fact]
+    public void ListAllEmployees_ReturnsAllEmployees()
+    {
+        // Arrange
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new EmployeeController(dbContext);
+
+        // Act
+        var result = controller.ListAllEmployees();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var employees = Assert.IsType<List<Employee>>(okResult.Value);
+        Assert.Equal(2, employees.Count);
+        Assert.Contains(employees, e => e.EmployeeID == "1" && e.Name == "John Doe");
+        Assert.Contains(employees, e => e.EmployeeID == "2" && e.Name == "Jane Doe");
+    }
+    
+  
+    
+    
+    
+    
     [Fact]
     public void GetEmployeeProjects_ReturnsProjectsForEmployee()
     {
