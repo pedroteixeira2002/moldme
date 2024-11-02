@@ -10,8 +10,6 @@ namespace moldme.data
         {
             
         }
-        
-
         public DbSet<Company> Companies { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -19,7 +17,9 @@ namespace moldme.data
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<StaffOnProject> StaffOnProjects { get; set; }
-        public DbSet<Offer> Offers { get; set; }        
+        public DbSet<Offer> Offers { get; set; }     
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
     
     
