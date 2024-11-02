@@ -244,7 +244,7 @@ public class EmployeeControllerTests
     
     //GetEmployeeById
     [Fact]
-    public void GetEmployeeById_ReturnsEmployee()
+    public void GetEmployeeById_ReturnsEmployee_WhenEmployeeExists()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
@@ -261,9 +261,9 @@ public class EmployeeControllerTests
         Assert.Equal("1", employee.EmployeeID);
         Assert.Equal("John Doe", employee.Name);
     }
-    
+    //GetEmployeeById without employee
     [Fact]
-    public void GetEmployeeById_EmployeeDoesNotExist_ReturnsNotFound()
+    public void GetEmployeeById_ShouldReturnNotFound_WhenEmployeeDoesNotExist()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
