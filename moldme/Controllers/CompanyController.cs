@@ -216,6 +216,22 @@ namespace moldme.Controllers
             //lista de projetos encontrados
             return Ok(projects);
         }
+        
+        [HttpGet("GetProjectById/{companyID}/{projectID}")]
+        public IActionResult GetProjectById(string companyID, string projectID)
+        {
+            var companyExists = dbContext.Companies.Any(c => c.CompanyID == companyID);
+            if (!companyExists)
+            {
+                return NotFound("Company not found");
+            }
+            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectID && p.CompanyId == companyID);
+            if (project == null)
+            {
+                return NotFound("Project not found or does not belong to the specified company.");
+            }
+            return Ok(project);
+        }
     }
 }
 

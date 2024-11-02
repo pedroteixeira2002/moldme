@@ -371,8 +371,7 @@ public class CompanyControllerTests
             Assert.Equal(2, employees.Count);
         }
     }
-
-
+    
     [Fact]
     public void ViewProjectTest_ShouldReturnOk_WhenProjectExists()
     {
@@ -553,5 +552,48 @@ public class CompanyControllerTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("No projects found for this company", result.Value);
+    }
+    //getprojectbyid in company
+    [Fact]
+    public void GetProjectById_ShouldReturnOk_WhenProjectExists()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
+        var result = companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
+
+        Assert.NotNull(result);
+        var project = result.Value as Project;
+        Assert.Equal("New Project", project.Name);
+    }
+    
+    [Fact]
+    public void GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
+        var result = companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("Project not found or does not belong to the specified company.", result.Value);
+    }
+    
+    [Fact]
+    public void GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var companyController = new CompanyController(dbContext);
+        
+        var result = companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("Company not found", result.Value);
     }
 }
