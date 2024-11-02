@@ -95,8 +95,6 @@ public class AuthControllerTests
         dbContext.Payments.Add(payment);
         dbContext.SaveChanges();
     }
-
-
     
     [Fact]
     public void Login_ValidCredentials_ReturnsToken()
