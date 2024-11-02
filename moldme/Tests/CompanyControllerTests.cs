@@ -58,7 +58,7 @@ public class CompanyControllerTests
             NIF = 123456789,
             Email = "john.doe@example.com",
             Password = "password123",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         var project = new Project
@@ -75,7 +75,7 @@ public class CompanyControllerTests
         var payment = new Payment
         {
             PaymentID = "PAY001",
-            companyId = company.CompanyID,
+            CompanyId = company.CompanyID,
             Date = DateTime.Now,
             Value = 500,
             Plan = SubscriptionPlan.Premium
@@ -202,7 +202,7 @@ public class CompanyControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyID = company.CompanyID // Reference the existing company
+            CompanyId = company.CompanyID // Reference the existing company
         };
 
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
@@ -216,7 +216,7 @@ public class CompanyControllerTests
 
         var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
         Assert.NotNull(addedEmployee);
-        Assert.Equal(company.CompanyID, addedEmployee.CompanyID);
+        Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
     }
 
 
@@ -250,7 +250,7 @@ public class CompanyControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         // Add company and employee to the context and save changes
@@ -308,7 +308,7 @@ public class CompanyControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         // Persist changes to the database
@@ -375,7 +375,7 @@ public class CompanyControllerTests
             Email = "employee1@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         var employee2 = new Employee
@@ -387,7 +387,7 @@ public class CompanyControllerTests
             Email = "employee2@example.com",
             Contact = 123456789,
             Password = "password",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         // Add the company and employees to the context
@@ -462,7 +462,7 @@ public class CompanyControllerTests
         var payment = new Payment
         {
             PaymentID = "PAY002",
-            companyId = "1", // Ensure this matches a valid company ID
+            CompanyId = "1", // Ensure this matches a valid company ID
             Date = DateTime.Now,
             Value = 600,
             Plan = SubscriptionPlan.Premium

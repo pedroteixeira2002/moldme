@@ -74,12 +74,12 @@ public class ReviewControllerTests
             Comment = "Great employee",
             date = DateTime.Now,
             Stars = Stars.Five,
-            ReviewerID = "EMP001",
+            ReviewerId = "EMP001",
             ReviewedId = "EMP002"
         };
         
         // Act
-        var result = controller.AddReview(review.ReviewerID, review.ReviewedId, review) as OkObjectResult;
+        var result = controller.AddReview(review.ReviewerId, review.ReviewedId, review) as OkObjectResult;
         
         Assert.NotNull(result);
         Assert.Equal("Review added successfully", result.Value);
@@ -89,7 +89,7 @@ public class ReviewControllerTests
         // Verifica se a avaliação foi adicionada ao banco de dados
         Assert.NotNull(reviewInDb);
         // Verifica se o ReviewerID da avaliação é igual ao esperado.
-        Assert.Equal("EMP001", reviewInDb.ReviewerID);
+        Assert.Equal("EMP001", reviewInDb.ReviewerId);
         // Verifica se o ReviewedId da avaliação é igual ao esperado.
         Assert.Equal("EMP002", reviewInDb.ReviewedId);
         
@@ -110,11 +110,11 @@ public class ReviewControllerTests
             Comment = "Great employee",
             date = DateTime.Now,
             Stars = Stars.Five,
-            ReviewerID = "EMP003",
+            ReviewerId = "EMP003",
             ReviewedId = "EMP002"
         };
         
-        var result = controller.AddReview(review.ReviewerID, review.ReviewedId, review) as NotFoundObjectResult;
+        var result = controller.AddReview(review.ReviewerId, review.ReviewedId, review) as NotFoundObjectResult;
         
         Assert.NotNull(result);
         Assert.Equal("Reviewer not found", result.Value);
@@ -140,7 +140,7 @@ public class ReviewControllerTests
             Comment = "Great employee",
             date = DateTime.Now,
             Stars = Stars.Five,
-            ReviewerID = "EMP001",
+            ReviewerId = "EMP001",
             ReviewedId = "EMP003"
         };
         

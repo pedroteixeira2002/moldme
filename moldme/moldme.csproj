@@ -48,8 +48,4 @@
       <None Remove="Tests\NewFile1.txt" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Migrations\" />
-    </ItemGroup>
-
 </Project>

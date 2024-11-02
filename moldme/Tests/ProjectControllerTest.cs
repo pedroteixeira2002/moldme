@@ -42,7 +42,7 @@ public class ProjectControllerTest
             NIF = 123456789,
             Email = "john.doe@example.com",
             Password = "password123",
-            CompanyID = company.CompanyID
+            CompanyId = company.CompanyID
         };
 
         var project = new Project

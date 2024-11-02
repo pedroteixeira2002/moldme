@@ -12,8 +12,8 @@ using moldme.data;
 namespace moldme.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241031201934_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241102170726_new_02_11")]
+    partial class new_02_11
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,17 +27,35 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("EmployeeProject", b =>
                 {
-                    b.Property<string>("EmployeesEmployeeID")
+                    b.Property<string>("EmployeesEmployeeId")
                         .HasColumnType("nvarchar(6)");
 
                     b.Property<string>("ProjectsProjectId")
                         .HasColumnType("nvarchar(6)");
 
-                    b.HasKey("EmployeesEmployeeID", "ProjectsProjectId");
+                    b.HasKey("EmployeesEmployeeId", "ProjectsProjectId");
 
                     b.HasIndex("ProjectsProjectId");
 
                     b.ToTable("EmployeeProject");
+                });
+
+            modelBuilder.Entity("moldme.Models.Chat", b =>
+                {
+                    b.Property<string>("ChatId")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.HasKey("ChatId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("moldme.Models.Company", b =>
@@ -66,11 +84,10 @@ namespace moldme.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<int>("Plan")
-                        .HasMaxLength(20)
                         .HasColumnType("int")
                         .HasColumnName("SubscriptionPlan");
 
@@ -93,7 +110,7 @@ namespace moldme.Migrations
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<string>("CompanyID")
+                    b.Property<string>("CompanyId")
                         .IsRequired()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
@@ -126,9 +143,47 @@ namespace moldme.Migrations
 
                     b.HasKey("EmployeeID");
 
-                    b.HasIndex("CompanyID");
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("moldme.Models.Message", b =>
+                {
+                    b.Property<string>("MessageId")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("ChatId")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("ChatId1")
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("ChatId1");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("moldme.Models.Offer", b =>
@@ -139,7 +194,8 @@ namespace moldme.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -151,12 +207,17 @@ namespace moldme.Migrations
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("OfferId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Offers");
                 });
@@ -164,6 +225,11 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Payment", b =>
                 {
                     b.Property<string>("PaymentID")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -176,12 +242,9 @@ namespace moldme.Migrations
                     b.Property<float>("Value")
                         .HasColumnType("real");
 
-                    b.Property<string>("companyId")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
-
                     b.HasKey("PaymentID");
+
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Payments");
                 });
@@ -197,7 +260,8 @@ namespace moldme.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -220,6 +284,8 @@ namespace moldme.Migrations
 
                     b.HasKey("ProjectId");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Projects");
                 });
 
@@ -234,32 +300,36 @@ namespace moldme.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("ReviewedStaffID")
+                    b.Property<string>("ReviewedId")
+                        .IsRequired()
+                        .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<string>("StaffID")
+                    b.Property<string>("ReviewerId")
+                        .IsRequired()
+                        .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("Stars")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("date")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("ReviewID");
 
-                    b.HasIndex("ReviewedStaffID");
+                    b.HasIndex("ReviewedId");
 
-                    b.HasIndex("StaffID");
+                    b.HasIndex("ReviewerId");
 
                     b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("moldme.Models.Task", b =>
                 {
-                    b.Property<int>("TaskId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("TaskId")
                         .HasMaxLength(6)
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -269,8 +339,18 @@ namespace moldme.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -282,6 +362,10 @@ namespace moldme.Migrations
 
                     b.HasKey("TaskId");
 
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("ProjectId");
+
                     b.ToTable("Tasks");
                 });
 
@@ -289,22 +373,97 @@ namespace moldme.Migrations
                 {
                     b.HasOne("moldme.Models.Employee", null)
                         .WithMany()
-                        .HasForeignKey("EmployeesEmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("EmployeesEmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("moldme.Models.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectsProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("moldme.Models.Chat", b =>
+                {
+                    b.HasOne("moldme.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("moldme.Models.Employee", b =>
                 {
                     b.HasOne("moldme.Models.Company", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyID")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("moldme.Models.Message", b =>
+                {
+                    b.HasOne("moldme.Models.Chat", "Chat")
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("moldme.Models.Chat", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatId1");
+
+                    b.HasOne("moldme.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("moldme.Models.Offer", b =>
+                {
+                    b.HasOne("moldme.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("moldme.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("moldme.Models.Payment", b =>
+                {
+                    b.HasOne("moldme.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("moldme.Models.Project", b =>
+                {
+                    b.HasOne("moldme.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -313,17 +472,45 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("moldme.Models.Review", b =>
                 {
-                    b.HasOne("moldme.Models.Employee", "ReviewedEmployee")
+                    b.HasOne("moldme.Models.Employee", "Reviewed")
                         .WithMany()
-                        .HasForeignKey("ReviewedStaffID");
+                        .HasForeignKey("ReviewedId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("moldme.Models.Employee", "Reviewer")
                         .WithMany()
-                        .HasForeignKey("StaffID");
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
-                    b.Navigation("ReviewedEmployee");
+                    b.Navigation("Reviewed");
 
                     b.Navigation("Reviewer");
+                });
+
+            modelBuilder.Entity("moldme.Models.Task", b =>
+                {
+                    b.HasOne("moldme.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("moldme.Models.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("moldme.Models.Chat", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }
