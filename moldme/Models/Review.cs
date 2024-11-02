@@ -12,14 +12,23 @@ public class Review
     [Required]
     [StringLength(256)] 
     public string Comment { get; set; }
+    
+    [Required]
+    [DataType(DataType.Date)]
+    public DateTime date { get; set; }
         
     [Required]
     public Stars Stars { get; set; }
     
-    // Relacionamentos
-    [ForeignKey("StaffID")]
+    // ID do Employee que fez a avaliação
+    [ForeignKey("Reviewer")]
+    public string ReviewerID { get; set; }
+    
     public Employee Reviewer { get; set; }
-
-    [ForeignKey("ReviewedStaffID")]
-    public Employee ReviewedEmployee { get; set; }
+    
+    // ID do Employee que foi avaliado
+    [ForeignKey("Reviewed")]
+    public string ReviewedId { get; set; }
+    
+    public Employee Reviewed { get; set; }
 }
