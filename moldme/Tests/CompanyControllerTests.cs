@@ -656,6 +656,7 @@ public class CompanyControllerTests
         Assert.NotNull(result);
         Assert.Equal("Company not found", result.Value);
     }
+
     [Fact]
     public void RegisterCompany_Success()
     {

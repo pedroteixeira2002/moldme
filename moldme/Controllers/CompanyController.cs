@@ -124,47 +124,46 @@ namespace moldme.Controllers
             if (existingEmployee == null)
                 return NotFound("Employee not found or does not belong to the specified company.");
 
-        // Update the employee properties
-        existingEmployee.Name = updatedEmployee.Name;
-        existingEmployee.Profession = updatedEmployee.Profession;
-        existingEmployee.NIF = updatedEmployee.NIF;
-        existingEmployee.Email = updatedEmployee.Email;
-        existingEmployee.Contact = updatedEmployee.Contact;
-        existingEmployee.Password = updatedEmployee.Password; // Ensure this is hashed if needed
+            // Update the employee properties
+            existingEmployee.Name = updatedEmployee.Name;
+            existingEmployee.Profession = updatedEmployee.Profession;
+            existingEmployee.NIF = updatedEmployee.NIF;
+            existingEmployee.Email = updatedEmployee.Email;
+            existingEmployee.Contact = updatedEmployee.Contact;
+            existingEmployee.Password = updatedEmployee.Password; // Ensure this is hashed if needed
 
-        dbContext.SaveChanges();
-
-        // Return a success message instead of the employee object
-        return Ok("Employee updated successfully");
-    }
-    
-    [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
-    public IActionResult RemoveEmployee(string companyID, string employeeId)
-    {
-        var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
-
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found or does not belong to the specified company.");
-            }
-
-            dbContext.Employees.Remove(existingEmployee);
             dbContext.SaveChanges();
 
-        return Ok("Employee removed successfully");
-    }
-        
-    [HttpGet("ListAllEmployees/{companyID}")]
-    public IActionResult ListAllEmployees(string companyID)
-    {
-        var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
-        if (!employees.Any())
-        {
-            return NotFound("No employees found for this company.");
+            // Return a success message instead of the employee object
+            return Ok("Employee updated successfully");
         }
-        return Ok(employees);
-    }
+    
+        [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
+        public IActionResult RemoveEmployee(string companyID, string employeeId)
+        {
+            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyID == companyID);
 
+                if (existingEmployee == null)
+                {
+                    return NotFound("Employee not found or does not belong to the specified company.");
+                }
+
+                dbContext.Employees.Remove(existingEmployee);
+                dbContext.SaveChanges();
+
+            return Ok("Employee removed successfully");
+        }
+        
+        [HttpGet("ListAllEmployees/{companyID}")]
+        public IActionResult ListAllEmployees(string companyID)
+        {
+            var employees = dbContext.Employees.Where(e => e.CompanyID == companyID).ToList();
+            if (!employees.Any())
+            {
+                return NotFound("No employees found for this company.");
+            }
+            return Ok(employees);
+        }
 
         [HttpGet("ListPaymentHistory/{companyID}")]
         public IActionResult ListPaymentHistory(string companyID)
@@ -244,6 +243,7 @@ namespace moldme.Controllers
             }
             return Ok(project);
         }
+
         [HttpPost("register")]
         public IActionResult CreateCompany([FromBody] Company company)
         {   if (!ModelState.IsValid)
@@ -282,7 +282,6 @@ namespace moldme.Controllers
             return Ok(new { Token = token, Message = "Company registered successfully" });
             
         }
-
     }
 }
 
