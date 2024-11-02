@@ -60,8 +60,8 @@ namespace moldme.Tests
                 TaskId = "b",
                 TitleName = "Task 2",
                 Description = "Task 2 Description",
-                ProjectId = "2",
-                EmployeeId = "1",
+                ProjectId = "20",
+                EmployeeId = "10",
             });
 
             context.SaveChanges();
@@ -73,7 +73,8 @@ namespace moldme.Tests
             Assert.NotNull(result);
             var tasks = result.Value as List<Task>;
             Assert.NotNull(tasks);
-            Assert.Single(tasks);
+            Assert.Equal(2, tasks.Count);
+            
         }
 
         [Fact]
