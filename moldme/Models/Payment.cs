@@ -14,6 +14,8 @@ public class Payment
     [ForeignKey("Company")]
     public string companyId { get; set; }
     
+    public Company Company { get; set; }
+    
     [Required]
     [DataType(DataType.Date)]
     public DateTime Date { get; set; }

@@ -7,49 +7,49 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-        <PackageReference Include="Moq" Version="4.20.72" />
-        <PackageReference Include="xunit" Version="2.9.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+      <PackageReference Include="Moq" Version="4.20.72" />
+      <PackageReference Include="xunit" Version="2.9.2" />
+      <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include=".github\workflows\continuous_integration.yml" />
-        <Content Remove=".github\**" />
+      <Content Include=".github\workflows\continuous_integration.yml" />
+      <Content Remove=".github\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove=".github\**" />
-        <Compile Remove="data\MoldmeContext.cs" />
-        <Compile Remove="Models\StaffOnProject.cs" />
+      <Compile Remove=".github\**" />
+      <Compile Remove="data\MoldmeContext.cs" />
+      <Compile Remove="Models\StaffOnProject.cs" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove=".github\**" />
+      <EmbeddedResource Remove=".github\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove=".github\**" />
-        <None Remove="Tests\NewFile1.txt" />
+      <None Remove=".github\**" />
+      <None Remove="Tests\NewFile1.txt" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Migrations\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>
