@@ -31,5 +31,7 @@ public class Project
     [ForeignKey("Company"), Required]
     public string CompanyId { get; set; } 
     
+    public Company Company { get; set; }
+    
     public List<Employee> Employees { get; set; } = new List<Employee>();
 }

@@ -35,9 +35,9 @@ public class Employee
     public string Password { get; set; }
         
     [StringLength(6)]
+    [ForeignKey("Company")]
     public string CompanyID { get; set; }
-
-    [ForeignKey("CompanyID")]
+    
     public Company Company { get; set; }
     
     public List<Project> Projects { get; set; } = new List<Project>();
