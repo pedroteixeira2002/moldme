@@ -5,6 +5,7 @@ moldme/obj/
 # Ignore Rider/JetBrains specific files
 moldme/.idea/
 *.iml
+moldme/moldme.sln.DotSettings.user
 
 # Ignore user-specific files and OS-generated files
 *.user

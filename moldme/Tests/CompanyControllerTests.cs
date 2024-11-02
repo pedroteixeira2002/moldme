@@ -275,7 +275,6 @@ public class CompanyControllerTests
         Assert.Null(removedEmployee); // Assert that the removed employee is null
     }
 
-
     [Fact]
     public void EditEmployeeTest()
     {
@@ -343,7 +342,6 @@ public class CompanyControllerTests
         Assert.Equal(987654321, updatedEmployeeFromDb.NIF); // Check updated NIF
     }
 
-
     [Fact]
     public void ListAllEmployeesTest()
     {
@@ -409,9 +407,8 @@ public class CompanyControllerTests
         Assert.NotNull(employees);
         Assert.Equal(2, employees.Count);
     }
-
-
-[Fact]
+    
+    [Fact]
     public void ViewProjectTest_ShouldReturnOk_WhenProjectExists()
     {
         var dbContext = GetInMemoryDbContext();
@@ -548,6 +545,113 @@ public class CompanyControllerTests
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
         
         var result = companyController.UpgradePlan("999", SubscriptionPlan.Premium) as NotFoundObjectResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("Company not found", result.Value);
+    }
+    
+    //testes para o ListAllProjectsFromCompany
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenProjectsExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        
+        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+
+        Assert.NotNull(result);
+        var projects = result.Value as List<Project>;
+        Assert.Equal(1, projects.Count);
+    }
+    
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);  // Ensure no company with ID "999" is seeded
+
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+        // Act
+        var result = companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Company not found", result?.Value);
+    }
+    
+    [Fact]
+    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenNoProjectsExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+    
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+    
+        // Remove todos os projetos para simular
+        dbContext.Projects.RemoveRange(dbContext.Projects);
+        dbContext.SaveChanges();
+
+        // Act
+        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("No projects found for this company", result.Value);
+    }
+    //getprojectbyid in company
+    [Fact]
+    public void GetProjectById_ShouldReturnOk_WhenProjectExists()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        
+        var result = companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
+
+        Assert.NotNull(result);
+        var project = result.Value as Project;
+        Assert.Equal("New Project", project.Name);
+    }
+    
+    [Fact]
+    public void GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        
+        var result = companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("Project not found or does not belong to the specified company.", result.Value);
+    }
+    
+    [Fact]
+    public void GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+        
+        var tokenGenerator = new TokenGenerator(_configuration);
+        var passwordHasher = new PasswordHasher<Company>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        
+        var result = companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
 
         Assert.NotNull(result);
         Assert.Equal("Company not found", result.Value);
@@ -694,4 +798,3 @@ public class CompanyControllerTests
         Assert.Equal("Invalid email format.", result.Value);
     }
 }
-

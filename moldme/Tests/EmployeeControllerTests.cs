@@ -6,6 +6,7 @@ using moldme.data;
 using moldme.Models;
 
 namespace moldme.Tests;
+
 public class EmployeeControllerTests
 {
     public ApplicationDbContext GetInMemoryDbContext()
