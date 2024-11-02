@@ -4,8 +4,8 @@ namespace moldme.Models;
 
 public class Task
 {
-    [Key, MaxLength(6)]
-    public int TaskId { get; set; }
+    [Key, StringLength(6)]
+    public String TaskId { get; set; }
     
     [Required, MaxLength(64)]
     public string TitleName { get; set; }

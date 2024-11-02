@@ -27,7 +27,7 @@ namespace moldme.Tests
 
             var newTask = new Task
             {
-                TaskId = 1,
+                TaskId = "a",
                 TitleName = "New Task",
                 Description = "New Task Description",
                 Date = DateTime.Now,
@@ -40,7 +40,7 @@ namespace moldme.Tests
             Assert.NotNull(result);
             Assert.Equal("Task created successfully", result.Value);
 
-            var createdTask = context.Tasks.FirstOrDefault(t => t.TaskId == 1);
+            var createdTask = context.Tasks.FirstOrDefault(t => t.TaskId == "a");
             Assert.NotNull(createdTask);
             Assert.Equal("New Task", createdTask.TitleName);
             Assert.Equal("New Task Description", createdTask.Description);
@@ -55,7 +55,7 @@ namespace moldme.Tests
 
             context.Tasks.Add(new Task
             {
-                TaskId = 2,
+                TaskId = "b",
                 TitleName = "Task 2",
                 Description = "Task 2 Description"
             });
@@ -80,7 +80,7 @@ namespace moldme.Tests
 
             context.Tasks.Add(new Task
             {
-                TaskId = 3,
+                TaskId = "c",
                 TitleName = "Task 3",
                 Description = "Task 3 Description"
             });
@@ -88,7 +88,7 @@ namespace moldme.Tests
             context.SaveChanges();
 
             
-            var result = controller.GetById(3) as OkObjectResult;
+            var result = controller.GetById("c") as OkObjectResult;
 
             Assert.NotNull(result);
             var task = result.Value as Task;
@@ -105,7 +105,7 @@ namespace moldme.Tests
 
             var newTask = new Task
             {
-                TaskId = 10,
+                TaskId = "j",
                 TitleName = "Task 10",
                 Description = "Task 10 Description",
                 Date = DateTime.Now,
@@ -116,13 +116,13 @@ namespace moldme.Tests
             context.SaveChanges();
 
             // Act
-            var result = controller.GetById(10) as OkObjectResult;
+            var result = controller.GetById("j") as OkObjectResult;
 
             // Assert
             Assert.NotNull(result);
             var task = result.Value as Task;
             Assert.NotNull(task);
-            Assert.Equal(10, task.TaskId);
+            Assert.Equal("j", task.TaskId);
             Assert.Equal("Task 10", task.TitleName);
             Assert.Equal("Task 10 Description", task.Description);
         }
@@ -136,7 +136,7 @@ namespace moldme.Tests
 
             context.Tasks.Add(new Task
             {
-                TaskId = 4,
+                TaskId = "d",
                 TitleName = "Task 4",
                 Description = "Task 4 Description"
             });
@@ -145,18 +145,18 @@ namespace moldme.Tests
 
             var updatedTask = new Task
             {
-                TaskId = 4,
+                TaskId = "d",
                 TitleName = "Updated Task",
                 Description = "Updated Task Description"
             };
 
             
-            var result = controller.Update(4, updatedTask) as OkObjectResult;
+            var result = controller.Update("d", updatedTask) as OkObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Task updated successfully", result.Value);
 
-            var task = context.Tasks.Find(4);
+            var task = context.Tasks.Find("d");
             Assert.NotNull(task);
             Assert.Equal("Updated Task", task.TitleName);
             Assert.Equal("Updated Task Description", task.Description);
@@ -171,7 +171,7 @@ namespace moldme.Tests
 
             context.Tasks.Add(new Task
             {
-                TaskId = 5,
+                TaskId = "e",
                 TitleName = "Task 5",
                 Description = "Task 5 Description"
             });
@@ -179,12 +179,12 @@ namespace moldme.Tests
             context.SaveChanges();
 
             
-            var result = controller.Delete(5) as OkObjectResult;
+            var result = controller.Delete("e") as OkObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Task deleted successfully", result.Value);
 
-            var task = context.Tasks.Find(5);
+            var task = context.Tasks.Find("e");
             Assert.Null(task);
         }
         
@@ -196,7 +196,7 @@ namespace moldme.Tests
             var controller = new TaskController(context);
 
             
-            var result = controller.Delete(6) as NotFoundResult;
+            var result = controller.Delete("f") as NotFoundResult;
 
             Assert.NotNull(result);
         }
@@ -209,12 +209,12 @@ namespace moldme.Tests
 
             var updatedTask = new Task
             {
-                TaskId = 9,
+                TaskId = "i",
                 TitleName = "Updated Task",
                 Description = "Updated Task Description"
             };
 
-            var result = controller.Update(9, updatedTask) as NotFoundResult;
+            var result = controller.Update("i", updatedTask) as NotFoundResult;
 
             Assert.NotNull(result);
         }
@@ -225,7 +225,7 @@ namespace moldme.Tests
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
-            var result = controller.GetById(10) as NotFoundResult;
+            var result = controller.GetById("j") as NotFoundResult;
 
             Assert.NotNull(result);
         }
@@ -269,12 +269,12 @@ namespace moldme.Tests
 
             var updatedTask = new Task
             {
-                TaskId = 11,
+                TaskId = "k",
                 TitleName = "Updated Task",
                 Description = "Updated Task Description"
             };
 
-            var result = controller.Update(11, updatedTask) as BadRequestObjectResult;
+            var result = controller.Update("k", updatedTask) as BadRequestObjectResult;
 
             Assert.NotNull(result);
 

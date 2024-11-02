@@ -41,7 +41,7 @@ namespace moldme.Controllers
 
         // Read by ID
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(String id)
         {
             var task = _context.Tasks.Find(id); 
             if (task == null)
@@ -53,7 +53,7 @@ namespace moldme.Controllers
 
         // Update
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Task updatedTask)
+        public IActionResult Update(String id, [FromBody] Task updatedTask)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace moldme.Controllers
 
         // Delete
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(String id)
         {
             var task = _context.Tasks.Find(id);
             if (task == null)
