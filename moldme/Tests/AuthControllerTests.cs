@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using moldme.Auth;
@@ -6,11 +5,11 @@ using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
 using Xunit;
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 
+namespace moldme.Tests;
+    
 public class AuthControllerTests
 {
     private readonly IConfiguration _configuration;
