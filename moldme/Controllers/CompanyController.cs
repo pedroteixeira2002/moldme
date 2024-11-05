@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using moldme.Auth;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 
 namespace moldme.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class CompanyController : ControllerBase
@@ -17,7 +17,6 @@ namespace moldme.Controllers
         private readonly IPasswordHasher<Company> passwordHasher;
         private readonly IPasswordHasher<Company> companyPasswordHasher;
         
-
         public CompanyController(ApplicationDbContext dbContext, TokenGenerator tokenGenerator,IPasswordHasher<Company> companyPasswordHasher, IPasswordHasher<Company> passwordHasher)
         {
             this.dbContext = dbContext;
@@ -27,48 +26,80 @@ namespace moldme.Controllers
         }
 
         [HttpPost("addProject")]
-        public IActionResult AddProject(string companyID, [FromBody] Project project)
+        public IActionResult AddProject(string companyId, [FromBody] ProjectDto projectDto)
         {
-            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
-
+            // Verifica se a empresa existe
+            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyId);
 
             if (company == null)
                 return NotFound("Company not found");
 
-            project.CompanyId = company.CompanyID;
+            // Cria um novo objeto Project a partir do DTO
+            var project = new Project
+            {
+                ProjectId = Guid.NewGuid().ToString().Substring(0, 6), // Gera um novo ID para o projeto (ou outra lógica que você queira usar)
+                Name = projectDto.Name,
+                Description = projectDto.Description,
+                Status = projectDto.Status,
+                Budget = projectDto.Budget,
+                StartDate = projectDto.StartDate,
+                EndDate = projectDto.EndDate,
+                CompanyId = company.CompanyID,
+                Employees = new List<Employee>()
+            };
+
+            // Verifica se os IDs dos empregados são válidos e associa os empregados ao projeto
+            foreach (var employeeId in projectDto.EmployeeIds)
+            {
+                var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
+                if (employee != null)
+                {
+                    project.Employees.Add(employee);
+                }
+                else
+                {
+                    // Se algum empregado não for encontrado, você pode decidir como tratar isso
+                    return NotFound($"Employee with ID {employeeId} not found");
+                }
+            }
+
+            // Adiciona o projeto ao contexto e salva as alterações
             dbContext.Projects.Add(project);
             dbContext.SaveChanges();
 
             return Ok("Project added successfully");
         }
 
-        [HttpPut("EditProject/{projectID}")]
-        public IActionResult EditProject(string ProjectId, [FromBody] Project updatedProject)
+        [HttpPut("EditProject/{projectId}")]
+        public IActionResult EditProject(string projectId, [FromBody] ProjectDto updatedProjectDto)
         {
-            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
+            // Obtém o projeto existente pelo ID
+            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
 
+            // Verifica se o projeto existe
             if (existingProject == null)
                 return NotFound("Project not found");
 
-            if (existingProject.CompanyId != updatedProject.CompanyId)
-                return BadRequest("Project does not belong to the specified company.");
+            // Atualiza os campos do projeto com os dados do DTO
+            existingProject.Name = updatedProjectDto.Name;
+            existingProject.Description = updatedProjectDto.Description;
+            existingProject.Budget = updatedProjectDto.Budget;
+            existingProject.Status = updatedProjectDto.Status;
+            existingProject.StartDate = updatedProjectDto.StartDate;
+            existingProject.EndDate = updatedProjectDto.EndDate;
 
-            existingProject.Name = updatedProject.Name;
-            existingProject.Description = updatedProject.Description;
-            existingProject.Budget = updatedProject.Budget;
-            existingProject.Status = updatedProject.Status;
-            existingProject.StartDate = updatedProject.StartDate;
-            existingProject.EndDate = updatedProject.EndDate;
-
+            // Salva as alterações no banco de dados
             dbContext.SaveChanges();
 
+            // Retorna o projeto atualizado
             return Ok(existingProject);
         }
 
-        [HttpGet("ViewProject/{projectID}")]
-        public IActionResult ViewProject(string ProjectId)
+
+        [HttpGet("ViewProject/{projectId}")]
+        public IActionResult ViewProject(string projectId)
         {
-            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
+            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
 
             if (existingProject == null)
             {
@@ -78,39 +109,74 @@ namespace moldme.Controllers
             return Ok(existingProject);
         }
 
-        [HttpDelete("RemoveProject/{projectID}")]
-        public IActionResult RemoveProject(string ProjectId)
+
+        [HttpDelete("RemoveProject/{projectId}")]
+        public IActionResult RemoveProject(string projectId)
         {
-            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == ProjectId);
+            // Buscar o projeto, sem necessidade de incluir funcionários se não for usado
+            var existingProject = dbContext.Projects
+                .FirstOrDefault(p => p.ProjectId == projectId);
 
             if (existingProject == null)
             {
                 return NotFound("Project not found");
             }
 
+            // Remover o projeto. A exclusão em cascata deve cuidar das referências na tabela EmployeeProject
             dbContext.Projects.Remove(existingProject);
             dbContext.SaveChanges();
+
             return Ok("Project removed successfully");
         }
 
 
+
+
+
         //criar um employee, editar , remover e listar todos os employees   
         [HttpPost("AddEmployee/{companyID}")]
-        public IActionResult AddEmployee(string companyID, [FromBody] Employee employee)
+        public IActionResult AddEmployee(string companyID, [FromBody] AddEmployeeDto employeeDto)
         {
-            if (string.IsNullOrWhiteSpace(employee.EmployeeID))
+            // Verifica se o EmployeeID está vazio ou em branco
+            if (string.IsNullOrWhiteSpace(employeeDto.EmployeeID))
                 return BadRequest("EmployeeID is required and cannot be empty or whitespace");
 
+            // Verifica se a empresa existe com o CompanyID fornecido
             var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
-
             if (company == null)
                 return NotFound("Company not found");
 
-            employee.CompanyId = company.CompanyID;
+            // Verifica se o projeto existe com o ProjectId fornecido
+            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == employeeDto.ProjectId);
+            if (project == null)
+                return NotFound("Project not found");
 
+            // Cria uma nova instância de Employee e define os valores necessários
+            var employee = new Employee
+            {
+                EmployeeID = employeeDto.EmployeeID,
+                Name = employeeDto.Name,
+                Profession = employeeDto.Profession,
+                NIF = employeeDto.Nif,
+                Email = employeeDto.Email,
+                Contact = employeeDto.Contact,
+                Password = employeeDto.Password,
+                CompanyId = company.CompanyID
+            };
+
+            
             dbContext.Employees.Add(employee);
-            dbContext.SaveChanges();
-
+            
+            project.Employees.Add(employee); 
+            
+            try
+            {
+                dbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while saving the employee: " + ex.Message);
+            }
 
             return Ok("Employee created successfully");
         }

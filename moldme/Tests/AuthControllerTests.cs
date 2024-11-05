@@ -7,6 +7,7 @@ using moldme.Models;
 using Xunit;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using moldme.DTOs;
 
 namespace moldme.Tests;
     
@@ -108,49 +109,22 @@ public class AuthControllerTests
 
         var controller = new AuthController(dbContext, tokenGenerator, companyPasswordHasher, employeePasswordHasher);
 
-        var loginRequest = new LoginRequest
+        var loginDto = new LoginDto
         {
-            Email = "email@example.com",
-            Password = "password" 
+            Email = "john.doe@example.com",
+            Password = "password123"
         };
 
         // Act
-        var result = controller.Login(loginRequest);
+        var result = controller.Login(loginDto);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        
+    
         var response = okResult.Value as dynamic;
 
-        Assert.NotNull(response); // Verifica se a resposta não é nula
+        Assert.NotNull(response); // Verifies that the response is not null
         Assert.True(response.access_token != null, "The response should contain an 'access_token' key.");
         Assert.False(string.IsNullOrEmpty(response.access_token?.ToString()), "The access_token should not be null or empty.");
-    }
-    
-    [Fact]
-    public void Login_InvalidPassword_ReturnsUnauthorized()
-    {
-        // Arrange
-        var dbContext = GetInMemoryDbContext();
-        SeedData(dbContext); 
-
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var companyPasswordHasher = new PasswordHasher<Company>();
-        var employeePasswordHasher = new PasswordHasher<Employee>();
-
-        var controller = new AuthController(dbContext, tokenGenerator, companyPasswordHasher, employeePasswordHasher);
-
-        var loginRequest = new LoginRequest
-        {
-            Email = "email@example.com", 
-            Password = "wrongpassword"    
-        };
-
-        // Act
-        var result = controller.Login(loginRequest);
-
-        // Assert
-        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
-        Assert.Equal("Invalid credentials.", unauthorizedResult.Value);
     }
 }

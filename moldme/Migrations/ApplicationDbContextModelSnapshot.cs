@@ -130,8 +130,8 @@ namespace moldme.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Profession")
                         .IsRequired()
@@ -156,9 +156,6 @@ namespace moldme.Migrations
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<string>("ChatId1")
-                        .HasColumnType("nvarchar(6)");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -175,8 +172,6 @@ namespace moldme.Migrations
                     b.HasKey("MessageId");
 
                     b.HasIndex("ChatId");
-
-                    b.HasIndex("ChatId1");
 
                     b.HasIndex("EmployeeId");
 
@@ -371,13 +366,13 @@ namespace moldme.Migrations
                     b.HasOne("moldme.Models.Employee", null)
                         .WithMany()
                         .HasForeignKey("EmployeesEmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("moldme.Models.Project", null)
                         .WithMany()
                         .HasForeignKey("ProjectsProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -406,14 +401,10 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Message", b =>
                 {
                     b.HasOne("moldme.Models.Chat", "Chat")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("moldme.Models.Chat", null)
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatId1");
 
                     b.HasOne("moldme.Models.Employee", "Employee")
                         .WithMany()

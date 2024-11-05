@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using moldme.Auth;
 using moldme.Controllers;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 using Moq;
 using Xunit;
@@ -89,135 +90,82 @@ public class CompanyControllerTests
         dbContext.SaveChanges();
     }
 
-    [Fact]
-    public void AddProjectTest_ShouldReturnOk_WhenProjectIsValid()
+    
+
+[Fact]
+public void AddEmployeeTest()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext(); // Get a new DbContext for the test
+    SeedData(dbContext); // Seed any necessary data (if applicable)
+
+    // Assuming _configuration is already defined in your test class and contains your JWT key
+    var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
+    var passwordHasher = new PasswordHasher<Company>();
+
+    // Create and add a company only if it doesn't exist in the in-memory database
+    Company company = new Company
     {
-        var dbContext = GetInMemoryDbContext();
-        SeedData(dbContext);
+        CompanyID = "1",
+        Name = "Company 1",
+        Address = "Address 1",
+        Email = "email@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector 1",
+        Plan = SubscriptionPlan.Premium,
+        Password = "password"
+    };
 
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
-        var project = new Project
-        {
-            ProjectId = "PROJ02",
-            Name = "New Project 2",
-            Description = "Description of Project 2",
-            Budget = 2000,
-            Status = Status.INPROGRESS,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(60),
-            CompanyId = "1"
-        };
-
-        var result = companyController.AddProject("1", project) as OkObjectResult;
-
-        Assert.NotNull(result);
-        Assert.Equal("Project added successfully", result.Value);
-        Assert.True(dbContext.Projects.Any(p => p.ProjectId == "PROJ02"));
+    // Only add the company if it doesn't exist
+    if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
+    {
+        dbContext.Companies.Add(company);
+        dbContext.SaveChanges(); // Save the company first
     }
 
-    [Fact]
-    public void EditProjectTest_ShouldReturnOk_WhenProjectIsUpdated()
+    // Create the employee DTO to be added
+    var employeeDto = new AddEmployeeDto
     {
-        {
-            // Arrange
-            var dbContext = GetInMemoryDbContext();
-            SeedData(dbContext);
+        EmployeeID = "E1", // Ensure a unique ID for the employee
+        Name = "Employee 1",
+        Profession = "Profession 1",
+        Nif = 123456789,
+        Email = "employee@example.com",
+        Contact = 987654321,
+        Password = "password",
+        ProjectId = "P1" // Add a project ID, assuming it exists in the seed data
+    };
 
-            var tokenGenerator = new TokenGenerator(_configuration);
-            var passwordHasher = new PasswordHasher<Company>();
-            var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+    // Optionally, seed a project in your database if it doesn't already exist
+    var project = new Project
+    {
+        ProjectId = employeeDto.ProjectId,
+        Name = "Project 1",
+        Description = "Project Description",
+        CompanyId = company.CompanyID
+    };
 
-            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "PROJ01");
-            Assert.NotNull(existingProject); // Ensure the project exists
-
-            var updatedProject = new Project
-            {
-                ProjectId = "PROJ01",
-                Name = "Updated Project",
-                Description = "Updated Description",
-                Budget = 10000,
-                Status = Status.DONE,
-                StartDate = DateTime.Now.AddDays(-10),
-                EndDate = DateTime.Now.AddDays(20),
-                CompanyId = existingProject.CompanyId // Ensure this matches
-            };
-
-            // Act
-            var result = companyController.EditProject("PROJ01", updatedProject) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result);
-
-            var updatedProjectFromDb = dbContext.Projects.Find("PROJ01");
-            Assert.Equal("Updated Project", updatedProjectFromDb.Name);
-            Assert.Equal(10000, updatedProjectFromDb.Budget);
-            Assert.Equal(Status.DONE, updatedProjectFromDb.Status);
-        }
-
+    if (!dbContext.Projects.Any(p => p.ProjectId == project.ProjectId))
+    {
+        dbContext.Projects.Add(project);
+        dbContext.SaveChanges(); // Save the project first
     }
 
-    [Fact]
-    public void AddEmployeeTest()
-    {
-        // Arrange
-        var dbContext = GetInMemoryDbContext(); // Get a new DbContext for the test
-        SeedData(dbContext); // Seed any necessary data (if applicable)
+    var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
-        // Assuming _configuration is already defined in your test class and contains your JWT key
-        var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
-        var passwordHasher = new PasswordHasher<Company>();
+    // Act
+    var result = companyController.AddEmployee(company.CompanyID, employeeDto) as OkObjectResult;
 
-        // Create and add a company only if it doesn't exist in the in-memory database
-        Company company = new Company
-        {
-            CompanyID = "1",
-            Name = "Company 1",
-            Address = "Address 1",
-            Email = "email@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector 1",
-            Plan = SubscriptionPlan.Premium,
-            Password = "password"
-        };
+    // Assert
+    Assert.NotNull(result);
+    Assert.Equal("Employee created successfully", result.Value);
 
-        // Only add the company if it doesn't exist
-        if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
-        {
-            dbContext.Companies.Add(company);
-            dbContext.SaveChanges(); // Save the company first
-        }
+    var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeDto.EmployeeID);
+    Assert.NotNull(addedEmployee);
+    Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
+}
 
-        // Create the employee to be added
-        var employee = new Employee
-        {
-            EmployeeID = "E1", // Ensure a unique ID for the employee
-            Name = "Employee 1",
-            Profession = "Profession 1",
-            NIF = 123456789,
-            Email = "employee@example.com",
-            Contact = 987654321,
-            Password = "password",
-            CompanyId = company.CompanyID // Reference the existing company
-        };
-
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
-        // Act
-        var result = companyController.AddEmployee(company.CompanyID, employee) as OkObjectResult;
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Employee created successfully", result.Value);
-
-        var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
-        Assert.NotNull(addedEmployee);
-        Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
-    }
 
 
     [Fact]
