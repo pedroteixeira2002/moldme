@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 
 namespace moldme.Controllers;
@@ -17,31 +18,39 @@ public class ReviewController : ControllerBase
     }
     
     [HttpPost("addReview")]
-    public IActionResult AddReview(string reviewerID, string reviewedEmployee,[FromBody] Review review)
+    public IActionResult AddReview([FromBody] ReviewDto reviewDto)
     {
-        // Verifica se se o reviwewerID é válido
-        var _reviewer = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewerID);
-        
+        // Verifica se o reviewerID é válido
+        var reviewer = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewDto.ReviewerId);
+    
         // Se o reviewerID não for válido, retorna um erro
-        if (_reviewer == null)
+        if (reviewer == null)
             return NotFound("Reviewer not found");
-        
-        // Verifica se se o reviewedEmployee é válido
-        var _reviewedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewedEmployee);
-        
+    
+        // Verifica se o reviewedEmployee é válido
+        var reviewedEmployeeEntity = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewDto.ReviewedId);
+    
         // Se o reviewedEmployee não for válido, retorna um erro
-        if (_reviewedEmployee == null)
+        if (reviewedEmployeeEntity == null)
             return NotFound("Reviewed Employee not found");
-        
-        
-        // Associa o Reviewer e o ReviewedEmployee à avaliação
-        review.ReviewerId = _reviewer.EmployeeID;
-        review.ReviewedId = _reviewedEmployee.EmployeeID;
-        
+    
+        // Cria uma nova avaliação e associa os dados do DTO
+        var review = new Review
+        {
+            ReviewID = Guid.NewGuid().ToString().Substring(0, 6), // Gera um ID único de 6 caracteres
+            Comment = reviewDto.Comment,
+            Stars = reviewDto.Stars,
+            date = DateTime.Now,  // Define a data atual como data da avaliação
+            ReviewerId = reviewer.EmployeeID, // Associa o ID do revisor
+            ReviewedId = reviewedEmployeeEntity.EmployeeID // Associa o ID do avaliado
+        };
+    
         // Adiciona a avaliação ao banco de dados
         dbContext.Reviews.Add(review);
         dbContext.SaveChanges();
-        
-        return Ok("Review added successfully");
+    
+        // Retorna uma resposta com sucesso
+        return Ok(new { Message = "Review added successfully", ReviewID = review.ReviewID });
     }
+
 }

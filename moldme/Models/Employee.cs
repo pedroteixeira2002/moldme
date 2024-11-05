@@ -7,8 +7,9 @@ namespace moldme.Models;
 public class Employee
 {
     [Key]
-    [StringLength(6)]
-    [Required]
+    [StringLength(56)]
+    [Required]  
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string EmployeeID { get; set; }
         
     [Required]

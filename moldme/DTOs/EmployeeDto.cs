@@ -2,12 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace moldme.DTOs;
 
-public class AddEmployeeDto
+public class EmployeeDto
 {
-    [Required]
-    [StringLength(6)]
-    public string EmployeeID { get; set; }
-
     [Required]
     [StringLength(64)]
     public string Name { get; set; }
@@ -32,9 +28,5 @@ public class AddEmployeeDto
     public string Password { get; set; }
 
     [Required]
-    [StringLength(6)]
-    public string CompanyId { get; set; } 
-
-    [Required]
-    public string ProjectId { get; set; } 
+    public string ProjectId { get; set; }
 }

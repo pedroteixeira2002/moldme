@@ -133,14 +133,9 @@ namespace moldme.Controllers
 
 
 
-        //criar um employee, editar , remover e listar todos os employees   
         [HttpPost("AddEmployee/{companyID}")]
-        public IActionResult AddEmployee(string companyID, [FromBody] AddEmployeeDto employeeDto)
+        public IActionResult AddEmployee(string companyID, [FromBody] EmployeeDto employeeDto)
         {
-            // Verifica se o EmployeeID está vazio ou em branco
-            if (string.IsNullOrWhiteSpace(employeeDto.EmployeeID))
-                return BadRequest("EmployeeID is required and cannot be empty or whitespace");
-
             // Verifica se a empresa existe com o CompanyID fornecido
             var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
             if (company == null)
@@ -154,7 +149,7 @@ namespace moldme.Controllers
             // Cria uma nova instância de Employee e define os valores necessários
             var employee = new Employee
             {
-                EmployeeID = employeeDto.EmployeeID,
+                EmployeeID = Guid.NewGuid().ToString().Substring(0, 6), // Gera um novo ID para o empregado
                 Name = employeeDto.Name,
                 Profession = employeeDto.Profession,
                 NIF = employeeDto.Nif,
@@ -164,11 +159,9 @@ namespace moldme.Controllers
                 CompanyId = company.CompanyID
             };
 
-            
             dbContext.Employees.Add(employee);
-            
-            project.Employees.Add(employee); 
-            
+            project.Employees.Add(employee);
+
             try
             {
                 dbContext.SaveChanges();
@@ -181,8 +174,8 @@ namespace moldme.Controllers
             return Ok("Employee created successfully");
         }
 
-        [HttpPut("EditEmployee/{companyID}/{employeeID}")]
-        public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] Employee updatedEmployee)
+        [HttpPut("EditEmployee/{employeeID}")]
+        public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] EmployeeDto updatedEmployeeDto)
         {
             var existingEmployee =
                 dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
@@ -191,12 +184,12 @@ namespace moldme.Controllers
                 return NotFound("Employee not found or does not belong to the specified company.");
 
             // Update the employee properties
-            existingEmployee.Name = updatedEmployee.Name;
-            existingEmployee.Profession = updatedEmployee.Profession;
-            existingEmployee.NIF = updatedEmployee.NIF;
-            existingEmployee.Email = updatedEmployee.Email;
-            existingEmployee.Contact = updatedEmployee.Contact;
-            existingEmployee.Password = updatedEmployee.Password; // Ensure this is hashed if needed
+            existingEmployee.Name = updatedEmployeeDto.Name;
+            existingEmployee.Profession = updatedEmployeeDto.Profession;
+            existingEmployee.NIF = updatedEmployeeDto.Nif;
+            existingEmployee.Email = updatedEmployeeDto.Email;
+            existingEmployee.Contact = updatedEmployeeDto.Contact;
+            existingEmployee.Password = updatedEmployeeDto.Password; // Ensure this is hashed if needed
 
             dbContext.SaveChanges();
 
@@ -204,7 +197,7 @@ namespace moldme.Controllers
             return Ok("Employee updated successfully");
         }
     
-        [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
+        [HttpDelete("RemoveEmployee/{employeeID}")]
         public IActionResult RemoveEmployee(string companyID, string employeeId)
         {
             var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
@@ -309,45 +302,60 @@ namespace moldme.Controllers
             }
             return Ok(project);
         }
-
+        
         [HttpPost("register")]
-        public IActionResult CreateCompany([FromBody] Company company)
-        {   if (!ModelState.IsValid)
+        public IActionResult CreateCompany([FromBody] CompanyDto companyDto)
+        {
+            // Verificar se os dados são válidos
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
-            // Validate email format
-            if (!new EmailAddressAttribute().IsValid(company.Email))
+
+            // Validar formato do email
+            if (!new EmailAddressAttribute().IsValid(companyDto.Email))
             {
-                
                 return BadRequest("Invalid email format.");
             }
 
-            // Check if the email already exists
-            if (dbContext.Companies.Any(c => c.Email == company.Email))
+            // Verificar se o email já está cadastrado
+            if (dbContext.Companies.Any(c => c.Email == companyDto.Email))
             {
                 return BadRequest("A company with this email already exists.");
             }
 
-            // Validate Subscription Plan
-            if (!Enum.IsDefined(typeof(SubscriptionPlan), company.Plan))
+            // Validar plano de assinatura
+            if (!Enum.IsDefined(typeof(SubscriptionPlan), companyDto.Plan))
             {
                 return BadRequest("Invalid subscription plan.");
             }
 
-            company.Password = companyPasswordHasher.HashPassword(company, company.Password);
+            // Mapeia os dados da DTO para o modelo Company
+            var company = new Company
+            {
+                CompanyID = Guid.NewGuid().ToString().Substring(0, 6), // Gerar um ID único de 6 caracteres
+                Name = companyDto.Name,
+                TaxId = companyDto.TaxId,
+                Address = companyDto.Address,
+                Contact = companyDto.Contact,
+                Email = companyDto.Email,
+                Sector = companyDto.Sector,
+                Plan = companyDto.Plan,
+                Password = companyPasswordHasher.HashPassword(null, companyDto.Password) // Hash da senha
+            };
 
+            // Salva a nova empresa no banco de dados
             dbContext.Companies.Add(company);
             dbContext.SaveChanges();
 
-            // Generate JWT Token with role
+            // Gerar o Token JWT com função "Company"
             var token = tokenGenerator.GenerateToken(company.Email, "Company");
-            
 
+            // Retornar resposta de sucesso com token e mensagem
             return Ok(new { Token = token, Message = "Company registered successfully" });
-            
         }
+
+
     }
 }
 
