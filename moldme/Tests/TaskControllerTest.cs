@@ -17,12 +17,39 @@ namespace moldme.Tests
                 .Options;
             return new ApplicationDbContext(options);
         }
+        
+        private void SeedData(ApplicationDbContext dbContext)
+        {
+            var project = new Project
+            {
+                ProjectId = "1",
+                Name = "Project 1",
+                CompanyId = "1", // Ensure CompanyId is set
+                Description = "Project Description" // Ensure Description is set
+            };
+
+            var employee = new Employee
+            {
+                EmployeeID = "1",
+                Name = "Employee 1",
+                CompanyId = "1", // Ensure CompanyId is set
+                Email = "employee1@example.com", // Ensure Email is set
+                Password = "password123", // Ensure Password is set
+                Profession = "Developer" // Ensure Profession is set
+            };
+
+            dbContext.Projects.Add(project);
+            dbContext.Employees.Add(employee);
+            dbContext.SaveChanges();
+        }
+
 
         [Fact]
         public void CreateTask_ReturnsOkResult_WithCreatedTask()
         {
             // Arrange
             var context = GetInMemoryDbContext();
+            SeedData(context);
             var controller = new TaskController(context);
 
             var newTaskDto = new TaskDto
@@ -30,10 +57,10 @@ namespace moldme.Tests
                 TitleName = "New Task",
                 Description = "New Task Description",
                 Date = DateTime.Now,
-                FilePath = "moldme/UpdateTask_ReturnsNotFoundResult_WhenTaskNotFound #2.testsession",
+                FilePath = "path/to/file",
                 ProjectId = "1",
                 EmployeeId = "1",
-                Status = Status.PENDING // Assuming Status is an enum
+                Status = Status.PENDING
             };
 
             // Act
@@ -56,6 +83,10 @@ namespace moldme.Tests
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
+            // Clear the database to ensure a clean state
+            context.Tasks.RemoveRange(context.Tasks);
+            context.SaveChanges();
+
             context.Tasks.Add(new Task
             {
                 TaskId = "b",
@@ -74,8 +105,7 @@ namespace moldme.Tests
             Assert.NotNull(result);
             var tasks = result.Value as List<Task>;
             Assert.NotNull(tasks);
-            Assert.Equal(2, tasks.Count);
-            
+            Assert.Equal(1, tasks.Count);
         }
 
         [Fact]
@@ -107,192 +137,193 @@ namespace moldme.Tests
             Assert.Equal("Task 3 Description", task.Description);
         }
 
-[Fact]
-public void UpdateTask_ReturnsOkResult_WithUpdatedTask()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void UpdateTask_ReturnsOkResult_WithUpdatedTask()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    context.Tasks.Add(new Task
-    {
-        TaskId = "d",
-        TitleName = "Task 4",
-        Description = "Task 4 Description",
-        ProjectId = "1",
-        EmployeeId = "1",
-    });
+            context.Tasks.Add(new Task
+            {
+                TaskId = "d",
+                TitleName = "Task 4",
+                Description = "Task 4 Description",
+                ProjectId = "1",
+                EmployeeId = "1",
+            });
 
-    context.SaveChanges();
+            context.SaveChanges();
 
-    var updatedTaskDto = new TaskDto
-    {
-        TitleName = "Updated Task",
-        Description = "Updated Task Description",
-        Date = DateTime.Now,
-        Status = Status.PENDING,
-        ProjectId = "1",
-        EmployeeId = "1"
-    };
+            var updatedTaskDto = new TaskDto
+            {
+                TitleName = "Updated Task",
+                Description = "Updated Task Description",
+                Date = DateTime.Now,
+                Status = Status.PENDING,
+                ProjectId = "1",
+                EmployeeId = "1"
+            };
 
-    // Act
-    var result = controller.Update("d", updatedTaskDto) as OkObjectResult;
+            // Act
+            var result = controller.Update("d", updatedTaskDto) as OkObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
-    Assert.Equal("Task updated successfully", result.Value);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Task updated successfully", result.Value);
 
-    var task = context.Tasks.Find("d");
-    Assert.NotNull(task);
-    Assert.Equal("Updated Task", task.TitleName);
-    Assert.Equal("Updated Task Description", task.Description);
-}
+            var task = context.Tasks.Find("d");
+            Assert.NotNull(task);
+            Assert.Equal("Updated Task", task.TitleName);
+            Assert.Equal("Updated Task Description", task.Description);
+        }
 
-[Fact]
-public void DeleteTask_ReturnsOkResult_WithDeletedTask()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void DeleteTask_ReturnsOkResult_WithDeletedTask()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    context.Tasks.Add(new Task
-    {
-        TaskId = "e",
-        TitleName = "Task 5",
-        Description = "Task 5 Description",
-        ProjectId = "1",
-        EmployeeId = "1",
-    });
+            context.Tasks.Add(new Task
+            {
+                TaskId = "e",
+                TitleName = "Task 5",
+                Description = "Task 5 Description",
+                ProjectId = "1",
+                EmployeeId = "1",
+            });
 
-    context.SaveChanges();
+            context.SaveChanges();
 
-    // Act
-    var result = controller.Delete("e") as OkObjectResult;
+            // Act
+            var result = controller.Delete("e") as OkObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
-    Assert.Equal("Task deleted successfully", result.Value);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Task deleted successfully", result.Value);
 
-    var task = context.Tasks.Find("e");
-    Assert.Null(task);
-}
+            var task = context.Tasks.Find("e");
+            Assert.Null(task);
+        }
 
-[Fact]
-public void DeleteTask_ReturnsNotFoundResult_WhenTaskNotFound()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void DeleteTask_ReturnsNotFoundResult_WhenTaskNotFound()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    // Act
-    var result = controller.Delete("f") as NotFoundResult;
+            // Act
+            var result = controller.Delete("f") as NotFoundResult;
 
-    // Assert
-    Assert.NotNull(result);
-}
+            // Assert
+            Assert.NotNull(result);
+        }
 
-[Fact]
-public void UpdateTask_ReturnsNotFoundResult_WhenTaskNotFound()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void UpdateTask_ReturnsNotFoundResult_WhenTaskNotFound()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    var updatedTaskDto = new TaskDto
-    {
-        TitleName = "Updated Task",
-        Description = "Updated Task Description",
-        Date = DateTime.Now,
-        Status = Status.PENDING,
-        ProjectId = "1",
-        EmployeeId = "1"
-    };
+            var updatedTaskDto = new TaskDto
+            {
+                TitleName = "Updated Task",
+                Description = "Updated Task Description",
+                Date = DateTime.Now,
+                Status = Status.PENDING,
+                ProjectId = "1",
+                EmployeeId = "1"
+            };
 
-    // Act
-    var result = controller.Update("i", updatedTaskDto) as NotFoundResult;
+            // Act
+            var result = controller.Update("i", updatedTaskDto) as NotFoundObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
-}
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Task not found", result.Value);
+        }
 
-[Fact]
-public void GetTaskById_ReturnsNotFoundResult_WhenTaskNotFound()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void GetTaskById_ReturnsNotFoundResult_WhenTaskNotFound()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    // Act
-    var result = controller.GetById("j") as NotFoundResult;
+            // Act
+            var result = controller.GetById("j") as NotFoundResult;
 
-    // Assert
-    Assert.NotNull(result);
-}
+            // Assert
+            Assert.NotNull(result);
+        }
 
-[Fact]
-public void GetAllTasks_ReturnsOkResult_WithNoTasks()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void GetAllTasks_ReturnsOkResult_WithNoTasks()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    // Clear the database
-    context.Tasks.RemoveRange(context.Tasks);
-    context.SaveChanges();
+            // Clear the database
+            context.Tasks.RemoveRange(context.Tasks);
+            context.SaveChanges();
 
-    // Act
-    var result = controller.GetAll() as OkObjectResult;
+            // Act
+            var result = controller.GetAll() as OkObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
-    var tasks = result.Value as List<Task>;
-    Assert.NotNull(tasks);
-    Assert.Empty(tasks);
-}
+            // Assert
+            Assert.NotNull(result);
+            var tasks = result.Value as List<Task>;
+            Assert.NotNull(tasks);
+            Assert.Empty(tasks);
+        }
 
-[Fact]
-public void CreateTask_ReturnsBadRequestResult_WhenTaskIsNull()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
+        [Fact]
+        public void CreateTask_ReturnsBadRequestResult_WhenTaskIsNull()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
 
-    // Act
-    var result = controller.Create(null) as BadRequestObjectResult;
+            // Act
+            var result = controller.Create(null) as BadRequestObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
-    Assert.Equal("Task is null", result.Value);
-}
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Task is null", result.Value);
+        }
 
-[Fact]
-public void UpdateTask_ReturnsBadRequestResult_WhenModelStateIsInvalid()
-{
-    // Arrange
-    var context = GetInMemoryDbContext();
-    var controller = new TaskController(context);
-    controller.ModelState.AddModelError("TitleName", "Required");
+        [Fact]
+        public void UpdateTask_ReturnsBadRequestResult_WhenModelStateIsInvalid()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var controller = new TaskController(context);
+            controller.ModelState.AddModelError("TitleName", "Required");
 
-    var updatedTaskDto = new TaskDto
-    {
-        TitleName = "Updated Task",
-        Description = "Updated Task Description",
-        Date = DateTime.Now,
-        Status = Status.PENDING,
-        ProjectId = "1",
-        EmployeeId = "1"
-    };
+            var updatedTaskDto = new TaskDto
+            {
+                TitleName = "Updated Task",
+                Description = "Updated Task Description",
+                Date = DateTime.Now,
+                Status = Status.PENDING,
+                ProjectId = "1",
+                EmployeeId = "1"
+            };
 
-    // Act
-    var result = controller.Update("k", updatedTaskDto) as BadRequestObjectResult;
+            // Act
+            var result = controller.Update("k", updatedTaskDto) as BadRequestObjectResult;
 
-    // Assert
-    Assert.NotNull(result);
+            // Assert
+            Assert.NotNull(result);
 
-    var errors = result.Value as SerializableError;
-    Assert.NotNull(errors);
-    Assert.True(errors.ContainsKey("TitleName"));
-    Assert.Equal("Required", ((string[])errors["TitleName"])[0]);
-}
+            var errors = result.Value as SerializableError;
+            Assert.NotNull(errors);
+            Assert.True(errors.ContainsKey("TitleName"));
+            Assert.Equal("Required", ((string[])errors["TitleName"])[0]);
+        }
     }
 }

@@ -59,39 +59,41 @@ public class ReviewControllerTests
         dbContext.Employees.AddRange(employee1, employee2);
         dbContext.SaveChanges();
     }
+    
    [Fact]
-public void AddReview()
-{
-    // Arrange
-    var dbContext = GetInMemoryDbContext();
-    SeedData(dbContext);
+   public void AddReview()
+   {
+       // Arrange
+       var dbContext = GetInMemoryDbContext();
+       SeedData(dbContext);
     
-    var controller = new ReviewController(dbContext);
+       var controller = new ReviewController(dbContext);
     
-    var reviewDto = new ReviewDto
-    {
-        Comment = "Great employee",
-        Stars = Stars.Five,
-        ReviewerId = "EMP001",
-        ReviewedId = "EMP002"
-    };
+       var reviewDto = new ReviewDto
+       {
+           Comment = "Great employee",
+           Stars = Stars.Five,
+           ReviewerId = "EMP001",
+           ReviewedId = "EMP002"
+       };
     
-    // Act
-    var result = controller.AddReview(reviewDto) as OkObjectResult;
+       // Act
+       var result = controller.AddReview(reviewDto) as OkObjectResult;
     
-    // Assert
-    Assert.NotNull(result);
-    Assert.Equal("Review added successfully", result.Value);
+       // Assert
+       Assert.NotNull(result);
+       var resultValue = result.Value as dynamic;
+       Assert.Equal("Review added successfully", resultValue.Message);
     
-    // Obtem a avaliação do banco de dados
-    var reviewInDb = dbContext.Reviews.FirstOrDefault(r => r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
-    // Verifica se a avaliação foi adicionada ao banco de dados
-    Assert.NotNull(reviewInDb);
-    // Verifica se o ReviewerID da avaliação é igual ao esperado.
-    Assert.Equal("EMP001", reviewInDb.ReviewerId);
-    // Verifica se o ReviewedId da avaliação é igual ao esperado.
-    Assert.Equal("EMP002", reviewInDb.ReviewedId);
-}
+       // Obtem a avaliação do banco de dados
+       var reviewInDb = dbContext.Reviews.FirstOrDefault(r => r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
+       // Verifica se a avaliação foi adicionada ao banco de dados
+       Assert.NotNull(reviewInDb);
+       // Verifica se o ReviewerID da avaliação é igual ao esperado.
+       Assert.Equal("EMP001", reviewInDb.ReviewerId);
+       // Verifica se o ReviewedId da avaliação é igual ao esperado.
+       Assert.Equal("EMP002", reviewInDb.ReviewedId);
+   }
 
 [Fact]
 public void AddReview_InvalidReviewer()
