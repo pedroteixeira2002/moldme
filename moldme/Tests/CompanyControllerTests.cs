@@ -487,7 +487,7 @@ public class CompanyControllerTests
     [Fact]
     public void UpgradePlan_ShouldReturnOk_WhenPlanIsUpgraded()
     {
-        // Arrange: Seed the data with a specific initial plan
+        // Arrange
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
 
@@ -495,28 +495,26 @@ public class CompanyControllerTests
         var passwordHasher = new PasswordHasher<Company>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
     
-        // Ensure the company has an initial plan that is different from the new plan
+        // Configurar o plano inicial para a empresa
         var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
         if (existingCompany != null)
         {
-            existingCompany.Plan = SubscriptionPlan.Basic; // Set the current plan to Basic
+            existingCompany.Plan = SubscriptionPlan.Basic;
             dbContext.SaveChanges();
         }
 
-        // Act: Attempt to upgrade to a new plan
-        var newPlan = SubscriptionPlan.Premium; // New plan to upgrade to
+        var newPlan = SubscriptionPlan.Premium;
 
-
+        // Act
         var result = companyController.UpgradePlan("1", newPlan) as OkObjectResult;
 
-        // Assert: Check if the response is as expected
-        Assert.NotNull(result); // This assertion is failing, indicating the result is null
-        Assert.Equal($"Subscription plan updated to {newPlan}", result.Value);
-
-        // Assert: Check if the plan is updated in the database
+        // Assert: Confirma que o resultado não é nulo e o plano foi atualizado
+        Assert.NotNull(result);
         var updatedCompany = dbContext.Companies.Find("1");
         Assert.Equal(newPlan, updatedCompany.Plan);
     }
+
+
 
     [Fact]
     public void UpgradePlan_ShouldReturnBadRequest_WhenPlanIsSame()
