@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
@@ -16,7 +17,8 @@ namespace moldme.Controllers
         {
             dbContext = context;
         }
-
+        
+        [Authorize]
         [HttpPost("assign-employee")]
         public IActionResult AssignEmployee(string employeeId, string projectId)
         {
@@ -48,7 +50,7 @@ namespace moldme.Controllers
             return Ok("Employee assigned to project successfully.");
         }
 
-
+        [Authorize]
         [HttpDelete("remove-employee")]
         public IActionResult RemoveEmployee(string employeeId, string projectId)
         {
@@ -82,6 +84,7 @@ namespace moldme.Controllers
         }
 
         // Aceitar uma oferta de um projeto associado a uma empresa
+        [Authorize]
         [HttpPut("acceptOffer/{offerId}")]
         public IActionResult AcceptOffer(string companyId, string projectId, string offerId)
         {
@@ -119,6 +122,7 @@ namespace moldme.Controllers
         }
 
         // Rejeitar uma oferta de um projeto associado a uma empresa
+        [Authorize]
         [HttpPut("rejectOffer/{offerId}")]
         public IActionResult RejectOffer(string companyId, string projectId, string offerId)
         {

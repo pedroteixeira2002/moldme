@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
         this.companyPasswordHasher = companyPasswordHasher;
         this.employeePasswordHasher = employeePasswordHasher;
     }
-
+    
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginDto request)
     {
