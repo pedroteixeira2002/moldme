@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.Models;
@@ -15,7 +16,8 @@ namespace moldme.Controllers
         {
             _context = context;
         }
-
+        
+        [Authorize]
         [HttpPost("addtask")]
         public IActionResult Create([FromBody] TaskDto taskDto)
         {
@@ -57,6 +59,7 @@ namespace moldme.Controllers
         }
 
         // Read all
+        [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -65,6 +68,7 @@ namespace moldme.Controllers
         }
 
         // Read by ID
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(String id)
         {
@@ -77,6 +81,7 @@ namespace moldme.Controllers
         }
 
         // Update
+        [Authorize]
         [HttpPut("editTask/{id}")]
         public IActionResult Update(string id, [FromBody] TaskDto updatedTaskDto)
         {
@@ -103,6 +108,7 @@ namespace moldme.Controllers
         }
 
         // Delete
+        [Authorize]
         [HttpDelete("Delete/{id}")]
         public IActionResult Delete(String id)
         {

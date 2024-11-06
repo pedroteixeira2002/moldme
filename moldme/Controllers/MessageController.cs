@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
@@ -18,6 +19,7 @@ namespace moldme.Controllers
         }
 
         // GET: api/Message/{chatId}
+        [Authorize]
         [HttpGet("{chatId}")]
         public async Task<ActionResult<IEnumerable<Message>>> GetMessages(String chatId)
         {
@@ -30,6 +32,7 @@ namespace moldme.Controllers
         }
 
         // POST: api/Message
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Message>> SendMessage([FromBody] MessageDto messageDto)
         {
@@ -55,6 +58,7 @@ namespace moldme.Controllers
         }
         
         // DELETE: api/Message/{messageId}
+        [Authorize]
         [HttpDelete("{messageId}")]
         public async Task<ActionResult> DeleteMessage(String messageId)
         {

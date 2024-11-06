@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.DTOs;
 using moldme.Models;
@@ -17,6 +18,7 @@ public class ReviewController : ControllerBase
         dbContext = reviewContext;
     }
     
+    [Authorize]
     [HttpPost("addReview")]
     public IActionResult AddReview([FromBody] ReviewDto reviewDto)
     {
