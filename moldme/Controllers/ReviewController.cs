@@ -20,17 +20,27 @@ public class ReviewController : ControllerBase
     
     [Authorize]
     [HttpPost("addReview")]
-    public IActionResult AddReview([FromBody] ReviewDto reviewDto)
-    {
+    public async Task<IActionResult> AddReview([FromBody] ReviewDto reviewDto)
+    {   
+        if (reviewDto == null)
+        {
+            return BadRequest("Review data is null");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         // Verifica se o reviewerID é válido
-        var reviewer = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewDto.ReviewerId);
+        var reviewer = await dbContext.Employees.FindAsync(reviewDto.ReviewerId);;
     
         // Se o reviewerID não for válido, retorna um erro
         if (reviewer == null)
             return NotFound("Reviewer not found");
     
         // Verifica se o reviewedEmployee é válido
-        var reviewedEmployeeEntity = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == reviewDto.ReviewedId);
+        var reviewedEmployeeEntity = await dbContext.Employees.FindAsync(reviewDto.ReviewerId);
     
         // Se o reviewedEmployee não for válido, retorna um erro
         if (reviewedEmployeeEntity == null)
@@ -48,8 +58,8 @@ public class ReviewController : ControllerBase
         };
     
         // Adiciona a avaliação ao banco de dados
-        dbContext.Reviews.Add(review);
-        dbContext.SaveChanges();
+        await dbContext.Reviews.AddAsync(review);
+        await dbContext.SaveChangesAsync();
     
         // Retorna uma resposta com sucesso
         return Ok(new { Message = "Review added successfully", ReviewID = review.ReviewID });

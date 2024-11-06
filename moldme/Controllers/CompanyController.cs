@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.Auth;
 using moldme.data;
 using moldme.DTOs;
@@ -332,20 +333,20 @@ namespace moldme.Controllers
         
         [Authorize]
         [HttpGet("ListAllProjects/{companyID}")]
-        public IActionResult ListAllProjectsFromCompany(string companyID)
+        public async Task<IActionResult> ListAllProjectsFromCompany(string companyID)
         {
             // Verifica se a companhia existe
-            var companyExists = dbContext.Companies.Any(c => c.CompanyID == companyID);
+            var companyExists = await dbContext.Companies.AnyAsync(c => c.CompanyID == companyID);
             if (!companyExists)
             {
                 return NotFound("Company not found");
             }
 
             //projetos associados à companhia
-            var projects = dbContext.Projects.Where(p => p.CompanyId == companyID).ToList();
+            var projects = await dbContext.Projects.Where(p => p.CompanyId == companyID).ToListAsync();
 
             // Verifica se há projetos
-            if (projects.Count == 0)
+            if (projects.Any())
             {
                 return Ok("No projects found for this company");
             }
@@ -356,14 +357,14 @@ namespace moldme.Controllers
         
         [Authorize]
         [HttpGet("GetProjectById/{companyID}/{projectID}")]
-        public IActionResult GetProjectById(string companyID, string projectID)
+        public async Task<IActionResult> GetProjectById(string companyID, string projectID)
         {
-            var companyExists = dbContext.Companies.Any(c => c.CompanyID == companyID);
+            var companyExists = await dbContext.Companies.AnyAsync(c => c.CompanyID == companyID);
             if (!companyExists)
             {
                 return NotFound("Company not found");
             }
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectID && p.CompanyId == companyID);
+            var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == projectID && p.CompanyId == companyID);
             if (project == null)
             {
                 return NotFound("Project not found or does not belong to the specified company.");

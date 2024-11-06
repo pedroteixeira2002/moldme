@@ -86,22 +86,22 @@ namespace moldme.Controllers
         // Aceitar uma oferta de um projeto associado a uma empresa
         [Authorize]
         [HttpPut("acceptOffer/{offerId}")]
-        public IActionResult AcceptOffer(string companyId, string projectId, string offerId)
+        public async Task<IActionResult> AcceptOffer(string companyId, string projectId, string offerId)
         {
             // Search for the companyID in the database
-            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var company = await dbContext.Companies.FirstOrDefaultAsync(c => c.CompanyID == companyId);
 
             if (company == null)
                 return NotFound("Company not found");
 
             // Search for the projectID in the database
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+            var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == projectId);
 
             if (project == null)
                 return NotFound("Project not found");
 
             // Search for the offerID in the database
-            var offer = dbContext.Offers.FirstOrDefault(o => o.OfferId == offerId);
+            var offer = await dbContext.Offers.FirstOrDefaultAsync(o => o.OfferId == offerId);
 
             if (offer == null)
                 return NotFound("Offer not found");
@@ -116,7 +116,7 @@ namespace moldme.Controllers
 
             offer.Status = Status.ACCEPTED; // Altera o status da oferta para aceite
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok("Offer accepted successfully");
         }
@@ -124,22 +124,22 @@ namespace moldme.Controllers
         // Rejeitar uma oferta de um projeto associado a uma empresa
         [Authorize]
         [HttpPut("rejectOffer/{offerId}")]
-        public IActionResult RejectOffer(string companyId, string projectId, string offerId)
+        public async Task<IActionResult> RejectOffer(string companyId, string projectId, string offerId)
         {
             // Search for the companyID in the database
-            var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var company = await dbContext.Companies.FirstOrDefaultAsync(c => c.CompanyID == companyId);
 
             if (company == null)
                 return NotFound("Company not found");
 
             // Search for the projectID in the database
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+            var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == projectId);
 
             if (project == null)
                 return NotFound("Project not found");
 
             // Search for the offerID in the database
-            var offer = dbContext.Offers.FirstOrDefault(o => o.OfferId == offerId);
+            var offer = await  dbContext.Offers.FirstOrDefaultAsync(o => o.OfferId == offerId);
 
             if (offer == null)
                 return NotFound("Offer not found");
@@ -154,7 +154,7 @@ namespace moldme.Controllers
 
             offer.Status = Status.DENIED; // Altera o status da oferta para rejeitada
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok("Offer rejected successfully");
         }

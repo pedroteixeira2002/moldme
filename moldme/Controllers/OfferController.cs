@@ -21,28 +21,43 @@ public class OfferController : ControllerBase
     // Enviar uma oferta para um projeto associado a uma empresa
     [Authorize]
     [HttpPost("sendOffer")]
-    public IActionResult SendOffer(string companyId, string projectId, [FromBody] Offer offer)
+    public async Task<IActionResult> SendOffer(string companyId, string projectId, [FromBody] Offer offer)
     {
+        if (offer == null)
+        {
+            return BadRequest("Offer is null");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         // Search for the companyID in the database
-        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+        var company = await dbContext.Companies.FindAsync(companyId);
         
         if (company == null)
             return NotFound("Company not found");
         
         // Search for the projectID in the database
-        var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+        var project =  await dbContext.Projects.FindAsync(projectId);
         
         if (project == null)
             return NotFound("Project not found");
+        
+        if (offer.Status != Status.PENDING)
+        {
+            return BadRequest("Offer status must be PENDING");
+        }
         
         // Associa a oferta à empresa e ao projeto através das chaves estrangeiras
         offer.CompanyId = company.CompanyID;
         offer.ProjectId = project.ProjectId;
         
         // Query the database to add the offer
-        dbContext.Offers.Add(offer.Status == Status.PENDING ? offer : throw new Exception("Offer status must be PENDING"));
+        await dbContext.Offers.AddAsync(offer);
         // Save changes to the database
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
 
         return Ok("Offer sent successfully");
     }
