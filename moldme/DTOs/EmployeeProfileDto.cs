@@ -1,4 +1,4 @@
-namespace moldme.Models.DTOs
+namespace moldme.DTOs
 {
     public class EmployeeProfileDTO
     {

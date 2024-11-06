@@ -14,3 +14,5 @@ ISTO É UM FICHEIRO PRIORIZADO DE TAREFAS A FAZER (PRIORIZADO)
 - VERIFICAR EXCEL DAS AVALIAÇÕES                   (MIGUEL)
 - DOCUMENTAR SPRINT BACKLOGS E PRODUCT BACKLOG     (MIGUEL + TIAGO)
 - VERIFICAR DOCUMENTAÇÃO                           (TODOS)
+
+- Metodo Delete Projetos, adicionar cascade ao dbcontext 

@@ -33,12 +33,13 @@ namespace moldme.data
                         .HasOne<Project>()
                         .WithMany()
                         .HasForeignKey("ProjectsProjectId")
-                        .OnDelete(DeleteBehavior.NoAction),
+                        .OnDelete(DeleteBehavior.Cascade),
+                
                     j => j
                         .HasOne<Employee>()
                         .WithMany()
                         .HasForeignKey("EmployeesEmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                 );
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Reviewer)

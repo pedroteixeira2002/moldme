@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using moldme.data;
 
@@ -11,9 +12,11 @@ using moldme.data;
 namespace moldme.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105184512_UpdateEmployeeIDConfig")]
+    partial class UpdateEmployeeIDConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("EmployeeProject", b =>
                 {
                     b.Property<string>("EmployeesEmployeeId")
-                        .HasColumnType("nvarchar(56)");
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<string>("ProjectsProjectId")
                         .HasColumnType("nvarchar(6)");
@@ -105,8 +108,8 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("EmployeeID")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(56)
-                        .HasColumnType("nvarchar(56)");
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()

@@ -8,7 +8,8 @@ public class Employee
 {
     [Key]
     [StringLength(6)]
-    [Required]
+    [Required]  
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string EmployeeID { get; set; }
         
     [Required]
@@ -31,7 +32,7 @@ public class Employee
     public int? Contact { get; set; }
         
     [Required]
-    [StringLength(64)]
+    [StringLength(256)]
     public string Password { get; set; }
         
     [Required, StringLength(6)] public string CompanyId { get; set; }

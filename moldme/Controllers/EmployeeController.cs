@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 
 namespace moldme.Controllers
@@ -16,87 +17,6 @@ namespace moldme.Controllers
             _context = context;
         }
         
-        [HttpPost ("AddEmployee")]
-        public IActionResult AddEmployee([FromBody] Employee employee)
-        {
-            if (employee == null)
-            {
-                return BadRequest("Employee data is required");
-            }
-            
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Employees.Add(employee); 
-            _context.SaveChanges();
-
-            return CreatedAtAction(nameof(GetEmployeeById), new { employeeId = employee.EmployeeID }, employee);
-        }
-
-        
-        [HttpPut("EditEmployee/{employeeId}")]
-        public IActionResult EditEmployee(string employeeId, [FromBody] Employee updatedEmployee)
-        {
-            if (updatedEmployee == null)
-            {
-                return BadRequest("Updated employee data is required");
-            }
-
-            
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var existingEmployee = _context.Employees.Find(employeeId); 
-
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found");
-            }
-
-            existingEmployee.Name = updatedEmployee.Name;
-            existingEmployee.Profession = updatedEmployee.Profession;
-            existingEmployee.NIF = updatedEmployee.NIF;
-            existingEmployee.Email = updatedEmployee.Email;
-            existingEmployee.Contact = updatedEmployee.Contact;
-            existingEmployee.Password = updatedEmployee.Password;
-            existingEmployee.CompanyId = updatedEmployee.CompanyId;
-
-            _context.SaveChanges(); 
-
-            return Ok(existingEmployee);
-        }
-
-// Remove an employee
-        [HttpDelete("RemoveEmployee/{employeeId}")]
-        public IActionResult RemoveEmployee(string employeeId)
-        {
-            // Find the employee and include related projects to handle the join table
-            var existingEmployee = _context.Employees
-                .Include(e => e.Projects) // Include related projects (handled by EmployeeProject)
-                .SingleOrDefault(e => e.EmployeeID == employeeId);
-
-            if (existingEmployee == null)
-            {
-                return NotFound("Employee not found");
-            }
-
-            // Remove entries in the EmployeeProject join table for this employee
-            var employeeProjects = _context.Set<Dictionary<string, object>>("EmployeeProject")
-                .Where(ep => ep["EmployeesEmployeeId"].ToString() == employeeId);
-
-            _context.RemoveRange(employeeProjects);
-
-            // Remove the employee itself
-            _context.Employees.Remove(existingEmployee);
-            _context.SaveChanges();
-
-            return Ok($"Employee with ID {employeeId} removed successfully");
-        }
-
         // List all employees
         [HttpGet("ListAllEmployees")]
         public IActionResult ListAllEmployees()
@@ -119,20 +39,20 @@ namespace moldme.Controllers
         }
         
         // Get employee projects
-        [HttpGet("GetEmployeeProjects/{employeeId}")]
+        [HttpGet("{employeeId}/projects")]
         public async Task<IActionResult> GetEmployeeProjects(string employeeId)
         {
-            // Verifica se o funcionário existe
-            var employee = await _context.Employees
-                .Include(e => e.Projects)
-                .FirstOrDefaultAsync(e => e.EmployeeID == employeeId);
+            var projects = await _context.Projects
+                .Where(p => p.Employees.Any(e => e.EmployeeID == employeeId))
+                .ToListAsync();
 
-            if (employee == null)
-                return NotFound($"Employee with ID {employeeId} not found.");
+            if (!projects.Any())
+            {
+                return NotFound("No projects found for this employee.");
+            }
 
-            // Retorna a lista de projetos do funcionário
-            return Ok(employee.Projects);
+            return Ok(projects);
         }
     }
-    }
+}
 
