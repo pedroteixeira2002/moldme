@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity.Data;
+using moldme.DTOs;
 using moldme.Models;
 
 namespace moldme.Controllers;
@@ -26,12 +27,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public IActionResult Login([FromBody] LoginDto request)
     {
         var user = dbContext.Companies.FirstOrDefault(c => c.Email == request.Email) ??
                    dbContext.Employees.FirstOrDefault(e => e.Email == request.Email) as dynamic;
 
         if (user == null) return Unauthorized("Invalid credentials.");
+    
         var isPasswordValid = user is Company 
             ? companyPasswordHasher.VerifyHashedPassword((Company)user, user.Password, request.Password)
             : employeePasswordHasher.VerifyHashedPassword((Employee)user, user.Password, request.Password);

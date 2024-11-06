@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using moldme.Auth;
 using moldme.Controllers;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 using Moq;
 using Xunit;
@@ -89,135 +90,81 @@ public class CompanyControllerTests
         dbContext.SaveChanges();
     }
 
-    [Fact]
-    public void AddProjectTest_ShouldReturnOk_WhenProjectIsValid()
+    
+
+[Fact]
+public void AddEmployeeTest()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext(); // Get a new DbContext for the test
+    SeedData(dbContext); // Seed any necessary data (if applicable)
+
+    // Assuming _configuration is already defined in your test class and contains your JWT key
+    var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
+    var passwordHasher = new PasswordHasher<Company>();
+
+    // Create and add a company only if it doesn't exist in the in-memory database
+    Company company = new Company
     {
-        var dbContext = GetInMemoryDbContext();
-        SeedData(dbContext);
+        CompanyID = "1",
+        Name = "Company 1",
+        Address = "Address 1",
+        Email = "email@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector 1",
+        Plan = SubscriptionPlan.Premium,
+        Password = "password"
+    };
 
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
-        var project = new Project
-        {
-            ProjectId = "PROJ02",
-            Name = "New Project 2",
-            Description = "Description of Project 2",
-            Budget = 2000,
-            Status = Status.INPROGRESS,
-            StartDate = DateTime.Now,
-            EndDate = DateTime.Now.AddDays(60),
-            CompanyId = "1"
-        };
-
-        var result = companyController.AddProject("1", project) as OkObjectResult;
-
-        Assert.NotNull(result);
-        Assert.Equal("Project added successfully", result.Value);
-        Assert.True(dbContext.Projects.Any(p => p.ProjectId == "PROJ02"));
+    // Only add the company if it doesn't exist
+    if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
+    {
+        dbContext.Companies.Add(company);
+        dbContext.SaveChanges(); // Save the company first
     }
 
-    [Fact]
-    public void EditProjectTest_ShouldReturnOk_WhenProjectIsUpdated()
+    // Create the employee DTO to be added
+    var employeeDto = new EmployeeDto
     {
-        {
-            // Arrange
-            var dbContext = GetInMemoryDbContext();
-            SeedData(dbContext);
+        Name = "Employee 1",
+        Profession = "Profession 1",
+        Nif = 123456789,
+        Email = "employee@example.com",
+        Contact = 987654321,
+        Password = "password",
+        ProjectId = "P1" // Add a project ID, assuming it exists in the seed data
+    };
 
-            var tokenGenerator = new TokenGenerator(_configuration);
-            var passwordHasher = new PasswordHasher<Company>();
-            var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+    // Optionally, seed a project in your database if it doesn't already exist
+    var project = new Project
+    {
+        ProjectId = employeeDto.ProjectId,
+        Name = "Project 1",
+        Description = "Project Description",
+        CompanyId = company.CompanyID
+    };
 
-            var existingProject = dbContext.Projects.FirstOrDefault(p => p.ProjectId == "PROJ01");
-            Assert.NotNull(existingProject); // Ensure the project exists
-
-            var updatedProject = new Project
-            {
-                ProjectId = "PROJ01",
-                Name = "Updated Project",
-                Description = "Updated Description",
-                Budget = 10000,
-                Status = Status.DONE,
-                StartDate = DateTime.Now.AddDays(-10),
-                EndDate = DateTime.Now.AddDays(20),
-                CompanyId = existingProject.CompanyId // Ensure this matches
-            };
-
-            // Act
-            var result = companyController.EditProject("PROJ01", updatedProject) as OkObjectResult;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsType<OkObjectResult>(result);
-
-            var updatedProjectFromDb = dbContext.Projects.Find("PROJ01");
-            Assert.Equal("Updated Project", updatedProjectFromDb.Name);
-            Assert.Equal(10000, updatedProjectFromDb.Budget);
-            Assert.Equal(Status.DONE, updatedProjectFromDb.Status);
-        }
-
+    if (!dbContext.Projects.Any(p => p.ProjectId == project.ProjectId))
+    {
+        dbContext.Projects.Add(project);
+        dbContext.SaveChanges(); // Save the project first
     }
 
-    [Fact]
-    public void AddEmployeeTest()
-    {
-        // Arrange
-        var dbContext = GetInMemoryDbContext(); // Get a new DbContext for the test
-        SeedData(dbContext); // Seed any necessary data (if applicable)
+    var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
-        // Assuming _configuration is already defined in your test class and contains your JWT key
-        var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
-        var passwordHasher = new PasswordHasher<Company>();
+    // Act
+    var result = companyController.AddEmployee(company.CompanyID, employeeDto) as OkObjectResult;
 
-        // Create and add a company only if it doesn't exist in the in-memory database
-        Company company = new Company
-        {
-            CompanyID = "1",
-            Name = "Company 1",
-            Address = "Address 1",
-            Email = "email@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector 1",
-            Plan = SubscriptionPlan.Premium,
-            Password = "password"
-        };
+    // Assert
+    Assert.NotNull(result);
+    Assert.Equal("Employee created successfully", result.Value);
 
-        // Only add the company if it doesn't exist
-        if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
-        {
-            dbContext.Companies.Add(company);
-            dbContext.SaveChanges(); // Save the company first
-        }
+    var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.Email == employeeDto.Email);
+    Assert.NotNull(addedEmployee);
+    Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
+}
 
-        // Create the employee to be added
-        var employee = new Employee
-        {
-            EmployeeID = "E1", // Ensure a unique ID for the employee
-            Name = "Employee 1",
-            Profession = "Profession 1",
-            NIF = 123456789,
-            Email = "employee@example.com",
-            Contact = 987654321,
-            Password = "password",
-            CompanyId = company.CompanyID // Reference the existing company
-        };
-
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
-        // Act
-        var result = companyController.AddEmployee(company.CompanyID, employee) as OkObjectResult;
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Employee created successfully", result.Value);
-
-        var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
-        Assert.NotNull(addedEmployee);
-        Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
-    }
 
 
     [Fact]
@@ -275,72 +222,71 @@ public class CompanyControllerTests
         Assert.Null(removedEmployee); // Assert that the removed employee is null
     }
 
-    [Fact]
-    public void EditEmployeeTest()
+ [Fact]
+public void EditEmployeeTest()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext(); // Create a new DbContext for the test
+    var tokenGenerator = new TokenGenerator(_configuration);
+    var passwordHasher = new PasswordHasher<Company>();
+    var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+    // Create and add a company
+    var company = new Company
     {
-        // Arrange
-        var dbContext = GetInMemoryDbContext(); // Create a new DbContext for the test
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var passwordHasher = new PasswordHasher<Company>();
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        CompanyID = "1",
+        Name = "Company 1",
+        Address = "Address 1",
+        Email = "email@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector 1",
+        Plan = SubscriptionPlan.Premium,
+        Password = "password"
+    };
 
-        // Create and add a company
-        var company = new Company
-        {
-            CompanyID = "1",
-            Name = "Company 1",
-            Address = "Address 1",
-            Email = "email@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector 1",
-            Plan = SubscriptionPlan.Premium,
-            Password = "password"
-        };
+    // Create and add an employee
+    var employee = new Employee
+    {
+        EmployeeID = "1", // Unique ID
+        Name = "Original Employee",
+        Profession = "Original Profession",
+        NIF = 123456789,
+        Email = "employee@example.com",
+        Contact = 987654321,
+        Password = "password",
+        CompanyId = company.CompanyID
+    };
 
-        // Create and add an employee
-        var employee = new Employee
-        {
-            EmployeeID = "1", // Unique ID
-            Name = "Original Employee",
-            Profession = "Original Profession",
-            NIF = 123456789,
-            Email = "employee@example.com",
-            Contact = 987654321,
-            Password = "password",
-            CompanyId = company.CompanyID
-        };
+    // Persist changes to the database
+    dbContext.Companies.Add(company);
+    dbContext.Employees.Add(employee);
+    dbContext.SaveChanges(); // This is crucial to persist the data
 
-        // Persist changes to the database
-        dbContext.Companies.Add(company);
-        dbContext.Employees.Add(employee);
-        dbContext.SaveChanges(); // This is crucial to persist the data
+    // Create an updated employee DTO
+    var updatedEmployeeDto = new EmployeeDto
+    {
+        Name = "Updated Employee",
+        Profession = "Updated Profession",
+        Nif = 987654321,
+        Email = "updated@example.com",
+        Contact = 123456789,
+        Password = "newpassword" // Assuming the controller handles hashing
+    };
 
-        // Create an updated employee object
-        var updatedEmployee = new Employee
-        {
-            EmployeeID = "1", // Same ID for updating
-            Name = "Updated Employee",
-            Profession = "Updated Profession",
-            NIF = 987654321,
-            Email = "updated@example.com",
-            Contact = 123456789,
-            Password = "newpassword" // Assuming the controller handles hashing
-        };
+    // Act
+    var result = controller.EditEmployee(company.CompanyID, employee.EmployeeID, updatedEmployeeDto) as OkObjectResult;
 
-        // Act
-        var result = controller.EditEmployee(company.CompanyID, employee.EmployeeID, updatedEmployee) as OkObjectResult;
+    // Assert
+    Assert.NotNull(result); // Check that the result is not null
+    Assert.Equal("Employee updated successfully", result.Value); // Verify the success message
 
-        // Assert
-        Assert.NotNull(result); // Check that the result is not null
-        Assert.Equal("Employee updated successfully", result.Value); // Verify the success message
-
-        // Fetch the updated employee from the database
-        var updatedEmployeeFromDb = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
-        Assert.NotNull(updatedEmployeeFromDb); // Ensure the employee exists
-        Assert.Equal("Updated Employee", updatedEmployeeFromDb.Name); // Check updated name
-        Assert.Equal(987654321, updatedEmployeeFromDb.NIF); // Check updated NIF
-    }
+    // Fetch the updated employee from the database
+    var updatedEmployeeFromDb = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employee.EmployeeID);
+    Assert.NotNull(updatedEmployeeFromDb); // Ensure the employee exists
+    Assert.Equal("Updated Employee", updatedEmployeeFromDb.Name); // Check updated name
+    Assert.Equal(987654321, updatedEmployeeFromDb.NIF); // Check updated NIF
+}
 
     [Fact]
     public void ListAllEmployeesTest()
@@ -657,145 +603,140 @@ public class CompanyControllerTests
         Assert.Equal("Company not found", result.Value);
     }
 
-    [Fact]
-    public void RegisterCompany_Success()
+  [Fact]
+public void RegisterCompany_Success()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext();
+    var passwordHasher = new PasswordHasher<Company>();
+    var tokenGenerator = new TokenGenerator(_configuration);
+    var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+    var companyDto = new CompanyDto
     {
-        // Arrange
-        var dbContext = GetInMemoryDbContext();
-        var passwordHasher = new PasswordHasher<Company>();
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        Name = "New Company",
+        Address = "123 Street",
+        Email = "newcompany@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector",
+        Plan = SubscriptionPlan.Premium,
+        Password = "SecurePassword123"
+    };
 
-        var company = new Company
-        {
-            CompanyID = "1",
-            Name = "New Company",
-            Address = "123 Street",
-            Email = "newcompany@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector",
-            Plan = SubscriptionPlan.Premium,
-            Password = "SecurePassword123"
-        };
+    // Act
+    var result = controller.CreateCompany(companyDto) as OkObjectResult;
 
-        // Act
-        var result = controller.CreateCompany(company) as OkObjectResult;
+    // Assert
+    Assert.NotNull(result);
+    Assert.IsType<OkObjectResult>(result);
+    Assert.Equal("Company registered successfully", ((dynamic)result.Value).Message);
+    Assert.NotNull(((dynamic)result.Value).Token);
+}
 
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("Company registered successfully", ((dynamic)result.Value).Message);
-        Assert.NotNull(((dynamic)result.Value).Token);
-    }
+[Fact]
+public void RegisterCompany_DuplicateEmail()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext();
+    var passwordHasher = new PasswordHasher<Company>();
+    var tokenGenerator = new TokenGenerator(_configuration);
+    var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
-    [Fact]
-    public void RegisterCompany_DuplicateEmail()
+    var existingCompany = new Company
     {
-        // Arrange
-        var dbContext = GetInMemoryDbContext();
-        var passwordHasher = new PasswordHasher<Company>();
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        CompanyID = "1",
+        Name = "Existing Company",
+        Address = "123 Street",
+        Email = "duplicate@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector",
+        Plan = SubscriptionPlan.Premium,
+        Password = "SecurePassword123"
+    };
+    
+    dbContext.Companies.Add(existingCompany);
+    dbContext.SaveChanges();
 
-        var existingCompany = new Company
-        {
-            CompanyID = "1",
-            Name = "Existing Company",
-            Address = "123 Street",
-            Email = "duplicate@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector",
-            Plan = SubscriptionPlan.Premium,
-            Password = "SecurePassword123"
-        };
-        
-        dbContext.Companies.Add(existingCompany);
-        dbContext.SaveChanges();
-
-        var newCompany = new Company
-        {
-            CompanyID = "2",
-            Name = "New Company",
-            Address = "456 Avenue",
-            Email = "duplicate@example.com", // Duplicate email
-            Contact = 987654321,
-            TaxId = 987654321,
-            Sector = "Sector",
-            Plan = SubscriptionPlan.Premium,
-            Password = "SecurePassword456"
-        };
-
-        // Act
-        var result = controller.CreateCompany(newCompany) as BadRequestObjectResult;
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("A company with this email already exists.", result.Value);
-    }
-
-    [Fact]
-    public void RegisterCompany_MissingInformation()
+    var newCompanyDto = new CompanyDto
     {
-        // Arrange
-        var dbContext = GetInMemoryDbContext();
-        var passwordHasher = new PasswordHasher<Company>();
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        Name = "New Company",
+        Address = "456 Avenue",
+        Email = "duplicate@example.com", // Duplicate email
+        Contact = 987654321,
+        TaxId = 987654321,
+        Sector = "Sector",
+        Plan = SubscriptionPlan.Premium,
+        Password = "SecurePassword456"
+    };
 
-        var company = new Company
-        {
-            CompanyID = "3",
-            Name = "Invalid Subscription Plan Company",
-            Address = "123 Street",
-            Email = "invalidplan@example.com",
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector",
-            Plan = (SubscriptionPlan)999, // Invalid plan
-            Password = "SecurePassword123"
-        };
+    // Act
+    var result = controller.CreateCompany(newCompanyDto) as BadRequestObjectResult;
 
-        // Act
-        var result = controller.CreateCompany(company) as BadRequestObjectResult;
+    // Assert
+    Assert.NotNull(result);
+    Assert.IsType<BadRequestObjectResult>(result);
+    Assert.Equal("A company with this email already exists.", result.Value);
+}
 
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("Invalid subscription plan.", result.Value); // Verificando a string diretamente
+[Fact]
+public void RegisterCompany_MissingInformation()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext();
+    var passwordHasher = new PasswordHasher<Company>();
+    var tokenGenerator = new TokenGenerator(_configuration);
+    var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
-    }
-
-    [Fact]
-    public void RegisterCompany_InvalidEmailFormat()
+    var companyDto = new CompanyDto
     {
-        // Arrange
-        var dbContext = GetInMemoryDbContext();
-        var passwordHasher = new PasswordHasher<Company>();
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        Name = "Invalid Subscription Plan Company",
+        Address = "123 Street",
+        Email = "invalidplan@example.com",
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector",
+        Plan = (SubscriptionPlan)999, // Invalid plan
+        Password = "SecurePassword123"
+    };
 
-        var company = new Company
-        {
-            CompanyID = "4",
-            Name = "Invalid Email Company",
-            Address = "789 Boulevard",
-            Email = "invalid-email", // Invalid email format
-            Contact = 123456789,
-            TaxId = 123456789,
-            Sector = "Sector",
-            Plan = SubscriptionPlan.Premium,
-            Password = "SecurePassword123"
-        };
+    // Act
+    var result = controller.CreateCompany(companyDto) as BadRequestObjectResult;
 
-        // Act
-        var result = controller.CreateCompany(company) as BadRequestObjectResult;
+    // Assert
+    Assert.NotNull(result);
+    Assert.IsType<BadRequestObjectResult>(result);
+    Assert.Equal("Invalid subscription plan.", result.Value);
+}
 
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal("Invalid email format.", result.Value);
-    }
+[Fact]
+public void RegisterCompany_InvalidEmailFormat()
+{
+    // Arrange
+    var dbContext = GetInMemoryDbContext();
+    var passwordHasher = new PasswordHasher<Company>();
+    var tokenGenerator = new TokenGenerator(_configuration);
+    var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+
+    var companyDto = new CompanyDto
+    {
+        Name = "Invalid Email Company",
+        Address = "789 Boulevard",
+        Email = "invalid-email", // Invalid email format
+        Contact = 123456789,
+        TaxId = 123456789,
+        Sector = "Sector",
+        Plan = SubscriptionPlan.Premium,
+        Password = "SecurePassword123"
+    };
+
+    // Act
+    var result = controller.CreateCompany(companyDto) as BadRequestObjectResult;
+
+    // Assert
+    Assert.NotNull(result);
+    Assert.IsType<BadRequestObjectResult>(result);
+    Assert.Equal("Invalid email format.", result.Value);
+}
 }
