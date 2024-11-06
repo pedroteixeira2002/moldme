@@ -245,24 +245,86 @@ namespace moldme.Controllers
         [HttpPut("UpgradePlan/{companyID}")]
         public IActionResult UpgradePlan(string companyID, SubscriptionPlan subscriptionPlan)
         {
+            // Verificar se a empresa existe
             var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
             if (existingCompany == null)
             {
                 return NotFound("Company not found");
             }
 
+            // Verificar se o plano já está ativo
             var atualPlan = existingCompany.Plan;
             if (subscriptionPlan == atualPlan)
             {
                 return BadRequest("Subscription plan already upgraded");
             }
 
+            // Atualizar o plano da empresa
             existingCompany.Plan = subscriptionPlan;
             dbContext.SaveChanges();
 
-            return Ok($"Subscription plan updated to {subscriptionPlan}");
-
+            // Registrar o pagamento do novo plano
+            return SubscribePlan(companyID, subscriptionPlan);
         }
+
+        [HttpPost("SubscribePlan/{companyID}")]
+        public IActionResult SubscribePlan(string companyID, SubscriptionPlan subscriptionPlan)
+        {
+            // Verificar se a empresa existe
+            var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+
+            // Obter o valor do plano automaticamente
+            float value = SubscriptionPlanHelper.GetPlanPrice(subscriptionPlan);
+            if (value == 0 && subscriptionPlan != SubscriptionPlan.None)
+            {
+                return BadRequest("Invalid subscription plan.");
+            }
+
+            // Criar um novo pagamento
+            var newPayment = new Payment
+            {
+                PaymentID = Guid.NewGuid().ToString().Substring(0, 6),
+                CompanyId = companyID,
+                Date = DateTime.Now,
+                Value = value,
+                Plan = subscriptionPlan
+            };
+
+            // Adicionar o pagamento e salvar
+            dbContext.Payments.Add(newPayment);
+            dbContext.SaveChanges();
+
+            return Ok($"Payment of {value} registered successfully for plan {subscriptionPlan}");
+        }
+        [HttpPut("CancelSubscription/{companyID}")]
+        public IActionResult CancelSubscription(string companyID)
+        {
+            // Verificar se a empresa existe
+            var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+
+            // Verificar se a empresa já está no plano None
+            if (existingCompany.Plan == SubscriptionPlan.None)
+            {
+                return BadRequest("The subscription is already canceled.");
+            }
+
+            // Alterar o plano da empresa para None
+            existingCompany.Plan = SubscriptionPlan.None;
+            dbContext.SaveChanges();
+
+            return Ok("Subscription successfully canceled.");
+        }
+
+
+
 
         [HttpGet("ListAllProjects/{companyID}")]
         public IActionResult ListAllProjectsFromCompany(string companyID)
@@ -350,7 +412,8 @@ namespace moldme.Controllers
 
             // Gerar o Token JWT com função "Company"
             var token = tokenGenerator.GenerateToken(company.Email, "Company");
-
+            SubscribePlan(company.CompanyID, company.Plan);
+            
             // Retornar resposta de sucesso com token e mensagem
             return Ok(new { Token = token, Message = "Company registered successfully" });
         }
