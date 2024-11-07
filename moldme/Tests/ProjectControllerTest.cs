@@ -4,6 +4,7 @@ using moldme.data;
 using moldme.Models;
 using moldme.Controllers;
 using Xunit;
+using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests;
 
@@ -241,10 +242,12 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
+            var result = controller.AcceptOffer("1", "PROJ01", "OFFER01");
+            var okResult = result.Result as OkObjectResult;
+
 
             Assert.NotNull(result);
-            Assert.Equal("Offer accepted successfully", result.Value);
+            Assert.Equal("Offer accepted successfully", okResult.Value);
 
             var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(acceptedOffer);
@@ -253,7 +256,7 @@ public class ProjectControllerTest
     }
     
     [Fact]
-    public void AcceptOffer_InvalidCompany_ReturnsNotFound()
+    public async Task AcceptOffer_InvalidCompany_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -261,15 +264,15 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
-
+            var result = await controller.AcceptOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
+            
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
         }
     }
     
     [Fact]
-    public void AcceptOffer_InvalidProject_ReturnsNotFound()
+    public async Task AcceptOffer_InvalidProject_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -277,7 +280,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
+            var result = await controller.AcceptOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Project not found", result.Value);
@@ -285,7 +288,7 @@ public class ProjectControllerTest
     }
     
     [Fact]
-    public void AcceptOffer_InvalidOffer_ReturnsNotFound()
+    public async Task AcceptOffer_InvalidOffer_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -293,7 +296,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
+            var result = await controller.AcceptOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer not found", result.Value);
@@ -310,10 +313,12 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
+            var result = controller.RejectOffer("1", "PROJ01", "OFFER01") ;
+            var okResult = result.Result as OkObjectResult;
+
 
             Assert.NotNull(result);
-            Assert.Equal("Offer rejected successfully", result.Value);
+            Assert.Equal("Offer rejected successfully", okResult.Value);
 
             var rejectedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(rejectedOffer);
@@ -322,7 +327,7 @@ public class ProjectControllerTest
     }
     
     [Fact]
-    public void RejectOffer_InvalidCompany_ReturnsNotFound()
+    public async Task RejectOffer_InvalidCompany_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -330,7 +335,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
+            var result = await controller.RejectOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
@@ -338,7 +343,7 @@ public class ProjectControllerTest
     }
     
     [Fact]
-    public void RejectOffer_InvalidProject_ReturnsNotFound()
+    public async Task RejectOffer_InvalidProject_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -346,7 +351,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
+            var result = await controller.RejectOffer("1", "invalid", "OFFER01") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Project not found", result.Value);
@@ -354,7 +359,7 @@ public class ProjectControllerTest
     }
     
     [Fact]
-    public void RejectOffer_InvalidOffer_ReturnsNotFound()
+    public async Task RejectOffer_InvalidOffer_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -362,7 +367,7 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
+            var result = await controller.RejectOffer("1", "PROJ01", "invalid") as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Offer not found", result.Value);

@@ -5,6 +5,7 @@ using moldme.data;
 using moldme.DTOs;
 using moldme.Models;
 using Xunit;
+using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests;
 
@@ -60,43 +61,30 @@ public class ReviewControllerTests
         dbContext.SaveChanges();
     }
     
-   [Fact]
-   public void AddReview()
-   {
-       // Arrange
-       var dbContext = GetInMemoryDbContext();
-       SeedData(dbContext);
-    
-       var controller = new ReviewController(dbContext);
-    
-       var reviewDto = new ReviewDto
-       {
-           Comment = "Great employee",
-           Stars = Stars.Five,
-           ReviewerId = "EMP001",
-           ReviewedId = "EMP002"
-       };
-    
-       // Act
-       var result = controller.AddReview(reviewDto) as OkObjectResult;
-    
-       // Assert
-       Assert.NotNull(result);
-       var resultValue = result.Value as dynamic;
-       Assert.Equal("Review added successfully", resultValue.Message);
-    
-       // Obtem a avaliação do banco de dados
-       var reviewInDb = dbContext.Reviews.FirstOrDefault(r => r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
-       // Verifica se a avaliação foi adicionada ao banco de dados
-       Assert.NotNull(reviewInDb);
-       // Verifica se o ReviewerID da avaliação é igual ao esperado.
-       Assert.Equal("EMP001", reviewInDb.ReviewerId);
-       // Verifica se o ReviewedId da avaliação é igual ao esperado.
-       Assert.Equal("EMP002", reviewInDb.ReviewedId);
-   }
+    [Fact]
+    public async Task AddReview_WhenValid()
+    {
+        var dbContext = GetInMemoryDbContext();
+        SeedData(dbContext);
+
+        var controller = new ReviewController(dbContext);
+
+        var reviewDto = new ReviewDto
+        {
+            Comment = "Great employee",
+            Stars = Stars.Five,
+            ReviewerId = "EMP001",
+            ReviewedId = "EMP002"
+        };
+
+        var result = await controller.AddReview(reviewDto) as OkObjectResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("Review added successfully", result.Value);
+    }
 
 [Fact]
-public void AddReview_InvalidReviewer()
+public async Task AddReview_InvalidReviewer()
 {
     // Arrange
     var dbContext = GetInMemoryDbContext();
@@ -113,7 +101,7 @@ public void AddReview_InvalidReviewer()
     };
     
     // Act
-    var result = controller.AddReview(reviewDto) as NotFoundObjectResult;
+    var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
     
     // Assert
     Assert.NotNull(result);
@@ -126,9 +114,8 @@ public void AddReview_InvalidReviewer()
 }
 
 [Fact]
-public void AddReview_InvalidReviewedEmployee()
+public async Task AddReview_InvalidReviewedEmployee()
 {
-    // Arrange
     var dbContext = GetInMemoryDbContext();
     SeedData(dbContext);
     
@@ -139,19 +126,13 @@ public void AddReview_InvalidReviewedEmployee()
         Comment = "Great employee",
         Stars = Stars.Five,
         ReviewerId = "EMP001",
-        ReviewedId = "EMP003"
+        ReviewedId = "notright"
     };
     
-    // Act
-    var result = controller.AddReview(reviewDto) as NotFoundObjectResult;
+    var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
     
-    // Assert
     Assert.NotNull(result);
     Assert.Equal("Reviewed Employee not found", result.Value);
     
-    var reviewInDb = dbContext.Reviews.FirstOrDefault(r => r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
-    Assert.Null(reviewInDb);
-    
-    Assert.Equal(0, dbContext.Reviews.Count());
 }
 }

@@ -7,6 +7,8 @@ using moldme.Models;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
+
 namespace moldme.Tests;
 
 public class OfferControllerTests
@@ -70,10 +72,12 @@ public class OfferControllerTests
                 Description = "Description 1"
             };
 
-            var result = controller.SendOffer("1", "1", offer) as OkObjectResult;
+            var result = controller.SendOffer("1", "1", offer);
+            var okResult = result.Result as OkObjectResult;
+
 
             Assert.NotNull(result);
-            Assert.Equal("Offer sent successfully", result.Value);
+            Assert.Equal("Offer sent successfully", okResult.Value);
 
             var addedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
             Assert.NotNull(addedOffer);
@@ -83,7 +87,7 @@ public class OfferControllerTests
     }
 
     [Fact]
-    public void SendOffer_InvalidCompany_ReturnsNotFound()
+    public async Task SendOffer_InvalidCompany_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -101,7 +105,7 @@ public class OfferControllerTests
                 Description = "Description 1"
             };
 
-            var result = controller.SendOffer("invalid", "1", offer) as NotFoundObjectResult;
+            var result = await controller.SendOffer("invalid", "1", offer) as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
@@ -109,7 +113,7 @@ public class OfferControllerTests
     }
 
     [Fact]
-    public void SendOffer_InvalidProject_ReturnsNotFound()
+    public async Task SendOffer_InvalidProject_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -127,7 +131,7 @@ public class OfferControllerTests
                 Description = "Description 1"
             };
 
-            var result = controller.SendOffer("1", "invalid", offer) as NotFoundObjectResult;
+            var result = await controller.SendOffer("1", "invalid", offer) as NotFoundObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Project not found", result.Value);

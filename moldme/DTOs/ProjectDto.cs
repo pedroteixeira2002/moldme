@@ -1,7 +1,3 @@
-
-
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using moldme.Models;
 namespace moldme.DTOs
@@ -31,8 +27,6 @@ namespace moldme.DTOs
 
         [Required]
         public string CompanyId { get; set; }
-
-        [Required]
         public List<string> EmployeeIds { get; set; } = new List<string>();
     }
 }
