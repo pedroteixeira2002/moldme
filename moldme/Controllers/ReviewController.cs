@@ -32,21 +32,16 @@ public class ReviewController : ControllerBase
             return BadRequest(ModelState);
         }
         
-        // Verifica se o reviewerID é válido
         var reviewer = await dbContext.Employees.FindAsync(reviewDto.ReviewerId);;
     
-        // Se o reviewerID não for válido, retorna um erro
         if (reviewer == null)
             return NotFound("Reviewer not found");
     
-        // Verifica se o reviewedEmployee é válido
-        var reviewedEmployeeEntity = await dbContext.Employees.FindAsync(reviewDto.ReviewerId);
+        var reviewedEmployeeEntity = await dbContext.Employees.FindAsync(reviewDto.ReviewedId);
     
-        // Se o reviewedEmployee não for válido, retorna um erro
         if (reviewedEmployeeEntity == null)
             return NotFound("Reviewed Employee not found");
     
-        // Cria uma nova avaliação e associa os dados do DTO
         var review = new Review
         {
             ReviewID = Guid.NewGuid().ToString().Substring(0, 6), // Gera um ID único de 6 caracteres
@@ -62,7 +57,7 @@ public class ReviewController : ControllerBase
         await dbContext.SaveChangesAsync();
     
         // Retorna uma resposta com sucesso
-        return Ok(new { Message = "Review added successfully", ReviewID = review.ReviewID });
+        return Ok("Review added successfully");
     }
 
 }

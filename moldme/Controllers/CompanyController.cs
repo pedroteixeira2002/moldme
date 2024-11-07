@@ -346,7 +346,7 @@ namespace moldme.Controllers
             var projects = await dbContext.Projects.Where(p => p.CompanyId == companyID).ToListAsync();
 
             // Verifica se há projetos
-            if (projects.Any())
+            if (!projects.Any())
             {
                 return Ok("No projects found for this company");
             }
@@ -365,6 +365,7 @@ namespace moldme.Controllers
                 return NotFound("Company not found");
             }
             var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == projectID && p.CompanyId == companyID);
+            
             if (project == null)
             {
                 return NotFound("Project not found or does not belong to the specified company.");
