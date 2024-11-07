@@ -28,7 +28,7 @@ namespace moldme.Controllers
         }
         
         [Authorize]
-        [HttpPost("addProject")]
+        [HttpPost("addProject/{companyId}")]
         public IActionResult AddProject(string companyId, [FromBody] ProjectDto projectDto)
         {
             // Verifica se a empresa existe
