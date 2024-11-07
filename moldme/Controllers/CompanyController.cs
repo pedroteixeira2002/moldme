@@ -373,7 +373,7 @@ namespace moldme.Controllers
             return Ok(project);
         }
         
-        [Authorize]
+        
         [HttpPost("register")]
         public IActionResult CreateCompany([FromBody] CompanyDto companyDto)
         {
