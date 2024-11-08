@@ -27,6 +27,8 @@ namespace moldme.DTOs
 
         [Required]
         public string CompanyId { get; set; }
+
+        
         public List<string> EmployeeIds { get; set; } = new List<string>();
     }
 }

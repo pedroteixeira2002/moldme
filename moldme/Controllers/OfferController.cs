@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 
 namespace moldme.Controllers;
@@ -21,43 +22,35 @@ public class OfferController : ControllerBase
     // Enviar uma oferta para um projeto associado a uma empresa
     [Authorize]
     [HttpPost("sendOffer")]
-    public async Task<IActionResult> SendOffer(string companyId, string projectId, [FromBody] Offer offer)
+    public IActionResult SendOffer([FromBody] OfferDto offerDto)
     {
-        if (offer == null)
-        {
-            return BadRequest("Offer is null");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         // Search for the companyID in the database
-        var company = await dbContext.Companies.FindAsync(companyId);
-        
+        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == offerDto.CompanyId);
+
         if (company == null)
             return NotFound("Company not found");
-        
+
         // Search for the projectID in the database
-        var project =  await dbContext.Projects.FindAsync(projectId);
-        
+        var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == offerDto.ProjectId);
+
         if (project == null)
             return NotFound("Project not found");
-        
-        if (offer.Status != Status.PENDING)
+
+        // Create a new Offer entity from the DTO
+        var offer = new Offer
         {
-            return BadRequest("Offer status must be PENDING");
-        }
-        
-        // Associa a oferta à empresa e ao projeto através das chaves estrangeiras
-        offer.CompanyId = company.CompanyID;
-        offer.ProjectId = project.ProjectId;
-        
+            OfferId = offerDto.OfferId,
+            CompanyId = company.CompanyID,
+            ProjectId = project.ProjectId,
+            Date = offerDto.Date,
+            Status = offerDto.Status,
+            Description = offerDto.Description
+        };
+
         // Query the database to add the offer
-        await dbContext.Offers.AddAsync(offer);
+        dbContext.Offers.Add(offer.Status == Status.PENDING ? offer : throw new Exception("Offer status must be PENDING"));
         // Save changes to the database
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
 
         return Ok("Offer sent successfully");
     }

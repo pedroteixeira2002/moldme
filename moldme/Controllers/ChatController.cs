@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using moldme.data;
 using moldme.Models;
 
@@ -16,53 +14,32 @@ namespace moldme.Controllers
         {
             _context = context;
         }
-        [Authorize]
-        [HttpPost("newchat")]
-        public async Task<ActionResult<Chat>> CreateChat([FromBody] Chat chat)
+
+        // Create
+        [HttpPost]
+        public async Task<ActionResult<Chat>> CreateChat(Chat chat)
         {
-            if (chat == null)
-            {
-                return BadRequest("Chat is null");
-            }
-
-            // Validate ProjectId
-            var project = await _context.Projects.FindAsync(chat.ProjectId);
-            if (project == null)
-            {
-                return NotFound("Project not found");
-            }
-
-            // Validate unique ChatId
-            var existingChat = await _context.Chats.FindAsync(chat.ChatId);
-            if (existingChat != null)
-            {
-                return Conflict("Chat with the same ID already exists");
-            }
-
             _context.Chats.Add(chat);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok("Chat created successfully");
         }
-        [Authorize]
-        [HttpDelete("remove/{id}")]
-        public async Task<IActionResult> DeleteChat(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest("Chat ID is null or empty");
-            }
 
-            var chat = await _context.Chats.FindAsync(id);
+        // Delete
+        [HttpDelete("{id}")]
+        public IActionResult Delete(String id)
+        {
+            var chat = _context.Chats.Find(id);
             if (chat == null)
             {
-                return NotFound("Chat not found");
+                return NotFound();
             }
 
             _context.Chats.Remove(chat);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return Ok("Chat deleted successfully");
         }
     }
+    
 }

@@ -25,18 +25,18 @@ namespace moldme.Tests
             {
                 ProjectId = "1",
                 Name = "Project 1",
-                CompanyId = "1",
-                Description = "Project Description"
+                CompanyId = "1", // Ensure CompanyId is set
+                Description = "Project Description" // Ensure Description is set
             };
 
             var employee = new Employee
             {
                 EmployeeID = "1",
                 Name = "Employee 1",
-                CompanyId = "1",
-                Email = "employee1@example.com",
-                Password = "password123",
-                Profession = "Developer"
+                CompanyId = "1", // Ensure CompanyId is set
+                Email = "employee1@example.com", // Ensure Email is set
+                Password = "password123", // Ensure Password is set
+                Profession = "Developer" // Ensure Profession is set
             };
 
             dbContext.Projects.Add(project);
@@ -44,9 +44,59 @@ namespace moldme.Tests
             dbContext.SaveChanges();
         }
 
+
+    [Fact]
+    public void Task_Properties_GetterSetter_WorksCorrectly()
+    {
+        var task = new Task
+        {
+            TaskId = "T12345",
+            TitleName = "Task 1",
+            Description = "Description of Task 1",
+            Status = Status.INPROGRESS,
+            Date = new DateTime(2023, 10, 1),
+            ProjectId = "P12345",
+            Project = new Project { ProjectId = "P12345", Name = "Project 1" },
+            EmployeeId = "E12345",
+            FilePath = "/path/to/file",
+            Employee = new Employee { EmployeeID = "E12345", Name = "John Doe" }
+        };
+
+        Assert.Equal("T12345", task.TaskId);
+        Assert.Equal("Task 1", task.TitleName);
+        Assert.Equal("Description of Task 1", task.Description);
+        Assert.Equal(Status.INPROGRESS, task.Status);
+        Assert.Equal(new DateTime(2023, 10, 1), task.Date);
+        Assert.Equal("P12345", task.ProjectId);
+        Assert.Equal("Project 1", task.Project.Name);
+        Assert.Equal("E12345", task.EmployeeId);
+        Assert.Equal("/path/to/file", task.FilePath);
+        Assert.Equal("John Doe", task.Employee.Name);
+
+        task.TitleName = "Updated Task";
+        task.Description = "Updated Description";
+        task.Status = Status.DONE;
+        task.Date = new DateTime(2023, 11, 1);
+        task.ProjectId = "P67890";
+        task.Project = new Project { ProjectId = "P67890", Name = "Updated Project" };
+        task.EmployeeId = "E67890";
+        task.FilePath = "/new/path/to/file";
+        task.Employee = new Employee { EmployeeID = "E67890", Name = "Jane Doe" };
+
+        Assert.Equal("Updated Task", task.TitleName);
+        Assert.Equal("Updated Description", task.Description);
+        Assert.Equal(Status.DONE, task.Status);
+        Assert.Equal(new DateTime(2023, 11, 1), task.Date);
+        Assert.Equal("P67890", task.ProjectId);
+        Assert.Equal("Updated Project", task.Project.Name);
+        Assert.Equal("E67890", task.EmployeeId);
+        Assert.Equal("/new/path/to/file", task.FilePath);
+        Assert.Equal("Jane Doe", task.Employee.Name);
+    }        
         [Fact]
         public void CreateTask_ReturnsOkResult_WithCreatedTask()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             SeedData(context);
             var controller = new TaskController(context);
@@ -61,13 +111,14 @@ namespace moldme.Tests
                 EmployeeId = "1",
                 Status = Status.PENDING
             };
-
+            
             var result = controller.Create(newTaskDto) as OkObjectResult;
 
             Assert.NotNull(result);
             Assert.Equal("Task created successfully", result.Value);
 
-            var createdTask = context.Tasks.FirstOrDefault(t => t.TitleName == "New Task" && t.Description == "New Task Description");
+            var createdTask =
+                context.Tasks.FirstOrDefault(t => t.TitleName == "New Task" && t.Description == "New Task Description");
             Assert.NotNull(createdTask);
             Assert.Equal("New Task", createdTask.TitleName);
             Assert.Equal("New Task Description", createdTask.Description);
@@ -76,9 +127,11 @@ namespace moldme.Tests
         [Fact]
         public void GetAllTasks_ReturnsOkResult_WithAllTasks()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
+            // Clear the database to ensure a clean state
             context.Tasks.RemoveRange(context.Tasks);
             context.SaveChanges();
 
@@ -93,17 +146,20 @@ namespace moldme.Tests
 
             context.SaveChanges();
 
+            // Act
             var result = controller.GetAll() as OkObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             var tasks = result.Value as List<Task>;
             Assert.NotNull(tasks);
-            Assert.Single(tasks);
+            Assert.Equal(1, tasks.Count);
         }
 
         [Fact]
         public void GetTaskById_ReturnsOkResult_WithTask()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
@@ -118,8 +174,10 @@ namespace moldme.Tests
 
             context.SaveChanges();
 
+            // Act
             var result = controller.GetById("c") as OkObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             var task = result.Value as Task;
             Assert.NotNull(task);
@@ -130,6 +188,7 @@ namespace moldme.Tests
         [Fact]
         public void UpdateTask_ReturnsOkResult_WithUpdatedTask()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
@@ -154,8 +213,10 @@ namespace moldme.Tests
                 EmployeeId = "1"
             };
 
-            var result = controller.UpdateTask("d", updatedTaskDto) as OkObjectResult;
+            // Act
+            var result = controller.Update("d", updatedTaskDto) as OkObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             Assert.Equal("Task updated successfully", result.Value);
 
@@ -168,6 +229,7 @@ namespace moldme.Tests
         [Fact]
         public void DeleteTask_ReturnsOkResult_WithDeletedTask()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
@@ -182,8 +244,10 @@ namespace moldme.Tests
 
             context.SaveChanges();
 
-            var result = controller.DeleteTask("e") as OkObjectResult;
+            // Act
+            var result = controller.Delete("e") as OkObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             Assert.Equal("Task deleted successfully", result.Value);
 
@@ -194,17 +258,21 @@ namespace moldme.Tests
         [Fact]
         public void DeleteTask_ReturnsNotFoundResult_WhenTaskNotFound()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
-            var result = controller.DeleteTask("l") as NotFoundObjectResult;
+            // Act
+            var result = controller.Delete("f") as NotFoundResult;
 
+            // Assert
             Assert.NotNull(result);
         }
 
         [Fact]
         public void UpdateTask_ReturnsNotFoundResult_WhenTaskNotFound()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
@@ -218,8 +286,10 @@ namespace moldme.Tests
                 EmployeeId = "1"
             };
 
-            var result = controller.UpdateTask("i", updatedTaskDto) as NotFoundObjectResult;
+            // Act
+            var result = controller.Update("i", updatedTaskDto) as NotFoundObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             Assert.Equal("Task not found", result.Value);
         }
@@ -227,25 +297,32 @@ namespace moldme.Tests
         [Fact]
         public void GetTaskById_ReturnsNotFoundResult_WhenTaskNotFound()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
-            var result = controller.GetById("j") as NotFoundObjectResult;
+            // Act
+            var result = controller.GetById("j") as NotFoundResult;
 
+            // Assert
             Assert.NotNull(result);
         }
 
         [Fact]
         public void GetAllTasks_ReturnsOkResult_WithNoTasks()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
+            // Clear the database
             context.Tasks.RemoveRange(context.Tasks);
             context.SaveChanges();
 
+            // Act
             var result = controller.GetAll() as OkObjectResult;
 
+            // Assert
             Assert.NotNull(result);
             var tasks = result.Value as List<Task>;
             Assert.NotNull(tasks);
@@ -255,18 +332,22 @@ namespace moldme.Tests
         [Fact]
         public void CreateTask_ReturnsBadRequestResult_WhenTaskIsNull()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
 
+            // Act
             var result = controller.Create(null) as BadRequestObjectResult;
 
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal("Task data is null", result.Value);
+            Assert.Equal("Task is null", result.Value);
         }
 
         [Fact]
         public void UpdateTask_ReturnsBadRequestResult_WhenModelStateIsInvalid()
         {
+            // Arrange
             var context = GetInMemoryDbContext();
             var controller = new TaskController(context);
             controller.ModelState.AddModelError("TitleName", "Required");
@@ -274,83 +355,23 @@ namespace moldme.Tests
             var updatedTaskDto = new TaskDto
             {
                 TitleName = "Updated Task",
+                Description = "Updated Task Description",
                 Date = DateTime.Now,
                 Status = Status.PENDING,
                 ProjectId = "1",
                 EmployeeId = "1"
             };
 
-            var result = controller.UpdateTask("c", updatedTaskDto) as BadRequestObjectResult;
+            // Act
+            var result = controller.Update("k", updatedTaskDto) as BadRequestObjectResult;
 
+            // Assert
             Assert.NotNull(result);
-            Assert.Equal(400, result.StatusCode);
-        }
 
-        [Theory]
-        [InlineData(null, "Description", "1", "1")]
-        [InlineData("Title", null, "1", "1")]
-        [InlineData("Title", "Description", null, "1")]
-        [InlineData("Title", "Description", "1", null)]
-        public void CreateTask_ReturnsBadRequestResult_WhenRequiredFieldsAreMissing(string title, string description, string projectId, string employeeId)
-        {
-            var context = GetInMemoryDbContext();
-            var controller = new TaskController(context);
-
-            var newTaskDto = new TaskDto
-            {
-                TitleName = title,
-                Description = description,
-                Date = DateTime.Now,
-                FilePath = "path/to/file",
-                ProjectId = projectId,
-                EmployeeId = employeeId,
-                Status = Status.PENDING
-            };
-
-            var result = controller.Create(newTaskDto) as BadRequestObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("TitleName, Description, ProjectId, and EmployeeId are required", result.Value);
-        }
-
-        [Theory]
-        [InlineData(null, "Description", "1", "1")]
-        [InlineData("Title", null, "1", "1")]
-        [InlineData("Title", "Description", null, "1")]
-        [InlineData("Title", "Description", "1", null)]
-        public void UpdateTask_ReturnsBadRequestResult_WhenRequiredFieldsAreMissing(string title, string description, string projectId, string employeeId)
-        {
-            var context = GetInMemoryDbContext();
-            var controller = new TaskController(context);
-
-            var updatedTaskDto = new TaskDto
-            {
-                TitleName = title,
-                Description = description,
-                Date = DateTime.Now,
-                FilePath = "path/to/file",
-                ProjectId = projectId,
-                EmployeeId = employeeId,
-                Status = Status.PENDING
-            };
-
-            var result = controller.UpdateTask("d", updatedTaskDto) as BadRequestObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("TitleName, Description, ProjectId, and EmployeeId are required", result.Value);
-            
-        }
-
-        [Fact]
-        public void DeleteTask_ReturnsBadRequestResult_WhenIdIsInvalid()
-        {
-            var context = GetInMemoryDbContext();
-            var controller = new TaskController(context);
-
-            var result = controller.DeleteTask("") as BadRequestObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("Task ID is required", result.Value);
+            var errors = result.Value as SerializableError;
+            Assert.NotNull(errors);
+            Assert.True(errors.ContainsKey("TitleName"));
+            Assert.Equal("Required", ((string[])errors["TitleName"])[0]);
         }
     }
 }

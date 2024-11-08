@@ -5,9 +5,6 @@ using moldme.data;
 using moldme.Models;
 using Microsoft.EntityFrameworkCore;
 using moldme.DTOs;
-using moldme.hubs;
-using Moq;
-using Microsoft.AspNetCore.SignalR;
 using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests
@@ -22,17 +19,27 @@ namespace moldme.Tests
             return new ApplicationDbContext(options);
         }
 
-        private IHubContext<ChatHub> GetMockHubContext()
+        [Fact]
+        public void Message_Properties_GetterSetter_WorksCorrectly()
         {
-            var mockClients = new Mock<IHubClients>();
-            var mockClientProxy = new Mock<IClientProxy>();
+            var message = new Message
+            {
+                MessageId = "M12345",
+                Text = "Hello, World!",
+                Date = new DateTime(2023, 10, 1),
+                EmployeeId = "E12345",
+                Employee = new Employee { EmployeeID = "E12345", Name = "John Doe" },
+                ChatId = "C12345",
+                Chat = new Chat { ChatId = "C12345", ProjectId = "P12345" }
+            };
 
-            mockClients.Setup(clients => clients.All).Returns(mockClientProxy.Object);
-
-            var mockHubContext = new Mock<IHubContext<ChatHub>>();
-            mockHubContext.Setup(hub => hub.Clients).Returns(mockClients.Object);
-
-            return mockHubContext.Object;
+            Assert.Equal("M12345", message.MessageId);
+            Assert.Equal("Hello, World!", message.Text);
+            Assert.Equal(new DateTime(2023, 10, 1), message.Date);
+            Assert.Equal("E12345", message.EmployeeId);
+            Assert.Equal("John Doe", message.Employee.Name);
+            Assert.Equal("C12345", message.ChatId);
+            Assert.Equal("P12345", message.Chat.ProjectId);
         }
 
         [Fact]
@@ -40,76 +47,76 @@ namespace moldme.Tests
         {
             using (var dbContext = GetInMemoryDbContext())
             {
-                var hubContext = GetMockHubContext();
-                var controller = new MessageController(dbContext, hubContext);
-
-                var company = new Company
-                {
-                    CompanyID = "1",
-                    Name = "Test Company",
-                    Address = "123 Street",
-                    Email = "company@example.com",
-                    Contact = 123456789,
-                    TaxId = 123456789,
-                    Sector = "Sector",
-                    Plan = SubscriptionPlan.Premium,
-                    Password = "SecurePassword123"
-                };
-
-                var project = new Project
-                {
-                    ProjectId = "2",
-                    Name = "Test Project",
-                    Description = "Description",
-                    Budget = 5000,
-                    Status = Status.INPROGRESS,
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow,
-                    CompanyId = "1"
-                };
-
-                var employee = new Employee
-                {
-                    EmployeeID = "1",
-                    Name = "John Doe",
-                    Profession = "Developer",
-                    Email = "johndoe@example.com",
-                    Password = "password123",
-                    CompanyId = "1"
-                };
-
-                var chat = new Chat
-                {
-                    ChatId = "1",
-                    ProjectId = "2"
-                };
-
-                dbContext.Companies.Add(company);
-                dbContext.Projects.Add(project);
-                dbContext.Employees.Add(employee);
-                dbContext.Chats.Add(chat);
-                await dbContext.SaveChangesAsync();
+                var controller = new MessageController(dbContext);
 
                 var messageDto = new MessageDto
                 {
+                    MessageId = "1",
                     Text = "Hello, World!",
-                    SenderId = "1",
+                    EmployeeId = "user1",
                     ChatId = "1"
                 };
 
                 var result = await controller.SendMessage(messageDto);
                 var actionResult = result.Result as CreatedAtActionResult;
-                
-                
+
                 Assert.NotNull(actionResult);
                 Assert.Equal(nameof(controller.GetMessages), actionResult.ActionName);
                 Assert.Equal("1", actionResult.RouteValues["chatId"]);
-
                 var message = actionResult.Value as Message;
                 Assert.NotNull(message);
                 Assert.Equal("Hello, World!", message.Text);
-                Assert.Equal("1", message.ChatId);
-                Assert.Equal("1", message.EmployeeId);
+            }
+        }
+
+        [Fact]
+        public void DeleteMessage_ExistingId_ReturnsOkResult()
+        {
+            using (var dbContext = GetInMemoryDbContext())
+            {
+                var chat = new Chat
+                {
+                    ChatId = "1",
+                    ProjectId = "2"
+                };
+                dbContext.Chats.Add(chat);
+                dbContext.SaveChanges();
+
+                var message = new Message
+                {
+                    MessageId = "2",
+                    Text = "Hello, World!",
+                    EmployeeId = "user1",
+                    Date = DateTime.Now,
+                    ChatId = "1"
+                };
+                dbContext.Messages.Add(message);
+                dbContext.SaveChanges();
+
+                var controller = new MessageController(dbContext);
+
+                var result = controller.DeleteMessage("2").Result;
+                var okResult = result as OkObjectResult;
+
+                Assert.NotNull(okResult);
+                Assert.Equal("Message deleted successfully", okResult.Value);
+
+                var deletedMessage = dbContext.Messages.FirstOrDefault(m => m.MessageId == "2");
+                Assert.Null(deletedMessage);
+            }
+        }
+
+        [Fact]
+        public void DeleteMessage_NonExistingId_ReturnsNotFoundResult()
+        {
+            using (var dbContext = GetInMemoryDbContext())
+            {
+                var controller = new MessageController(dbContext);
+
+                var result = controller.DeleteMessage("non-existing-id").Result;
+                var notFoundResult = result as NotFoundObjectResult;
+
+                Assert.NotNull(notFoundResult);
             }
         }
 
@@ -148,11 +155,11 @@ namespace moldme.Tests
 
                 dbContext.SaveChanges();
 
-                var hubContext = GetMockHubContext();
-                var controller = new MessageController(dbContext, hubContext);
+                var controller = new MessageController(dbContext);
 
                 var result = controller.GetMessages("2").Result;
                 var okResult = result.Result as OkObjectResult;
+
 
                 Assert.NotNull(okResult);
                 var messages = okResult.Value as List<Message>;

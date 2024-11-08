@@ -1,4 +1,4 @@
-namespace moldme.DTOs
+    namespace moldme.DTOs
 {
     public class CompanyProfileDto
     {

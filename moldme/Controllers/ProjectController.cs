@@ -17,9 +17,8 @@ namespace moldme.Controllers
         {
             dbContext = context;
         }
-        
         [Authorize]
-        [HttpPost("assign-employee")]
+        [HttpPost("assign-employee/{projectId}/{employeeID}")]
         public IActionResult AssignEmployee(string employeeId, string projectId)
         {
             if (string.IsNullOrWhiteSpace(employeeId))
@@ -50,8 +49,8 @@ namespace moldme.Controllers
             return Ok("Employee assigned to project successfully.");
         }
 
-        [Authorize]
-        [HttpDelete("remove-employee")]
+        [Authorize] 
+        [HttpDelete("remove-employee/{projectId}/{employeeID}")]
         public IActionResult RemoveEmployee(string employeeId, string projectId)
         {
             if (string.IsNullOrWhiteSpace(employeeId))

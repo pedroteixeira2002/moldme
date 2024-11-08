@@ -84,8 +84,55 @@ public class EmployeeControllerTests
         dbContext.Employees.Add(employeeWithoutProjects);
         dbContext.SaveChanges();
     }
-    
-    //ListAllEmployees
+
+    [Fact]
+    public void Employee_Properties_GetterSetter_WorksCorrectly()
+    {
+        // Arrange
+        var employee = new Employee
+        {
+            EmployeeID = "E12345",
+            Name = "John Doe",
+            Profession = "Developer",
+            NIF = 123456789,
+            Email = "john.doe@example.com",
+            Contact = 987654321,
+            Password = "password123",
+            CompanyId = "C12345",
+            Company = new Company { CompanyID = "C12345", Name = "Tech Corp" }
+        };
+
+        // Act & Assert
+        Assert.Equal("E12345", employee.EmployeeID);
+        Assert.Equal("John Doe", employee.Name);
+        Assert.Equal("Developer", employee.Profession);
+        Assert.Equal(123456789, employee.NIF);
+        Assert.Equal("john.doe@example.com", employee.Email);
+        Assert.Equal(987654321, employee.Contact);
+        Assert.Equal("password123", employee.Password);
+        Assert.Equal("C12345", employee.CompanyId);
+        Assert.Equal("Tech Corp", employee.Company.Name);
+
+        // Test setters
+        employee.Name = "Jane Doe";
+        employee.Profession = "Manager";
+        employee.NIF = 987654321;
+        employee.Email = "jane.doe@example.com";
+        employee.Contact = 123456789;
+        employee.Password = "newpassword123";
+        employee.CompanyId = "C67890";
+        employee.Company = new Company { CompanyID = "C67890", Name = "New Tech Corp" };
+
+        Assert.Equal("Jane Doe", employee.Name);
+        Assert.Equal("Manager", employee.Profession);
+        Assert.Equal(987654321, employee.NIF);
+        Assert.Equal("jane.doe@example.com", employee.Email);
+        Assert.Equal(123456789, employee.Contact);
+        Assert.Equal("newpassword123", employee.Password);
+        Assert.Equal("C67890", employee.CompanyId);
+        Assert.Equal("New Tech Corp", employee.Company.Name);
+    }
+
     [Fact]
     public void ListAllEmployees_ReturnsAllEmployees()
     {
@@ -105,7 +152,7 @@ public class EmployeeControllerTests
         Assert.Contains(employees, e => e.EmployeeID == "1" && e.Name == "John Doe");
         Assert.Contains(employees, e => e.EmployeeID == "2" && e.Name == "Jane Doe");
     }
-    
+
     //GetEmployeeById
     [Fact]
     public void GetEmployeeById_ReturnsEmployee_WhenEmployeeExists()
@@ -125,6 +172,7 @@ public class EmployeeControllerTests
         Assert.Equal("1", employee.EmployeeID);
         Assert.Equal("John Doe", employee.Name);
     }
+
     //GetEmployeeById without employee
     [Fact]
     public void GetEmployeeById_ShouldReturnNotFound_WhenEmployeeDoesNotExist()
@@ -142,15 +190,15 @@ public class EmployeeControllerTests
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal("Employee not found", notFoundResult.Value);
     }
-    
-    
+
+
     [Fact]
     public void GetEmployeeProjects_ReturnsProjectsForEmployee()
     {
         // insere dados teste no DbContext em memória
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         // Configura o controller
         var controller = new EmployeeController(dbContext);
 
@@ -168,14 +216,14 @@ public class EmployeeControllerTests
         Assert.Contains(projects, p => p.ProjectId == "1" && p.Name == "Project 1");
         Assert.Contains(projects, p => p.ProjectId == "2" && p.Name == "Project 2");
     }
-    
+
     [Fact]
     public void GetEmployeeProjects_EmployeeDoesNotExist_ReturnsNotFound()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new EmployeeController(dbContext);
 
         // Act
@@ -202,6 +250,4 @@ public class EmployeeControllerTests
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal("No projects found for this employee.", notFoundResult.Value); // Expecting the NotFound message
     }
-
-
 }

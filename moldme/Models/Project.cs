@@ -16,8 +16,6 @@ public class Project
     [Required, DataType(DataType.DateTime)] public DateTime EndDate { get; set; }
     [Required, StringLength(6)] public string CompanyId { get; set; }
     [ForeignKey("CompanyId")] public Company Company { get; set; }
-    
-    
     public List<Employee> Employees { get; set; } = new List<Employee>();
     public List<Task> Tasks { get; set; } = new List<Task>();
     public Chat Chat { get; set; }

@@ -4,8 +4,8 @@ using moldme.data;
 using moldme.Models;
 using moldme.Controllers;
 using Xunit;
-using Task = System.Threading.Tasks.Task;
-
+using Task = moldme.Models.Task;
+using Task2 = System.Threading.Tasks.Task;
 namespace moldme.Tests;
 
 public class ProjectControllerTest
@@ -56,7 +56,7 @@ public class ProjectControllerTest
             EndDate = DateTime.Now,
             CompanyId = company.CompanyID
         };
-        
+
         var offer = new Offer
         {
             OfferId = "OFFER01",
@@ -76,13 +76,76 @@ public class ProjectControllerTest
     }
 
     [Fact]
+    public void Project_Properties_GetterSetter_WorksCorrectly()
+    {
+        var project = new Project
+        {
+            ProjectId = "P12345",
+            Name = "Project 1",
+            Description = "Description of Project 1",
+            Budget = 10000,
+            Status = Status.INPROGRESS,
+            StartDate = new DateTime(2023, 1, 1),
+            EndDate = new DateTime(2023, 12, 31),
+            CompanyId = "C12345",
+            Company = new Company { CompanyID = "C12345", Name = "Tech Corp" },
+            Tasks = new List<Task>
+            {
+                new Task { TaskId = "T1", TitleName = "Task 1", Description = "Task 1 Description" },
+                new Task { TaskId = "T2", TitleName = "Task 2", Description = "Task 2 Description" }
+            },
+            Employees = new List<Employee>
+            {
+                new Employee { EmployeeID = "EMP001", Name = "John Doe", Profession = "Developer" }
+            }
+        };
+
+        Assert.Equal("P12345", project.ProjectId);
+        Assert.Equal("Project 1", project.Name);
+        Assert.Equal("Description of Project 1", project.Description);
+        Assert.Equal(10000, project.Budget);
+        Assert.Equal(Status.INPROGRESS, project.Status);
+        Assert.Equal(new DateTime(2023, 1, 1), project.StartDate);
+        Assert.Equal(new DateTime(2023, 12, 31), project.EndDate);
+        Assert.Equal("C12345", project.CompanyId);
+        Assert.Equal("Tech Corp", project.Company.Name);
+        Assert.Equal(2, project.Tasks.Count);
+        Assert.Equal("Task 1", project.Tasks[0].TitleName);
+        Assert.Equal("Task 2", project.Tasks[1].TitleName);
+
+        project.Name = "Updated Project";
+        project.Description = "Updated Description";
+        project.Budget = 20000;
+        project.Status = Status.DONE;
+        project.StartDate = new DateTime(2023, 2, 1);
+        project.EndDate = new DateTime(2023, 11, 30);
+        project.CompanyId = "C67890";
+        project.Company = new Company { CompanyID = "C67890", Name = "New Tech Corp" };
+        project.Tasks = new List<Task>
+        {
+            new Task { TaskId = "T3", TitleName = "Task 3", Description = "Task 3 Description" }
+        };
+
+        Assert.Equal("Updated Project", project.Name);
+        Assert.Equal("Updated Description", project.Description);
+        Assert.Equal(20000, project.Budget);
+        Assert.Equal(Status.DONE, project.Status);
+        Assert.Equal(new DateTime(2023, 2, 1), project.StartDate);
+        Assert.Equal(new DateTime(2023, 11, 30), project.EndDate);
+        Assert.Equal("C67890", project.CompanyId);
+        Assert.Equal("New Tech Corp", project.Company.Name);
+        Assert.Single(project.Tasks);
+        Assert.Equal("Task 3", project.Tasks[0].TitleName);
+    }
+
+    [Fact]
     public void AssignEmployee_ShouldReturnOk_WhenEmployeeAndProjectAreValid()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
@@ -97,12 +160,12 @@ public class ProjectControllerTest
 
     [Fact]
     public void AssignEmployee_ShouldReturnConflict_WhenEmployeeAlreadyAssigned()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
@@ -119,14 +182,14 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnNotFound_WhenEmployeeNotAssignedToProject()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
-        var employeeId = "EMP002";  // Employee não existente
-        var projectId = "PROJ02";   // Projeto não existente
+
+        var employeeId = "EMP002"; // Employee não existente
+        var projectId = "PROJ02"; // Projeto não existente
 
         // Act
         var result = controller.RemoveEmployee(employeeId, projectId);
@@ -139,12 +202,12 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnOk_WhenEmployeeAssigned()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var employeeId = "EMP001";
         var projectId = "PROJ01";
 
@@ -157,17 +220,18 @@ public class ProjectControllerTest
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal("Employee removed from project successfully.", okResult.Value);
-        Assert.False(dbContext.Projects.Any(p => p.ProjectId == projectId && p.Employees.Any(e => e.EmployeeID == employeeId)));
+        Assert.False(dbContext.Projects.Any(p =>
+            p.ProjectId == projectId && p.Employees.Any(e => e.EmployeeID == employeeId)));
     }
 
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var projectId = "PROJ01";
 
         // Act
@@ -180,12 +244,12 @@ public class ProjectControllerTest
 
     [Fact]
     public void AssignEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var employeeId = "EMP001";
 
         // Act
@@ -198,12 +262,12 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenEmployeeIdIsNull()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var projectId = "PROJ01";
 
         // Act
@@ -216,12 +280,12 @@ public class ProjectControllerTest
 
     [Fact]
     public void RemoveEmployee_ShouldReturnBadRequest_WhenProjectIdIsNull()
-    {   
+    {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
-        
+
         var controller = new ProjectController(dbContext);
-        
+
         var employeeId = "EMP001";
 
         // Act
@@ -231,10 +295,10 @@ public class ProjectControllerTest
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Project ID cannot be null or empty.", badRequestResult.Value);
     }
-       
+
     // Testes para o método AcceptOffer
     [Fact]
-    public void AcceptOffer_ShouldReturnOk_WhenOfferIsAccepted()
+    public async Task2 AcceptOffer_ShouldReturnOk_WhenOfferIsAccepted()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -242,21 +306,19 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.AcceptOffer("1", "PROJ01", "OFFER01");
-            var okResult = result.Result as OkObjectResult;
-
+            var result = await controller.AcceptOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
 
             Assert.NotNull(result);
-            Assert.Equal("Offer accepted successfully", okResult.Value);
+            Assert.Equal("Offer accepted successfully", result.Value);
 
             var acceptedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(acceptedOffer);
             Assert.Equal(Status.ACCEPTED, acceptedOffer.Status);
         }
     }
-    
+
     [Fact]
-    public async Task AcceptOffer_InvalidCompany_ReturnsNotFound()
+    public async Task2 AcceptOffer_InvalidCompany_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -265,14 +327,15 @@ public class ProjectControllerTest
             var controller = new ProjectController(dbContext);
 
             var result = await controller.AcceptOffer("invalid", "PROJ01", "OFFER01") as NotFoundObjectResult;
-            
+
             Assert.NotNull(result);
             Assert.Equal("Company not found", result.Value);
         }
     }
+
     
     [Fact]
-    public async Task AcceptOffer_InvalidProject_ReturnsNotFound()
+    public async Task2 AcceptOffer_InvalidProject_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -286,9 +349,9 @@ public class ProjectControllerTest
             Assert.Equal("Project not found", result.Value);
         }
     }
-    
+
     [Fact]
-    public async Task AcceptOffer_InvalidOffer_ReturnsNotFound()
+    public async Task2 AcceptOffer_InvalidOffer_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -302,10 +365,10 @@ public class ProjectControllerTest
             Assert.Equal("Offer not found", result.Value);
         }
     }
-    
+
     // Testes para o método RejectOffer
     [Fact]
-    public void RejectOffer_ShouldReturnOk_WhenOfferIsRejected()
+    public async Task2 RejectOffer_ShouldReturnOk_WhenOfferIsRejected()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -313,21 +376,19 @@ public class ProjectControllerTest
 
             var controller = new ProjectController(dbContext);
 
-            var result = controller.RejectOffer("1", "PROJ01", "OFFER01") ;
-            var okResult = result.Result as OkObjectResult;
-
+            var result = await controller.RejectOffer("1", "PROJ01", "OFFER01") as OkObjectResult;
 
             Assert.NotNull(result);
-            Assert.Equal("Offer rejected successfully", okResult.Value);
+            Assert.Equal("Offer rejected successfully", result.Value);
 
             var rejectedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "OFFER01");
             Assert.NotNull(rejectedOffer);
             Assert.Equal(Status.DENIED, rejectedOffer.Status);
         }
     }
-    
+
     [Fact]
-    public async Task RejectOffer_InvalidCompany_ReturnsNotFound()
+    public async Task2 RejectOffer_InvalidCompany_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -341,9 +402,9 @@ public class ProjectControllerTest
             Assert.Equal("Company not found", result.Value);
         }
     }
-    
+
     [Fact]
-    public async Task RejectOffer_InvalidProject_ReturnsNotFound()
+    public async Task2 RejectOffer_InvalidProject_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
@@ -357,9 +418,9 @@ public class ProjectControllerTest
             Assert.Equal("Project not found", result.Value);
         }
     }
-    
+
     [Fact]
-    public async Task RejectOffer_InvalidOffer_ReturnsNotFound()
+    public async Task2 RejectOffer_InvalidOffer_ReturnsNotFound()
     {
         using (var dbContext = GetInMemoryDbContext())
         {
