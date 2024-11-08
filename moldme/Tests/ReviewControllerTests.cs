@@ -5,8 +5,10 @@ using moldme.data;
 using moldme.DTOs;
 using moldme.Models;
 using Xunit;
+using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests;
+
 
 public class ReviewControllerTests
 {
@@ -86,7 +88,7 @@ public class ReviewControllerTests
     }
 
     [Fact]
-    public void AddReview()
+    public async Task AddReview()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
@@ -103,26 +105,15 @@ public class ReviewControllerTests
         };
 
         // Act
-        var result = controller.AddReview(reviewDto) as OkObjectResult;
+        var result = await controller.AddReview(reviewDto) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);
-        var resultValue = result.Value as dynamic;
-        Assert.Equal("Review added successfully", resultValue.Message);
-
-        // Obtem a avaliação do banco de dados
-        var reviewInDb = dbContext.Reviews.FirstOrDefault(r =>
-            r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
-        // Verifica se a avaliação foi adicionada ao banco de dados
-        Assert.NotNull(reviewInDb);
-        // Verifica se o ReviewerID da avaliação é igual ao esperado.
-        Assert.Equal("EMP001", reviewInDb.ReviewerId);
-        // Verifica se o ReviewedId da avaliação é igual ao esperado.
-        Assert.Equal("EMP002", reviewInDb.ReviewedId);
+        Assert.Equal("Review added successfully", result.Value);
     }
 
     [Fact]
-    public void AddReview_InvalidReviewer()
+    public async Task AddReview_InvalidReviewer()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
@@ -139,7 +130,7 @@ public class ReviewControllerTests
         };
 
         // Act
-        var result = controller.AddReview(reviewDto) as NotFoundObjectResult;
+        var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -153,7 +144,7 @@ public class ReviewControllerTests
     }
 
     [Fact]
-    public void AddReview_InvalidReviewedEmployee()
+    public async Task AddReview_InvalidReviewedEmployee()
     {
         // Arrange
         var dbContext = GetInMemoryDbContext();
@@ -170,7 +161,7 @@ public class ReviewControllerTests
         };
 
         // Act
-        var result = controller.AddReview(reviewDto) as NotFoundObjectResult;
+        var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);

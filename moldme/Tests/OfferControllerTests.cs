@@ -7,6 +7,8 @@ using moldme.Models;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
+
 using moldme.DTOs;
 
 namespace moldme.Tests;
@@ -139,7 +141,7 @@ public class OfferControllerTests
     }
 
     [Fact]
-public void AddOfferTest()
+public async Task AddOfferTest()
 {
     using (var dbContext = GetInMemoryDbContext())
     {
@@ -170,7 +172,7 @@ public void AddOfferTest()
 }
 
 [Fact]
-public void SendOffer_InvalidCompany_ReturnsNotFound()
+public async Task SendOffer_InvalidCompany_ReturnsNotFound()
 {
     using (var dbContext = GetInMemoryDbContext())
     {
@@ -196,7 +198,7 @@ public void SendOffer_InvalidCompany_ReturnsNotFound()
 }
 
 [Fact]
-public void SendOffer_InvalidProject_ReturnsNotFound()
+public async Task SendOffer_InvalidProject_ReturnsNotFound()
 {
     using (var dbContext = GetInMemoryDbContext())
     {

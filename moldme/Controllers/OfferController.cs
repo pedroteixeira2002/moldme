@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.DTOs;
@@ -19,6 +20,7 @@ public class OfferController : ControllerBase
     }
     
     // Enviar uma oferta para um projeto associado a uma empresa
+    [Authorize]
     [HttpPost("sendOffer")]
     public IActionResult SendOffer([FromBody] OfferDto offerDto)
     {
@@ -52,4 +54,5 @@ public class OfferController : ControllerBase
 
         return Ok("Offer sent successfully");
     }
+    
 }

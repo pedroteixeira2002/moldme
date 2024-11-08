@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.data;
 using moldme.DTOs;
@@ -18,6 +19,7 @@ namespace moldme.Controllers
         }
         
         // List all employees
+        [Authorize]
         [HttpGet("ListAllEmployees")]
         public IActionResult ListAllEmployees()
         {
@@ -26,6 +28,7 @@ namespace moldme.Controllers
         }
 
         // Get employee by ID
+        [Authorize]
         [HttpGet("GetEmployeeById/{employeeId}")]
         public IActionResult GetEmployeeById(string employeeId)
         {
@@ -39,6 +42,7 @@ namespace moldme.Controllers
         }
         
         // Get employee projects
+        [Authorize]
         [HttpGet("{employeeId}/projects")]
         public async Task<IActionResult> GetEmployeeProjects(string employeeId)
         {

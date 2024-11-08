@@ -8,6 +8,7 @@ using moldme.DTOs;
 using moldme.Models;
 using Moq;
 using Xunit;
+using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests;
 
@@ -280,6 +281,7 @@ public class CompanyControllerTests
     }
 
 
+
     [Fact]
     public void RemoveEmployeeTest()
     {
@@ -547,6 +549,7 @@ public class CompanyControllerTests
         Assert.NotNull(payments); // Ensure the payments list is not null
         Assert.Single(payments); // Assert that there's exactly one payment in the list
         Assert.Equal("PAY002", payments[0].PaymentID);
+
     }
 
     [Fact]
@@ -579,6 +582,7 @@ public class CompanyControllerTests
         var updatedCompany = dbContext.Companies.Find("1");
         Assert.Equal(newPlan, updatedCompany.Plan);
     }
+
 
 
     [Fact]
@@ -617,7 +621,7 @@ public class CompanyControllerTests
 
     //testes para o ListAllProjectsFromCompany
     [Fact]
-    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenProjectsExist()
+    public async Task ListAllProjectsFromCompany_ShouldReturnOk_WhenProjectsExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -627,7 +631,7 @@ public class CompanyControllerTests
         var passwordHasher2 = new PasswordHasher<Employee>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
-        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+        var result = await companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
 
         Assert.NotNull(result);
         var projects = result.Value as List<Project>;
@@ -780,7 +784,7 @@ public class CompanyControllerTests
     }
 
     [Fact]
-    public void ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    public async Task ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext); // Ensure no company with ID "999" is seeded
@@ -791,7 +795,7 @@ public class CompanyControllerTests
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Act
-        var result = companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
+        var result = await companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -799,7 +803,7 @@ public class CompanyControllerTests
     }
 
     [Fact]
-    public void ListAllProjectsFromCompany_ShouldReturnOk_WhenNoProjectsExist()
+    public async Task ListAllProjectsFromCompany_ShouldReturnOk_WhenNoProjectsExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -814,7 +818,7 @@ public class CompanyControllerTests
         dbContext.SaveChanges();
 
         // Act
-        var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
+        var result = await companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -823,7 +827,7 @@ public class CompanyControllerTests
 
     //getprojectbyid in company
     [Fact]
-    public void GetProjectById_ShouldReturnOk_WhenProjectExists()
+    public async Task etProjectById_ShouldReturnOk_WhenProjectExists()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -833,7 +837,7 @@ public class CompanyControllerTests
         var passwordHasher2 = new PasswordHasher<Employee>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
-        var result = companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
+        var result = await companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
 
         Assert.NotNull(result);
         var project = result.Value as Project;
@@ -841,7 +845,7 @@ public class CompanyControllerTests
     }
 
     [Fact]
-    public void GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
+    public async Task GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -851,14 +855,14 @@ public class CompanyControllerTests
         var passwordHasher2 = new PasswordHasher<Employee>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
-        var result = companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
+        var result = await companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
 
         Assert.NotNull(result);
         Assert.Equal("Project not found or does not belong to the specified company.", result.Value);
     }
 
     [Fact]
-    public void GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    public async Task GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -868,7 +872,7 @@ public class CompanyControllerTests
         var passwordHasher2 = new PasswordHasher<Employee>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
-        var result = companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
+        var result = await companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
 
         Assert.NotNull(result);
         Assert.Equal("Company not found", result.Value);

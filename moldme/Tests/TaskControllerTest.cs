@@ -45,7 +45,7 @@ namespace moldme.Tests
         }
 
 
-[Fact]
+    [Fact]
     public void Task_Properties_GetterSetter_WorksCorrectly()
     {
         var task = new Task
