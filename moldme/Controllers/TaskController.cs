@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.DTOs;
@@ -16,22 +17,29 @@ namespace moldme.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpPost("addtask")]
         public IActionResult Create([FromBody] TaskDto taskDto)
         {
             if (taskDto == null)
             {
-                return BadRequest("Task is null");
+                return BadRequest("Task data is null");
             }
-    
-            // Validação de existência do Projeto
+
+            if (string.IsNullOrEmpty(taskDto.TitleName) || 
+                string.IsNullOrEmpty(taskDto.Description) || 
+                string.IsNullOrEmpty(taskDto.ProjectId) || 
+                string.IsNullOrEmpty(taskDto.EmployeeId))
+            {
+                return BadRequest("TitleName, Description, ProjectId, and EmployeeId are required");
+            }
+
             var project = _context.Projects.FirstOrDefault(p => p.ProjectId == taskDto.ProjectId);
             if (project == null)
             {
                 return NotFound("Project not found");
             }
 
-            // Validação de existência do Funcionário
             var employee = _context.Employees.FirstOrDefault(e => e.EmployeeID == taskDto.EmployeeId);
             if (employee == null)
             {
@@ -40,7 +48,7 @@ namespace moldme.Controllers
 
             var task = new Task
             {
-                TaskId = Guid.NewGuid().ToString().Substring(0, 6), // Gera um ID único de 6 caracteres
+                TaskId = Guid.NewGuid().ToString().Substring(0, 6),
                 TitleName = taskDto.TitleName,
                 Description = taskDto.Description,
                 Date = taskDto.Date,
@@ -56,33 +64,46 @@ namespace moldme.Controllers
             return Ok("Task created successfully");
         }
 
-        // Read all
+        [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
-            var tasks = _context.Tasks.ToList(); 
+            var tasks = _context.Tasks.ToList();
             return Ok(tasks);
         }
 
-        // Read by ID
+        [Authorize]
         [HttpGet("{id}")]
-        public IActionResult GetById(String id)
+        public IActionResult GetById(string id)
         {
-            var task = _context.Tasks.Find(id); 
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Task ID is required");
+            }
+
+            var task = _context.Tasks.Find(id);
             if (task == null)
             {
-                return NotFound();
+                return NotFound("Task not found");
             }
             return Ok(task);
         }
 
-        // Update
+        [Authorize]
         [HttpPut("editTask/{id}")]
-        public IActionResult Update(string id, [FromBody] TaskDto updatedTaskDto)
+        public IActionResult UpdateTask(string id, [FromBody] TaskDto updatedTaskDto)
         {
-            if (!ModelState.IsValid)
+            if (updatedTaskDto == null)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Task data is null");
+            }
+
+            if (string.IsNullOrEmpty(updatedTaskDto.TitleName) ||
+                string.IsNullOrEmpty(updatedTaskDto.Description) ||
+                string.IsNullOrEmpty(updatedTaskDto.ProjectId) ||
+                string.IsNullOrEmpty(updatedTaskDto.EmployeeId))
+            {
+                return BadRequest("TitleName, Description, ProjectId, and EmployeeId are required");
             }
 
             var task = _context.Tasks.Find(id);
@@ -91,26 +112,45 @@ namespace moldme.Controllers
                 return NotFound("Task not found");
             }
 
-            // Atualiza as propriedades da tarefa com os dados do DTO
+            var project = _context.Projects.FirstOrDefault(p => p.ProjectId == updatedTaskDto.ProjectId);
+            if (project == null)
+            {
+                return NotFound("Project not found");
+            }
+
+            var employee = _context.Employees.FirstOrDefault(e => e.EmployeeID == updatedTaskDto.EmployeeId);
+            if (employee == null)
+            {
+                return NotFound("Employee not found");
+            }
+
             task.TitleName = updatedTaskDto.TitleName;
-            task.Description = updatedTaskDto.Description; 
+            task.Description = updatedTaskDto.Description;
             task.Status = updatedTaskDto.Status;
             task.Date = updatedTaskDto.Date;
             task.FilePath = updatedTaskDto.FilePath;
+            task.ProjectId = updatedTaskDto.ProjectId;
+            task.EmployeeId = updatedTaskDto.EmployeeId;
 
             _context.SaveChanges();
             return Ok("Task updated successfully");
         }
 
-        // Delete
+        [Authorize]
         [HttpDelete("Delete/{id}")]
-        public IActionResult Delete(String id)
+        public IActionResult DeleteTask(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Task ID is required");
+            }
+
             var task = _context.Tasks.Find(id);
             if (task == null)
             {
-                return NotFound();
+                return NotFound("Task not found");
             }
+
             _context.Tasks.Remove(task);
             _context.SaveChanges();
             return Ok("Task deleted successfully");

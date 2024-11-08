@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.Auth;
 using moldme.data;
 using moldme.DTOs;
@@ -24,8 +26,9 @@ namespace moldme.Controllers
             this.passwordHasher = passwordHasher;
             this.companyPasswordHasher = companyPasswordHasher;
         }
-
-        [HttpPost("addProject")]
+        
+        [Authorize]
+        [HttpPost("addProject/{companyId}")]
         public IActionResult AddProject(string companyId, [FromBody] ProjectDto projectDto)
         {
             // Verifica se a empresa existe
@@ -66,7 +69,8 @@ namespace moldme.Controllers
 
             return Ok("Project added successfully");
         }
-
+        
+        [Authorize]
         [HttpPut("EditProject/{projectId}")]
         public IActionResult EditProject(string projectId, [FromBody] ProjectDto updatedProjectDto)
         {
@@ -90,7 +94,7 @@ namespace moldme.Controllers
             return Ok("Project updated successfully");
         }
 
-
+        [Authorize]
         [HttpGet("ViewProject/{projectId}")]
         public IActionResult ViewProject(string projectId)
         {
@@ -104,7 +108,7 @@ namespace moldme.Controllers
             return Ok(existingProject);
         }
 
-
+        [Authorize]
         [HttpDelete("RemoveProject/{projectId}")]
         public IActionResult RemoveProject(string projectId)
         {
@@ -123,11 +127,8 @@ namespace moldme.Controllers
 
             return Ok("Project removed successfully");
         }
-
-
-
-
-
+        
+        [Authorize]
         [HttpPost("AddEmployee/{companyID}")]
         public IActionResult AddEmployee(string companyID, [FromBody] EmployeeDto employeeDto)
         {
@@ -150,7 +151,7 @@ namespace moldme.Controllers
                 NIF = employeeDto.Nif,
                 Email = employeeDto.Email,
                 Contact = employeeDto.Contact,
-                Password = employeeDto.Password,
+                Password = passwordHasher.HashPassword(null, employeeDto.Password),
                 CompanyId = company.CompanyID
             };
 
@@ -184,14 +185,15 @@ namespace moldme.Controllers
             existingEmployee.NIF = updatedEmployeeDto.Nif;
             existingEmployee.Email = updatedEmployeeDto.Email;
             existingEmployee.Contact = updatedEmployeeDto.Contact;
-            existingEmployee.Password = updatedEmployeeDto.Password; // Ensure this is hashed if needed
+            existingEmployee.Password = passwordHasher.HashPassword(null, updatedEmployeeDto.Password);
 
             dbContext.SaveChanges();
 
             // Return a success message instead of the employee object
             return Ok("Employee updated successfully");
         }
-    
+        
+        [Authorize]
         [HttpDelete("RemoveEmployee/{employeeID}")]
         public IActionResult RemoveEmployee(string companyID, string employeeId)
         {
@@ -208,6 +210,7 @@ namespace moldme.Controllers
             return Ok("Employee removed successfully");
         }
         
+        [Authorize]
         [HttpGet("ListAllEmployees/{companyID}")]
         public IActionResult ListAllEmployees(string companyID)
         {
@@ -218,7 +221,8 @@ namespace moldme.Controllers
             }
             return Ok(employees);
         }
-
+        
+        [Authorize]
         [HttpGet("ListPaymentHistory/{companyID}")]
         public IActionResult ListPaymentHistory(string companyID)
         {
@@ -236,7 +240,8 @@ namespace moldme.Controllers
 
             return Ok(payments);
         }
-
+        
+        [Authorize]
         [HttpPut("UpgradePlan/{companyID}")]
         public IActionResult UpgradePlan(string companyID, SubscriptionPlan subscriptionPlan)
         {
@@ -261,7 +266,8 @@ namespace moldme.Controllers
             // Registrar o pagamento do novo plano
             return SubscribePlan(companyID, subscriptionPlan);
         }
-
+        
+        [Authorize]
         [HttpPost("SubscribePlan/{companyID}")]
         public IActionResult SubscribePlan(string companyID, SubscriptionPlan subscriptionPlan)
         {
@@ -295,6 +301,8 @@ namespace moldme.Controllers
 
             return Ok($"Payment of {value} registered successfully for plan {subscriptionPlan}");
         }
+        
+        [Authorize]
         [HttpPut("CancelSubscription/{companyID}")]
         public IActionResult CancelSubscription(string companyID)
         {
@@ -317,25 +325,23 @@ namespace moldme.Controllers
 
             return Ok("Subscription cancelled successfully");
         }
-
-
-
-
+        
+        [Authorize]
         [HttpGet("ListAllProjects/{companyID}")]
-        public IActionResult ListAllProjectsFromCompany(string companyID)
+        public async Task<IActionResult> ListAllProjectsFromCompany(string companyID)
         {
             // Verifica se a companhia existe
-            var companyExists = dbContext.Companies.Any(c => c.CompanyID == companyID);
+            var companyExists = await dbContext.Companies.AnyAsync(c => c.CompanyID == companyID);
             if (!companyExists)
             {
                 return NotFound("Company not found");
             }
 
             //projetos associados à companhia
-            var projects = dbContext.Projects.Where(p => p.CompanyId == companyID).ToList();
+            var projects = await dbContext.Projects.Where(p => p.CompanyId == companyID).ToListAsync();
 
             // Verifica se há projetos
-            if (projects.Count == 0)
+            if (!projects.Any())
             {
                 return Ok("No projects found for this company");
             }
@@ -344,21 +350,24 @@ namespace moldme.Controllers
             return Ok(projects);
         }
         
+        [Authorize]
         [HttpGet("GetProjectById/{companyID}/{projectID}")]
-        public IActionResult GetProjectById(string companyID, string projectID)
+        public async Task<IActionResult> GetProjectById(string companyID, string projectID)
         {
-            var companyExists = dbContext.Companies.Any(c => c.CompanyID == companyID);
+            var companyExists = await dbContext.Companies.AnyAsync(c => c.CompanyID == companyID);
             if (!companyExists)
             {
                 return NotFound("Company not found");
             }
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == projectID && p.CompanyId == companyID);
+            var project = await dbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == projectID && p.CompanyId == companyID);
+            
             if (project == null)
             {
                 return NotFound("Project not found or does not belong to the specified company.");
             }
             return Ok(project);
         }
+        
         
         [HttpPost("register")]
         public IActionResult CreateCompany([FromBody] CompanyDto companyDto)
@@ -412,8 +421,7 @@ namespace moldme.Controllers
             // Retornar resposta de sucesso com token e mensagem
             return Ok(new { Token = token, Message = "Company registered successfully" });
         }
-
-
+        
     }
 }
 

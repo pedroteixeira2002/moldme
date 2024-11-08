@@ -4,28 +4,28 @@ using moldme.Models;
 namespace moldme.DTOs;
 public class TaskDto
 {
-    [Required]
+    [Required(ErrorMessage = "TitleName is required")]
     [StringLength(64)]
-    public string TitleName { get; set; }
+    public String TitleName { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Description is required")]
     [StringLength(256)]
-    public string Description { get; set; }
+    public String Description { get; set; }
 
     [Required]
     [DataType(DataType.Date)]
     public DateTime Date { get; set; }
 
     [Required]
-    public Status Status { get; set; } // Supondo que Status é um enum
+    public Status Status { get; set; } 
 
-    [Required]
+    [Required(ErrorMessage = "ProjectId is required")]
     [StringLength(6)]
-    public string ProjectId { get; set; }
+    public String ProjectId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "EmployeeId is required")]
     [StringLength(6)]
-    public string EmployeeId { get; set; }
+    public String EmployeeId { get; set; }
 
-    public string? FilePath { get; set; } // Este campo é opcional
+    public String? FilePath { get; set; } 
 }

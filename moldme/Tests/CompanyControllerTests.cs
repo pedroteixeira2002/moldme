@@ -8,6 +8,7 @@ using moldme.DTOs;
 using moldme.Models;
 using Moq;
 using Xunit;
+using Task = System.Threading.Tasks.Task;
 
 namespace moldme.Tests;
 
@@ -634,7 +635,7 @@ public class CompanyControllerTests
         var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
 
         Assert.NotNull(result);
-        var projects = result.Value as List<Project>;
+        var projects = okResult.Value as List<Project>;
         Assert.Equal(1, projects.Count);
     }
 
@@ -779,7 +780,7 @@ public class CompanyControllerTests
     }
 
     [Fact]
-    public void ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    public async Task ListAllProjectsFromCompany_ShouldReturnNotFound_WhenCompanyDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext); // Ensure no company with ID "999" is seeded
@@ -789,7 +790,7 @@ public class CompanyControllerTests
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
 
         // Act
-        var result = companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
+        var result = await companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -818,26 +819,16 @@ public class CompanyControllerTests
         Assert.Equal("No projects found for this company", result.Value);
     }
 
-    //getprojectbyid in company
-    [Fact]
-    public void GetProjectById_ShouldReturnOk_WhenProjectExists()
-    {
-        var dbContext = GetInMemoryDbContext();
-        SeedData(dbContext);
-
-        var tokenGenerator = new TokenGenerator(_configuration);
-        var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
         var result = companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
 
+
         Assert.NotNull(result);
-        var project = result.Value as Project;
+        var project = okResult.Value as Project;
         Assert.Equal("New Project", project.Name);
     }
 
     [Fact]
-    public void GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
+    public async Task GetProjectById_ShouldReturnNotFound_WhenProjectDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -845,15 +836,15 @@ public class CompanyControllerTests
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
         var result = companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
+
 
         Assert.NotNull(result);
         Assert.Equal("Project not found or does not belong to the specified company.", result.Value);
     }
 
     [Fact]
-    public void GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
+    public async Task GetProjectById_ShouldReturnNotFound_WhenCompanyDoesNotExist()
     {
         var dbContext = GetInMemoryDbContext();
         SeedData(dbContext);
@@ -861,7 +852,6 @@ public class CompanyControllerTests
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
-
         var result = companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
 
         Assert.NotNull(result);
@@ -1005,3 +995,4 @@ public class CompanyControllerTests
         Assert.Equal("Invalid email format.", result.Value);
     }
 }
+

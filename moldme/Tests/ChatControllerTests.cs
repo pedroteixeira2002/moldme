@@ -26,16 +26,31 @@ namespace moldme.Tests
             using (var dbContext = GetInMemoryDbContext())
             {
                 var controller = new ChatController(dbContext);
-                
+                var project = new Project
+                {
+                    ProjectId = "2",
+                    Name = "Project 1",
+                    Description = "Description 1",
+                    Budget = 1000,
+                    Status = Status.INPROGRESS,
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
+                    CompanyId = "1"
+                };
+                dbContext.Projects.Add(project);
+
                 var chat = new Chat
                 {
                     ChatId = "1",
                     ProjectId = "2"
+                    
                 };
+                
 
                 var result = await controller.CreateChat(chat);
-                var okResult = result.Result as OkObjectResult;
 
+                Assert.NotNull(result);
+                var okResult = result.Result as OkObjectResult;
                 Assert.NotNull(okResult);
                 Assert.Equal("Chat created successfully", okResult.Value);
             }
@@ -81,7 +96,7 @@ namespace moldme.Tests
         }
 
         [Fact]
-        public void DeleteChat_ExistingId_ReturnsOkResult()
+        public async Task DeleteChat_ExistingId_ReturnsOkResult()
         {
             using (var dbContext = GetInMemoryDbContext())
             {
@@ -89,13 +104,14 @@ namespace moldme.Tests
                 {
                     ChatId = "1",
                     ProjectId = "2"
+                    
                 };
                 dbContext.Chats.Add(chat);
                 dbContext.SaveChanges();
 
                 var controller = new ChatController(dbContext);
 
-                var result = controller.Delete("1") as OkObjectResult;
+                var result = await controller.DeleteChat("1") as OkObjectResult;
 
                 Assert.NotNull(result);
                 Assert.Equal("Chat deleted successfully", result.Value);
@@ -103,15 +119,15 @@ namespace moldme.Tests
         }
 
         [Fact]
-        public void DeleteChat_NonExistingId_ReturnsNotFoundResult()
+        public async Task DeleteChat_NonExistingId_ReturnsNotFoundResult()
         {
             using (var dbContext = GetInMemoryDbContext())
             {
                 var controller = new ChatController(dbContext);
 
-                var result = controller.Delete("non-existing-id") as NotFoundResult;
+                var result = await controller.DeleteChat("non-existing-id") as NotFoundObjectResult;
 
-                Assert.NotNull(result);
+                Assert.Equal("Chat not found", result.Value);
             }
         }
     }
