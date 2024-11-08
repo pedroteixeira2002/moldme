@@ -40,6 +40,45 @@ namespace moldme.Tests
                 Assert.Equal("Chat created successfully", okResult.Value);
             }
         }
+        [Fact]
+        public void Chat_Properties_GetterSetter_WorksCorrectly()
+        {
+            // Arrange
+            var chat = new Chat
+            {
+                ChatId = "C12345",
+                ProjectId = "P12345",
+                Messages = new List<Message>
+                {
+                    new Message { MessageId = "M1", Text = "Hello", Date = DateTime.Now, EmployeeId = "E1" },
+                    new Message { MessageId = "M2", Text = "World", Date = DateTime.Now, EmployeeId = "E2" }
+                },
+                Project = new Project { ProjectId = "P12345", Name = "Project 1" }
+            };
+
+            // Act & Assert
+            Assert.Equal("C12345", chat.ChatId);
+            Assert.Equal("P12345", chat.ProjectId);
+            Assert.Equal(2, chat.Messages.Count);
+            Assert.Equal("Hello", chat.Messages[0].Text);
+            Assert.Equal("World", chat.Messages[1].Text);
+            Assert.Equal("Project 1", chat.Project.Name);
+
+            // Test Messages setter
+            var newMessages = new List<Message>
+            {
+                new Message { MessageId = "M3", Text = "New Message", Date = DateTime.Now, EmployeeId = "E3" }
+            };
+            chat.Messages = newMessages;
+            Assert.Single(chat.Messages);
+            Assert.Equal("New Message", chat.Messages[0].Text);
+
+            // Test Project getter and setter
+            var newProject = new Project { ProjectId = "P67890", Name = "New Project" };
+            chat.Project = newProject;
+            Assert.Equal("P67890", chat.Project.ProjectId);
+            Assert.Equal("New Project", chat.Project.Name);
+        }
 
         [Fact]
         public void DeleteChat_ExistingId_ReturnsOkResult()

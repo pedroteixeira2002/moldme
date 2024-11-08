@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using moldme.Controllers;
 using moldme.data;
+using moldme.DTOs;
 using moldme.Models;
 using Task = moldme.Models.Task;
 
@@ -17,7 +18,7 @@ namespace moldme.Tests
                 .Options;
             return new ApplicationDbContext(options);
         }
-        
+
         private void SeedData(ApplicationDbContext dbContext)
         {
             var project = new Project
@@ -44,6 +45,54 @@ namespace moldme.Tests
         }
 
 
+[Fact]
+    public void Task_Properties_GetterSetter_WorksCorrectly()
+    {
+        var task = new Task
+        {
+            TaskId = "T12345",
+            TitleName = "Task 1",
+            Description = "Description of Task 1",
+            Status = Status.INPROGRESS,
+            Date = new DateTime(2023, 10, 1),
+            ProjectId = "P12345",
+            Project = new Project { ProjectId = "P12345", Name = "Project 1" },
+            EmployeeId = "E12345",
+            FilePath = "/path/to/file",
+            Employee = new Employee { EmployeeID = "E12345", Name = "John Doe" }
+        };
+
+        Assert.Equal("T12345", task.TaskId);
+        Assert.Equal("Task 1", task.TitleName);
+        Assert.Equal("Description of Task 1", task.Description);
+        Assert.Equal(Status.INPROGRESS, task.Status);
+        Assert.Equal(new DateTime(2023, 10, 1), task.Date);
+        Assert.Equal("P12345", task.ProjectId);
+        Assert.Equal("Project 1", task.Project.Name);
+        Assert.Equal("E12345", task.EmployeeId);
+        Assert.Equal("/path/to/file", task.FilePath);
+        Assert.Equal("John Doe", task.Employee.Name);
+
+        task.TitleName = "Updated Task";
+        task.Description = "Updated Description";
+        task.Status = Status.DONE;
+        task.Date = new DateTime(2023, 11, 1);
+        task.ProjectId = "P67890";
+        task.Project = new Project { ProjectId = "P67890", Name = "Updated Project" };
+        task.EmployeeId = "E67890";
+        task.FilePath = "/new/path/to/file";
+        task.Employee = new Employee { EmployeeID = "E67890", Name = "Jane Doe" };
+
+        Assert.Equal("Updated Task", task.TitleName);
+        Assert.Equal("Updated Description", task.Description);
+        Assert.Equal(Status.DONE, task.Status);
+        Assert.Equal(new DateTime(2023, 11, 1), task.Date);
+        Assert.Equal("P67890", task.ProjectId);
+        Assert.Equal("Updated Project", task.Project.Name);
+        Assert.Equal("E67890", task.EmployeeId);
+        Assert.Equal("/new/path/to/file", task.FilePath);
+        Assert.Equal("Jane Doe", task.Employee.Name);
+    }        
         [Fact]
         public void CreateTask_ReturnsOkResult_WithCreatedTask()
         {
@@ -62,15 +111,14 @@ namespace moldme.Tests
                 EmployeeId = "1",
                 Status = Status.PENDING
             };
-
-            // Act
+            
             var result = controller.Create(newTaskDto) as OkObjectResult;
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Task created successfully", result.Value);
 
-            var createdTask = context.Tasks.FirstOrDefault(t => t.TitleName == "New Task" && t.Description == "New Task Description");
+            var createdTask =
+                context.Tasks.FirstOrDefault(t => t.TitleName == "New Task" && t.Description == "New Task Description");
             Assert.NotNull(createdTask);
             Assert.Equal("New Task", createdTask.TitleName);
             Assert.Equal("New Task Description", createdTask.Description);

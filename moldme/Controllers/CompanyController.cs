@@ -34,7 +34,6 @@ namespace moldme.Controllers
             if (company == null)
                 return NotFound("Company not found");
 
-            // Cria um novo objeto Project a partir do DTO
             var project = new Project
             {
                 ProjectId = Guid.NewGuid().ToString().Substring(0, 6), // Gera um novo ID para o projeto (ou outra lógica que você queira usar)
@@ -48,7 +47,6 @@ namespace moldme.Controllers
                 Employees = new List<Employee>()
             };
 
-            // Verifica se os IDs dos empregados são válidos e associa os empregados ao projeto
             foreach (var employeeId in projectDto.EmployeeIds)
             {
                 var employee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId);
@@ -58,7 +56,6 @@ namespace moldme.Controllers
                 }
                 else
                 {
-                    // Se algum empregado não for encontrado, você pode decidir como tratar isso
                     return NotFound($"Employee with ID {employeeId} not found");
                 }
             }
@@ -88,11 +85,9 @@ namespace moldme.Controllers
             existingProject.StartDate = updatedProjectDto.StartDate;
             existingProject.EndDate = updatedProjectDto.EndDate;
 
-            // Salva as alterações no banco de dados
             dbContext.SaveChanges();
 
-            // Retorna o projeto atualizado
-            return Ok(existingProject);
+            return Ok("Project updated successfully");
         }
 
 
@@ -320,7 +315,7 @@ namespace moldme.Controllers
             existingCompany.Plan = SubscriptionPlan.None;
             dbContext.SaveChanges();
 
-            return Ok("Subscription successfully canceled.");
+            return Ok("Subscription cancelled successfully");
         }
 
 

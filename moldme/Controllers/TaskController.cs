@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
-using moldme.Models;
+using moldme.DTOs;
 using Task = moldme.Models.Task;
 
 namespace moldme.Controllers

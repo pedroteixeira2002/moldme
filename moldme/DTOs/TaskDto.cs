@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using moldme.Models;
 
+namespace moldme.DTOs;
 public class TaskDto
 {
     [Required]

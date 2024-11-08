@@ -20,6 +20,29 @@ namespace moldme.Tests
         }
 
         [Fact]
+        public void Message_Properties_GetterSetter_WorksCorrectly()
+        {
+            var message = new Message
+            {
+                MessageId = "M12345",
+                Text = "Hello, World!",
+                Date = new DateTime(2023, 10, 1),
+                EmployeeId = "E12345",
+                Employee = new Employee { EmployeeID = "E12345", Name = "John Doe" },
+                ChatId = "C12345",
+                Chat = new Chat { ChatId = "C12345", ProjectId = "P12345" }
+            };
+
+            Assert.Equal("M12345", message.MessageId);
+            Assert.Equal("Hello, World!", message.Text);
+            Assert.Equal(new DateTime(2023, 10, 1), message.Date);
+            Assert.Equal("E12345", message.EmployeeId);
+            Assert.Equal("John Doe", message.Employee.Name);
+            Assert.Equal("C12345", message.ChatId);
+            Assert.Equal("P12345", message.Chat.ProjectId);
+        }
+
+        [Fact]
         public async Task SendMessage_ReturnsCreatedAtActionResult()
         {
             using (var dbContext = GetInMemoryDbContext())
@@ -118,14 +141,13 @@ namespace moldme.Tests
                     EmployeeId = "user2",
                     Date = DateTime.Now,
                     ChatId = "1"
-
                 };
-                
+
                 var chat1 = new Chat
                 {
                     ChatId = "2",
                     ProjectId = "2",
-                    Messages = {message1, message2}
+                    Messages = { message1, message2 }
                 };
                 dbContext.Messages.Add(message1);
                 dbContext.Messages.Add(message2);
