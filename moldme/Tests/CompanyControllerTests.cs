@@ -230,6 +230,7 @@ public class CompanyControllerTests
         // Assuming _configuration is already defined in your test class and contains your JWT key
         var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
         var passwordHasher = new PasswordHasher<Company>();
+        var passwordHasher2 = new PasswordHasher<Employee>();
 
         // Create and add a company only if it doesn't exist in the in-memory database
         Company company = new Company
@@ -261,25 +262,10 @@ public class CompanyControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            ProjectId = "P1" // Add a project ID, assuming it exists in the seed data
         };
+        
 
-        // Optionally, seed a project in your database if it doesn't already exist
-        var project = new Project
-        {
-            ProjectId = employeeDto.ProjectId,
-            Name = "Project 1",
-            Description = "Project Description",
-            CompanyId = company.CompanyID
-        };
-
-        if (!dbContext.Projects.Any(p => p.ProjectId == project.ProjectId))
-        {
-            dbContext.Projects.Add(project);
-            dbContext.SaveChanges(); // Save the project first
-        }
-
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Act
         var result = companyController.AddEmployee(company.CompanyID, employeeDto) as OkObjectResult;
@@ -335,7 +321,8 @@ public class CompanyControllerTests
         // Create an instance of the CompanyController
         var tokenGenerator = new TokenGenerator(_configuration); // Use _configuration directly
         var passwordHasher = new PasswordHasher<Company>();
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Act
         var result = controller.RemoveEmployee(company.CompanyID, employee.EmployeeID) as OkObjectResult;
@@ -356,7 +343,8 @@ public class CompanyControllerTests
         var dbContext = GetInMemoryDbContext(); // Create a new DbContext for the test
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Create and add a company
         var company = new Company
@@ -425,7 +413,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var company = new Company
         {
@@ -490,7 +479,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.ViewProject("PROJ01") as OkObjectResult;
 
@@ -507,7 +497,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.RemoveProject("PROJ01") as OkObjectResult;
 
@@ -525,7 +516,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Clear existing payments to isolate the test
         dbContext.Payments.RemoveRange(dbContext.Payments);
@@ -566,7 +558,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Configurar o plano inicial para a empresa
         var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
@@ -596,7 +589,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.UpgradePlan("1", SubscriptionPlan.Premium) as BadRequestObjectResult;
 
@@ -612,7 +606,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.UpgradePlan("999", SubscriptionPlan.Premium) as NotFoundObjectResult;
 
@@ -629,7 +624,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.ListAllProjectsFromCompany("1") as OkObjectResult;
 
@@ -647,7 +643,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var projectDto = new ProjectDto
         {
@@ -677,7 +674,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var projectDto = new ProjectDto
         {
@@ -705,7 +703,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var projectDto = new ProjectDto
         {
@@ -732,7 +731,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var projectDto = new ProjectDto
         {
@@ -766,7 +766,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.CancelSubscription("1") as OkObjectResult;
 
@@ -786,7 +787,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Act
         var result = companyController.ListAllProjectsFromCompany("999") as NotFoundObjectResult;
@@ -804,7 +806,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         // Remove todos os projetos para simular
         dbContext.Projects.RemoveRange(dbContext.Projects);
@@ -827,7 +830,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.GetProjectById("1", "PROJ01") as OkObjectResult;
 
@@ -844,7 +848,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.GetProjectById("1", "PROJ02") as NotFoundObjectResult;
 
@@ -860,7 +865,8 @@ public class CompanyControllerTests
 
         var tokenGenerator = new TokenGenerator(_configuration);
         var passwordHasher = new PasswordHasher<Company>();
-        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var result = companyController.GetProjectById("999", "PROJ01") as NotFoundObjectResult;
 
@@ -875,7 +881,8 @@ public class CompanyControllerTests
         var dbContext = GetInMemoryDbContext();
         var passwordHasher = new PasswordHasher<Company>();
         var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var companyDto = new CompanyDto
         {
@@ -906,7 +913,8 @@ public class CompanyControllerTests
         var dbContext = GetInMemoryDbContext();
         var passwordHasher = new PasswordHasher<Company>();
         var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var existingCompany = new Company
         {
@@ -952,7 +960,8 @@ public class CompanyControllerTests
         var dbContext = GetInMemoryDbContext();
         var passwordHasher = new PasswordHasher<Company>();
         var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var companyDto = new CompanyDto
         {
@@ -982,7 +991,8 @@ public class CompanyControllerTests
         var dbContext = GetInMemoryDbContext();
         var passwordHasher = new PasswordHasher<Company>();
         var tokenGenerator = new TokenGenerator(_configuration);
-        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher);
+        var passwordHasher2 = new PasswordHasher<Employee>();
+        var controller = new CompanyController(dbContext, tokenGenerator, passwordHasher, passwordHasher2);
 
         var companyDto = new CompanyDto
         {

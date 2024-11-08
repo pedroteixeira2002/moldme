@@ -7,6 +7,7 @@ using moldme.Models;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using moldme.DTOs;
 
 namespace moldme.Tests;
 
@@ -138,85 +139,85 @@ public class OfferControllerTests
     }
 
     [Fact]
-    public void AddOfferTest()
+public void AddOfferTest()
+{
+    using (var dbContext = GetInMemoryDbContext())
     {
-        using (var dbContext = GetInMemoryDbContext())
+        SeedData(dbContext);
+
+        var controller = new OfferController(dbContext);
+
+        var offerDto = new OfferDto
         {
-            SeedData(dbContext);
+            OfferId = "1",
+            CompanyId = "1",
+            ProjectId = "1",
+            Date = DateTime.Now,
+            Status = Status.PENDING,
+            Description = "Description 1"
+        };
 
-            var controller = new OfferController(dbContext);
+        var result = controller.SendOffer(offerDto) as OkObjectResult;
 
-            var offer = new Offer
-            {
-                OfferId = "1",
-                CompanyId = "1",
-                ProjectId = "1",
-                Date = DateTime.Now,
-                Status = Status.PENDING,
-                Description = "Description 1"
-            };
+        Assert.NotNull(result);
+        Assert.Equal("Offer sent successfully", result.Value);
 
-            var result = controller.SendOffer("1", "1", offer) as OkObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("Offer sent successfully", result.Value);
-
-            var addedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
-            Assert.NotNull(addedOffer);
-            Assert.Equal("1", addedOffer.CompanyId);
-            Assert.Equal("1", addedOffer.ProjectId);
-        }
+        var addedOffer = dbContext.Offers.FirstOrDefault(o => o.OfferId == "1");
+        Assert.NotNull(addedOffer);
+        Assert.Equal("1", addedOffer.CompanyId);
+        Assert.Equal("1", addedOffer.ProjectId);
     }
+}
 
-    [Fact]
-    public void SendOffer_InvalidCompany_ReturnsNotFound()
+[Fact]
+public void SendOffer_InvalidCompany_ReturnsNotFound()
+{
+    using (var dbContext = GetInMemoryDbContext())
     {
-        using (var dbContext = GetInMemoryDbContext())
+        SeedData(dbContext);
+
+        var controller = new OfferController(dbContext);
+
+        var offerDto = new OfferDto
         {
-            SeedData(dbContext);
+            OfferId = "1",
+            CompanyId = "invalid", // Non-existent company ID
+            ProjectId = "1",
+            Date = DateTime.Now,
+            Status = Status.PENDING,
+            Description = "Description 1"
+        };
 
-            var controller = new OfferController(dbContext);
+        var result = controller.SendOffer(offerDto) as NotFoundObjectResult;
 
-            var offer = new Offer
-            {
-                OfferId = "1",
-                CompanyId = "invalid",
-                ProjectId = "1",
-                Date = DateTime.Now,
-                Status = Status.PENDING,
-                Description = "Description 1"
-            };
-
-            var result = controller.SendOffer("invalid", "1", offer) as NotFoundObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("Company not found", result.Value);
-        }
+        Assert.NotNull(result);
+        Assert.Equal("Company not found", result.Value);
     }
+}
 
-    [Fact]
-    public void SendOffer_InvalidProject_ReturnsNotFound()
+[Fact]
+public void SendOffer_InvalidProject_ReturnsNotFound()
+{
+    using (var dbContext = GetInMemoryDbContext())
     {
-        using (var dbContext = GetInMemoryDbContext())
+        SeedData(dbContext);
+
+        var controller = new OfferController(dbContext);
+
+        var offerDto = new OfferDto
         {
-            SeedData(dbContext);
+            OfferId = "1",
+            CompanyId = "1",
+            ProjectId = "invalid", // Non-existent project ID
+            Date = DateTime.Now,
+            Status = Status.PENDING,
+            Description = "Description 1"
+        };
 
-            var controller = new OfferController(dbContext);
+        var result = controller.SendOffer(offerDto) as NotFoundObjectResult;
 
-            var offer = new Offer
-            {
-                OfferId = "1",
-                CompanyId = "1",
-                ProjectId = "invalid",
-                Date = DateTime.Now,
-                Status = Status.PENDING,
-                Description = "Description 1"
-            };
-
-            var result = controller.SendOffer("1", "invalid", offer) as NotFoundObjectResult;
-
-            Assert.NotNull(result);
-            Assert.Equal("Project not found", result.Value);
-        }
+        Assert.NotNull(result);
+        Assert.Equal("Project not found", result.Value);
     }
+}
 }

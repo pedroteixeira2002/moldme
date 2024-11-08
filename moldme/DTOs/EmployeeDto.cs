@@ -24,9 +24,6 @@ public class EmployeeDto
     public int? Contact { get; set; }
 
     [Required]
-    [StringLength(64)]
+    [StringLength(256)]
     public string Password { get; set; }
-
-    [Required]
-    public string ProjectId { get; set; }
 }

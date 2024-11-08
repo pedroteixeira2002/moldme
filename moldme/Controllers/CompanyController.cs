@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using moldme.Auth;
 using moldme.data;
 using moldme.DTOs;
@@ -14,15 +15,16 @@ namespace moldme.Controllers
     {
         private readonly ApplicationDbContext dbContext;
         private readonly TokenGenerator tokenGenerator;
-        private readonly IPasswordHasher<Company> passwordHasher;
         private readonly IPasswordHasher<Company> companyPasswordHasher;
+        private readonly IPasswordHasher<Employee> employeePasswordHasher;
         
-        public CompanyController(ApplicationDbContext dbContext, TokenGenerator tokenGenerator,IPasswordHasher<Company> companyPasswordHasher, IPasswordHasher<Company> passwordHasher)
+        public CompanyController(ApplicationDbContext dbContext, TokenGenerator tokenGenerator,
+            IPasswordHasher<Company> companyPasswordHasher, IPasswordHasher<Employee> employeePasswordHasher)
         {
             this.dbContext = dbContext;
             this.tokenGenerator = tokenGenerator;
-            this.passwordHasher = passwordHasher;
             this.companyPasswordHasher = companyPasswordHasher;
+            this.employeePasswordHasher = employeePasswordHasher;
         }
 
         [HttpPost("addProject")]
@@ -108,8 +110,8 @@ namespace moldme.Controllers
         [HttpDelete("RemoveProject/{projectId}")]
         public IActionResult RemoveProject(string projectId)
         {
-            // Buscar o projeto, sem necessidade de incluir funcionários se não for usado
             var existingProject = dbContext.Projects
+                .Include(p => p.Employees) // Inclui associações com funcionários
                 .FirstOrDefault(p => p.ProjectId == projectId);
 
             if (existingProject == null)
@@ -117,16 +119,14 @@ namespace moldme.Controllers
                 return NotFound("Project not found");
             }
 
-            // Remover o projeto. A exclusão em cascata deve cuidar das referências na tabela EmployeeProject
+            existingProject.Employees.Clear();
+            dbContext.SaveChanges(); // Salvar antes de remover o projeto
+
             dbContext.Projects.Remove(existingProject);
             dbContext.SaveChanges();
 
             return Ok("Project removed successfully");
         }
-
-
-
-
 
         [HttpPost("AddEmployee/{companyID}")]
         public IActionResult AddEmployee(string companyID, [FromBody] EmployeeDto employeeDto)
@@ -135,12 +135,7 @@ namespace moldme.Controllers
             var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
             if (company == null)
                 return NotFound("Company not found");
-
-            // Verifica se o projeto existe com o ProjectId fornecido
-            var project = dbContext.Projects.FirstOrDefault(p => p.ProjectId == employeeDto.ProjectId);
-            if (project == null)
-                return NotFound("Project not found");
-
+            
             // Cria uma nova instância de Employee e define os valores necessários
             var employee = new Employee
             {
@@ -150,12 +145,11 @@ namespace moldme.Controllers
                 NIF = employeeDto.Nif,
                 Email = employeeDto.Email,
                 Contact = employeeDto.Contact,
-                Password = employeeDto.Password,
+                Password = employeePasswordHasher.HashPassword(null, employeeDto.Password), // Hash da senha
                 CompanyId = company.CompanyID
             };
 
             dbContext.Employees.Add(employee);
-            project.Employees.Add(employee);
 
             try
             {
@@ -169,9 +163,14 @@ namespace moldme.Controllers
             return Ok("Employee created successfully");
         }
 
-        [HttpPut("EditEmployee/{employeeID}")]
+        [HttpPut("EditEmployee/{companyID}/{employeeID}")]
         public IActionResult EditEmployee(string companyID, string employeeId, [FromBody] EmployeeDto updatedEmployeeDto)
         {
+            var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == companyID);
+            
+            if (existingCompany == null)
+                return NotFound("Company not found");
+            
             var existingEmployee =
                 dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
 
@@ -184,7 +183,8 @@ namespace moldme.Controllers
             existingEmployee.NIF = updatedEmployeeDto.Nif;
             existingEmployee.Email = updatedEmployeeDto.Email;
             existingEmployee.Contact = updatedEmployeeDto.Contact;
-            existingEmployee.Password = updatedEmployeeDto.Password; // Ensure this is hashed if needed
+            existingEmployee.Password = employeePasswordHasher.HashPassword(null, updatedEmployeeDto.Password);
+            
 
             dbContext.SaveChanges();
 
@@ -192,18 +192,25 @@ namespace moldme.Controllers
             return Ok("Employee updated successfully");
         }
     
-        [HttpDelete("RemoveEmployee/{employeeID}")]
+        [HttpDelete("RemoveEmployee/{companyID}/{employeeID}")]
         public IActionResult RemoveEmployee(string companyID, string employeeId)
         {
-            var existingEmployee = dbContext.Employees.FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
+            var existingEmployee = dbContext.Employees
+                .Include(e => e.Reviews)
+                .FirstOrDefault(e => e.EmployeeID == employeeId && e.CompanyId == companyID);
 
-                if (existingEmployee == null)
-                {
-                    return NotFound("Employee not found or does not belong to the specified company.");
-                }
+            if (existingEmployee == null)
+            {
+                return NotFound("Employee not found or does not belong to the specified company.");
+            }
 
-                dbContext.Employees.Remove(existingEmployee);
-                dbContext.SaveChanges();
+            foreach (var review in existingEmployee.Reviews)
+            {
+                review.ReviewerId = null;
+            }
+
+            dbContext.Employees.Remove(existingEmployee);
+            dbContext.SaveChanges();
 
             return Ok("Employee removed successfully");
         }

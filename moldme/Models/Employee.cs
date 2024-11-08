@@ -39,5 +39,7 @@ public class Employee
     [ForeignKey("CompanyId")] public Company Company { get; set; }
     
     public List<Project> Projects { get; set; } = new List<Project>();
+    
+    public List<Review> Reviews { get; set; } = new List<Review>();
 }
 

@@ -4,6 +4,8 @@ using moldme.Models;
 
 namespace moldme.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class ChatController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
