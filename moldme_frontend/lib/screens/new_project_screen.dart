@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/widgets/app_drawer.dart';
 import '../services/company_service.dart';
 import '../models/project_dto.dart';
 
@@ -8,6 +11,18 @@ class NewProjectScreen extends StatefulWidget {
   @override
   State<NewProjectScreen> createState() => _NewProjectScreenState();
 }
+@override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("New Project"),
+      ),
+      drawer: const AppDrawer(),
+      body: const Center(
+        child: Text("Create a new project here!"),
+      ),
+    );
+  }
 
 class _NewProjectScreenState extends State<NewProjectScreen> {
   // Controllers for text fields
@@ -67,6 +82,7 @@ class _NewProjectScreenState extends State<NewProjectScreen> {
         elevation: 0,
         backgroundColor: const Color(0xFF1D9BF0),
       ),
+      drawer: const AppDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

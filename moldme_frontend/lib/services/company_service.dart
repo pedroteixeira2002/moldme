@@ -64,4 +64,5 @@ class CompanyService {
       throw Exception(errorResponse['message'] ?? "Failed to remove project");
     }
   }
+ 
 }
