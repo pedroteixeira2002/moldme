@@ -83,6 +83,15 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CompanyOrEmployee", policy => policy.RequireRole("Company", "Employee"));
     options.AddPolicy("CompanyOnly", policy => policy.RequireRole("Company"));
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.AllowAnyOrigin() // Permitir todas as origens
+            .AllowAnyMethod() // Permitir todos os métodos HTTP
+            .AllowAnyHeader(); // Permitir todos os cabeçalhos
+    });
+});
 
 // Configuração do pipeline de requisições HTTP.
 var app = builder.Build(); // Construa a aplicação após adicionar todos os serviços
@@ -104,6 +113,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication(); // O middleware de autenticação deve ser chamado aqui
 app.UseAuthorization();
 

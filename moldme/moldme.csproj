@@ -35,21 +35,25 @@
     <ItemGroup>
       <Content Include=".github\workflows\continuous_integration.yml" />
       <Content Remove=".github\**" />
+      <Content Remove="interfaces\**" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Remove=".github\**" />
       <Compile Remove="data\MoldmeContext.cs" />
       <Compile Remove="Models\StaffOnProject.cs" />
+      <Compile Remove="interfaces\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove=".github\**" />
+      <EmbeddedResource Remove="interfaces\**" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove=".github\**" />
       <None Remove="Tests\NewFile1.txt" />
+      <None Remove="interfaces\**" />
     </ItemGroup>
 
 </Project>
