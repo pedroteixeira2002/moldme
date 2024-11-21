@@ -1,4 +1,4 @@
-# moldme_frontend
+# front_end_moldme
 
 A new Flutter project.
 
