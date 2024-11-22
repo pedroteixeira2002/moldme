@@ -33,18 +33,18 @@ namespace moldme.data
                         .HasOne<Project>()
                         .WithMany()
                         .HasForeignKey("ProjectsProjectId")
-                        .OnDelete(DeleteBehavior.Cascade), // Prevent deletion if there are related entries
+                        .OnDelete(DeleteBehavior.Cascade),
                     j => j
                         .HasOne<Employee>()
                         .WithMany()
                         .HasForeignKey("EmployeesEmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade) // Prevent deletion if there are related entries
+                        .OnDelete(DeleteBehavior.Cascade) 
                 );
             modelBuilder.Entity<Employee>()
-                .HasMany(e => e.Reviews) // One Employee has many Reviews
-                .WithOne(r => r.Reviewer) // One Review belongs to one Employee
-                .HasForeignKey(r => r.ReviewerId) // The foreign key is ReviewerId in Review
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasMany(e => e.Reviews) 
+                .WithOne(r => r.Reviewer)
+                .HasForeignKey(r => r.ReviewerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

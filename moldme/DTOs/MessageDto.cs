@@ -1,9 +1,12 @@
 namespace moldme.DTOs;
 
+/// <summary>
+/// Data transfer object for messages
+/// </summary>
 public class MessageDto
 {
-    public String MessageId { get; set; }
-    public String ChatId { get; set; }
-    public String EmployeeId { get; set; }
+    /// <summary>
+    /// Text of the message
+    /// </summary>
     public string Text { get; set; }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace moldme.Migrations
 {
     /// <inheritdoc />
-    public partial class new_defense : Migration
+    public partial class new_22_11 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,7 @@ namespace moldme.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    EmployeeID = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Profession = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     NIF = table.Column<int>(type: "int", nullable: false),
@@ -45,7 +45,7 @@ namespace moldme.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeID);
+                    table.PrimaryKey("PK_Employees", x => x.EmployeeId);
                     table.ForeignKey(
                         name: "FK_Employees_Companies_CompanyId",
                         column: x => x.CompanyId,
@@ -117,13 +117,13 @@ namespace moldme.Migrations
                         name: "FK_Reviews_Employees_ReviewedId",
                         column: x => x.ReviewedId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeID",
+                        principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Reviews_Employees_ReviewerId",
                         column: x => x.ReviewerId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeID",
+                        principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.NoAction);
                 });
 
@@ -159,8 +159,8 @@ namespace moldme.Migrations
                         name: "FK_EmployeeProject_Employees_EmployeesEmployeeId",
                         column: x => x.EmployeesEmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "EmployeeId",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_EmployeeProject_Projects_ProjectsProjectId",
                         column: x => x.ProjectsProjectId,
@@ -208,7 +208,7 @@ namespace moldme.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    FileContent = table.Column<byte[]>(type: "varbinary(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -217,7 +217,7 @@ namespace moldme.Migrations
                         name: "FK_Tasks_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeID",
+                        principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Tasks_Projects_ProjectId",
@@ -250,7 +250,7 @@ namespace moldme.Migrations
                         name: "FK_Messages_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeID",
+                        principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.NoAction);
                 });
 
