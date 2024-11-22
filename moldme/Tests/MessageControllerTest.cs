@@ -22,13 +22,14 @@ namespace moldme.Tests
         [Fact]
         public void Message_Properties_GetterSetter_WorksCorrectly()
         {
+            
             var message = new Message
             {
                 MessageId = "M12345",
                 Text = "Hello, World!",
                 Date = new DateTime(2023, 10, 1),
                 EmployeeId = "E12345",
-                Employee = new Employee { EmployeeID = "E12345", Name = "John Doe" },
+                Employee = new Employee { EmployeeId = "E12345", Name = "John Doe" },
                 ChatId = "C12345",
                 Chat = new Chat { ChatId = "C12345", ProjectId = "P12345" }
             };
@@ -48,21 +49,38 @@ namespace moldme.Tests
             using (var dbContext = GetInMemoryDbContext())
             {
                 var controller = new MessageController(dbContext);
-
+                var sender = new Employee
+                {
+                    EmployeeId = "11",
+                    Name = "Employee 1",
+                    Profession = "Profession 1",
+                    NIF = 123456789,
+                    Email = "employee1@example.com",
+                    Contact = 987654321,
+                    Password = "password",
+                    CompanyId = "1"
+                };
+                dbContext.Employees.Add(sender);
+                var Chat = new Chat
+                {
+                    ChatId = "C12345",
+                    ProjectId = "P12345"
+                };
+                dbContext.Chats.Add(Chat);
+                dbContext.SaveChanges();
+                var EmployeeId = "11";
+                var ChatId = "C12345";
+                
                 var messageDto = new MessageDto
                 {
-                    MessageId = "1",
                     Text = "Hello, World!",
-                    EmployeeId = "user1",
-                    ChatId = "1"
                 };
 
-                var result = await controller.SendMessage(messageDto);
+                var result = await controller.SendMessage(messageDto, ChatId, EmployeeId);
                 var actionResult = result.Result as CreatedAtActionResult;
 
                 Assert.NotNull(actionResult);
                 Assert.Equal(nameof(controller.GetMessages), actionResult.ActionName);
-                Assert.Equal("1", actionResult.RouteValues["chatId"]);
                 var message = actionResult.Value as Message;
                 Assert.NotNull(message);
                 Assert.Equal("Hello, World!", message.Text);

@@ -3,20 +3,20 @@ using moldme.Models;
 
 namespace moldme.DTOs;
 
+/// <summary>
+/// Data transfer object for the review model.
+/// </summary>
 public class ReviewDto
 {
+    /// <summary>
+    /// The id of the review.
+    /// </summary>
     [Required]
     [StringLength(256)]
     public string Comment { get; set; }
 
-    [Required]
-    public Stars Stars { get; set; }
-
-    [Required]
-    [MaxLength(6)]
-    public string ReviewerId { get; set; }  
-
-    [Required]
-    [MaxLength(6)]
-    public string ReviewedId { get; set; }  
+    /// <summary>
+    /// The stars of the review.
+    /// </summary>
+    [Required] public Stars Stars { get; set; }
 }

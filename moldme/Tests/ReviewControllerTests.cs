@@ -37,7 +37,7 @@ public class ReviewControllerTests
 
         var employee1 = new Employee
         {
-            EmployeeID = "EMP001",
+            EmployeeId = "EMP001",
             Name = "John Doe",
             Profession = "Developer",
             NIF = 123456789,
@@ -48,7 +48,7 @@ public class ReviewControllerTests
 
         var employee2 = new Employee
         {
-            EmployeeID = "EMP002",
+            EmployeeId = "EMP002",
             Name = "Jane Doe",
             Profession = "Designer",
             NIF = 987654321,
@@ -72,9 +72,9 @@ public class ReviewControllerTests
             date = new DateTime(2023, 10, 1),
             Stars = Stars.Five,
             ReviewerId = "E12345",
-            Reviewer = new Employee { EmployeeID = "E12345", Name = "John Doe" },
+            Reviewer = new Employee { EmployeeId = "E12345", Name = "John Doe" },
             ReviewedId = "E54321",
-            Reviewed = new Employee { EmployeeID = "E54321", Name = "Jane Smith" }
+            Reviewed = new Employee { EmployeeId = "E54321", Name = "Jane Smith" }
         };
 
         Assert.Equal("R12345", review.ReviewID);
@@ -95,17 +95,16 @@ public class ReviewControllerTests
         SeedData(dbContext);
 
         var controller = new ReviewController(dbContext);
-
+        var ReviewerId = "EMP001";
+        var ReviewedId = "EMP002";
         var reviewDto = new ReviewDto
         {
             Comment = "Great employee",
             Stars = Stars.Five,
-            ReviewerId = "EMP001",
-            ReviewedId = "EMP002"
         };
 
         // Act
-        var result = await controller.AddReview(reviewDto) as OkObjectResult;
+        var result = await controller.ReviewCreate(reviewDto,ReviewerId,ReviewedId) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);
@@ -120,24 +119,23 @@ public class ReviewControllerTests
         SeedData(dbContext);
 
         var controller = new ReviewController(dbContext);
-
+        var ReviewerId = "EMP003";
+        var ReviewedId = "EMP002";
         var reviewDto = new ReviewDto
         {
             Comment = "Great employee",
             Stars = Stars.Five,
-            ReviewerId = "EMP003",
-            ReviewedId = "EMP002"
         };
 
         // Act
-        var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
+        var result = await controller.ReviewCreate(reviewDto,ReviewerId,ReviewedId) as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Reviewer not found", result.Value);
 
         var reviewInDb = dbContext.Reviews.FirstOrDefault(r =>
-            r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
+            r.ReviewerId == ReviewerId && r.ReviewedId ==ReviewedId);
         Assert.Null(reviewInDb);
 
         Assert.Equal(0, dbContext.Reviews.Count());
@@ -152,23 +150,23 @@ public class ReviewControllerTests
 
         var controller = new ReviewController(dbContext);
 
+        var ReviewerId = "EMP001";
+        var ReviewedId = "EMP003";
         var reviewDto = new ReviewDto
         {
             Comment = "Great employee",
             Stars = Stars.Five,
-            ReviewerId = "EMP001",
-            ReviewedId = "EMP003"
         };
 
         // Act
-        var result = await controller.AddReview(reviewDto) as NotFoundObjectResult;
+        var result = await controller.ReviewCreate(reviewDto,ReviewerId,ReviewedId) as NotFoundObjectResult;
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Reviewed Employee not found", result.Value);
 
         var reviewInDb = dbContext.Reviews.FirstOrDefault(r =>
-            r.ReviewerId == reviewDto.ReviewerId && r.ReviewedId == reviewDto.ReviewedId);
+            r.ReviewerId == ReviewerId && r.ReviewedId == ReviewedId);
         Assert.Null(reviewInDb);
 
         Assert.Equal(0, dbContext.Reviews.Count());

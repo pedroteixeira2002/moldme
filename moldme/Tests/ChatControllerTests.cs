@@ -1,10 +1,8 @@
 using Xunit;
-using Moq;
 using Microsoft.AspNetCore.Mvc;
 using moldme.Controllers;
 using moldme.data;
 using moldme.Models;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,34 +10,88 @@ namespace moldme.Tests
 {
     public class ChatControllerTests
     {
-        private ApplicationDbContext GetInMemoryDbContext()
+        public ApplicationDbContext GetInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             return new ApplicationDbContext(options);
         }
+        
+        private void SeedData(ApplicationDbContext dbContext)
+        {
+            var company = new Company
+            {
+                CompanyID = "1",
+                Name = "Company 1",
+                Address = "Address 1",
+                Email = "email@example.com",
+                Contact = 123456789,
+                TaxId = 123456789,
+                Sector = "Sector 1",
+                Plan = SubscriptionPlan.Premium,
+                Password = "password"
+            };
+
+            var employee = new Employee
+            {
+                EmployeeId = "EMP001",
+                Name = "John Doe",
+                Profession = "Developer",
+                NIF = 123456789,
+                Email = "john.doe@example.com",
+                Password = "password123",
+                CompanyId = company.CompanyID
+            };
+
+            var project = new Project
+            {
+                ProjectId = "PROJ01",
+                Name = "New Project",
+                Description = "Project Description",
+                Budget = 1000,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now,
+                CompanyId = company.CompanyID
+            };
+
+            var offer = new Offer
+            {
+                OfferId = "OFFER01",
+                CompanyId = "1",
+                ProjectId = "PROJ01",
+                Date = DateTime.Now,
+                Status = Status.PENDING,
+                Description = "Description 1"
+            };
+
+
+            dbContext.Companies.Add(company);
+            dbContext.Employees.Add(employee);
+            dbContext.Projects.Add(project);
+            dbContext.Offers.Add(offer);
+            dbContext.SaveChanges();
+        }
 
         [Fact]
         public async Task CreateChat_ReturnsOkResult()
         {
-            using (var dbContext = GetInMemoryDbContext())
+            var dbContext = GetInMemoryDbContext();
+            SeedData(dbContext);
             {
                 var controller = new ChatController(dbContext);
-                
-                var chat = new Chat
-                {
-                    ChatId = "1",
-                    ProjectId = "2"
-                };
 
-                var result = await controller.CreateChat(chat);
+                var ProjectId = "PROJ01";
+
+
+                var result = await controller.ChatCreate(ProjectId);
                 var okResult = result.Result as OkObjectResult;
 
                 Assert.NotNull(okResult);
                 Assert.Equal("Chat created successfully", okResult.Value);
             }
         }
+
         [Fact]
         public void Chat_Properties_GetterSetter_WorksCorrectly()
         {
@@ -95,7 +147,7 @@ namespace moldme.Tests
 
                 var controller = new ChatController(dbContext);
 
-                var result = controller.Delete("1") as OkObjectResult;
+                var result = controller.ChatDelete("1") as OkObjectResult;
 
                 Assert.NotNull(result);
                 Assert.Equal("Chat deleted successfully", result.Value);
@@ -109,7 +161,7 @@ namespace moldme.Tests
             {
                 var controller = new ChatController(dbContext);
 
-                var result = controller.Delete("non-existing-id") as NotFoundResult;
+                var result = controller.ChatDelete("non-existing-id") as NotFoundResult;
 
                 Assert.NotNull(result);
             }

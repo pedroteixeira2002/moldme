@@ -1,119 +1,164 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using moldme.data;
 using moldme.DTOs;
+using moldme.Interface;
 using Task = moldme.Models.Task;
 
-namespace moldme.Controllers
+namespace moldme.Controllers;
+
+/// <summary>
+/// Task Controller
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class TaskController : ControllerBase, ITask
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class TaskController : ControllerBase
+    /// <summary>
+    /// Database context
+    /// </summary>
+    private readonly ApplicationDbContext _context;
+
+    /// <summary>
+    /// Constructor for Task Controller
+    /// </summary>
+    /// <param name="context"></param>
+    public TaskController(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public TaskController(ApplicationDbContext context)
+    ///<inheritdoc cref="ITask.TaskCreate(TaskDto,string,string)"/>
+    [HttpPost("createTask")]
+    public IActionResult TaskCreate([FromBody] TaskDto taskDto, string projectId, string employeeId)
+    {
+        if (taskDto == null)
         {
-            _context = context;
+            return BadRequest("Task is null");
         }
 
-        [HttpPost("addtask")]
-        public IActionResult Create([FromBody] TaskDto taskDto)
+        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+        if (project == null)
         {
-            if (taskDto == null)
-            {
-                return BadRequest("Task is null");
-            }
-    
-            // Validação de existência do Projeto
-            var project = _context.Projects.FirstOrDefault(p => p.ProjectId == taskDto.ProjectId);
-            if (project == null)
-            {
-                return NotFound("Project not found");
-            }
-
-            // Validação de existência do Funcionário
-            var employee = _context.Employees.FirstOrDefault(e => e.EmployeeID == taskDto.EmployeeId);
-            if (employee == null)
-            {
-                return NotFound("Employee not found");
-            }
-
-            var task = new Task
-            {
-                TaskId = Guid.NewGuid().ToString().Substring(0, 6), // Gera um ID único de 6 caracteres
-                TitleName = taskDto.TitleName,
-                Description = taskDto.Description,
-                Date = taskDto.Date,
-                Status = taskDto.Status,
-                ProjectId = taskDto.ProjectId,
-                EmployeeId = taskDto.EmployeeId,
-                FilePath = taskDto.FilePath
-            };
-
-            _context.Tasks.Add(task);
-            _context.SaveChanges();
-
-            return Ok("Task created successfully");
+            return NotFound("Project not found");
         }
 
-        // Read all
-        [HttpGet]
-        public IActionResult GetAll()
+        var employee = _context.Employees.FirstOrDefault(e => e.EmployeeId == employeeId);
+        if (employee == null)
         {
-            var tasks = _context.Tasks.ToList(); 
-            return Ok(tasks);
+            return NotFound("Employee not found");
         }
 
-        // Read by ID
-        [HttpGet("{id}")]
-        public IActionResult GetById(String id)
+        byte[] fileContent = null;
+
+        if (!string.IsNullOrEmpty(taskDto.FilePath))
         {
-            var task = _context.Tasks.Find(id); 
-            if (task == null)
+            if (System.IO.File.Exists(taskDto.FilePath))
             {
-                return NotFound();
+                try
+                {
+                    var fileInfo = new FileInfo(taskDto.FilePath);
+
+                    const long maxFileSize = 10 * 1024 * 1024; // 10 MB
+                    if (fileInfo.Length > maxFileSize)
+                    {
+                        return BadRequest("File size exceeds the maximum allowed limit of 10 MB.");
+                    }
+
+                    fileContent = System.IO.File.ReadAllBytes(taskDto.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "An internal server error occurred.");
+                }
             }
-            return Ok(task);
+            else
+            {
+                return NotFound($"The file at path '{taskDto.FilePath}' was not found.");
+            }
         }
 
-        // Update
-        [HttpPut("editTask/{id}")]
-        public IActionResult Update(string id, [FromBody] TaskDto updatedTaskDto)
+        var task = new Task
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            TitleName = taskDto.TitleName,
+            Description = taskDto.Description,
+            Date = taskDto.Date,
+            Status = taskDto.Status,
+            ProjectId = projectId,
+            EmployeeId = employeeId,
+            FileContent = fileContent
+        };
 
-            var task = _context.Tasks.Find(id);
-            if (task == null)
-            {
-                return NotFound("Task not found");
-            }
+        _context.Tasks.Add(task);
+        _context.SaveChanges();
 
-            // Atualiza as propriedades da tarefa com os dados do DTO
-            task.TitleName = updatedTaskDto.TitleName;
-            task.Description = updatedTaskDto.Description; 
-            task.Status = updatedTaskDto.Status;
-            task.Date = updatedTaskDto.Date;
-            task.FilePath = updatedTaskDto.FilePath;
+        return Ok("Task created successfully");
+    }
 
-            _context.SaveChanges();
-            return Ok("Task updated successfully");
+    ///<inheritdoc cref="ITask.TaskGetAll(string)"/>
+    [HttpGet("project/{projectId}/tasks")]
+    public IActionResult TaskGetAll(string projectId)
+    {
+        if (projectId.IsNullOrEmpty())
+            return BadRequest("Project ID is null");
+
+        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+        if (project == null)
+            return NotFound("Project not found");
+
+        var tasks = _context.Tasks.ToList().FindAll(t => t.ProjectId == projectId);
+        return Ok(tasks);
+    }
+
+    ///<inheritdoc cref="ITask.TaskGetById(string)"/>
+    [HttpGet("task/{taskId}")]
+    public IActionResult TaskGetById(String taskId)
+    {
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
+        {
+            return NotFound();
         }
 
-        // Delete
-        [HttpDelete("Delete/{id}")]
-        public IActionResult Delete(String id)
+        return Ok(task);
+    }
+
+    ///<inheritdoc cref="ITask.TaskUpdate(string, TaskDto)"/>
+    [HttpPut("updateTask/{taskId}")]
+    public IActionResult TaskUpdate(string taskId, [FromBody] TaskDto updatedTaskDto)
+    {
+        if (!ModelState.IsValid)
         {
-            var task = _context.Tasks.Find(id);
-            if (task == null)
-            {
-                return NotFound();
-            }
-            _context.Tasks.Remove(task);
-            _context.SaveChanges();
-            return Ok("Task deleted successfully");
+            return BadRequest(ModelState);
         }
+
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
+        {
+            return NotFound("Task not found");
+        }
+
+        task.TitleName = updatedTaskDto.TitleName;
+        task.Description = updatedTaskDto.Description;
+        task.Status = updatedTaskDto.Status;
+        task.Date = updatedTaskDto.Date;
+
+        _context.SaveChanges();
+        return Ok("Task updated successfully");
+    }
+
+    ///<inheritdoc cref="ITask.TaskDelete(string)"/>
+    [HttpDelete("delete/{taskId}")]
+    public IActionResult TaskDelete(string taskId)
+    {
+        var task = _context.Tasks.Find(taskId);
+        if (task == null)
+        {
+            return NotFound();
+        }
+
+        _context.Tasks.Remove(task);
+        _context.SaveChanges();
+        return Ok("Task deleted successfully");
     }
 }

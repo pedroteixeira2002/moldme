@@ -59,7 +59,7 @@ public class AuthControllerTests
 
         var employee = new Employee
         {
-            EmployeeID = "EMP001",
+            EmployeeId = "EMP001",
             Name = "John Doe",
             Profession = "Developer",
             NIF = 123456789,
@@ -107,7 +107,7 @@ public class AuthControllerTests
         var companyPasswordHasher = new PasswordHasher<Company>();
         var employeePasswordHasher = new PasswordHasher<Employee>();
 
-        var controller = new AuthController(dbContext, tokenGenerator, companyPasswordHasher, employeePasswordHasher);
+        var controller = new AuthenticationController(dbContext, tokenGenerator, companyPasswordHasher, employeePasswordHasher);
 
         var loginDto = new LoginDto
         {

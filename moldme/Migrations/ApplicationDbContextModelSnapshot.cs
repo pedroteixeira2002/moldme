@@ -40,6 +40,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Chat", b =>
                 {
                     b.Property<string>("ChatId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -105,7 +106,7 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("moldme.Models.Employee", b =>
                 {
-                    b.Property<string>("EmployeeID")
+                    b.Property<string>("EmployeeId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
@@ -141,7 +142,7 @@ namespace moldme.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.HasKey("EmployeeID");
+                    b.HasKey("EmployeeId");
 
                     b.HasIndex("CompanyId");
 
@@ -151,6 +152,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Message", b =>
                 {
                     b.Property<string>("MessageId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -184,6 +186,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Offer", b =>
                 {
                     b.Property<string>("OfferId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -220,6 +223,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Payment", b =>
                 {
                     b.Property<string>("PaymentID")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -247,6 +251,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Project", b =>
                 {
                     b.Property<string>("ProjectId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -287,6 +292,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Review", b =>
                 {
                     b.Property<string>("ReviewID")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -323,6 +329,7 @@ namespace moldme.Migrations
             modelBuilder.Entity("moldme.Models.Task", b =>
                 {
                     b.Property<string>("TaskId")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
@@ -339,8 +346,9 @@ namespace moldme.Migrations
                         .HasMaxLength(6)
                         .HasColumnType("nvarchar(6)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("FileContent")
+                        .HasMaxLength(256)
+                        .HasColumnType("varbinary(256)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
