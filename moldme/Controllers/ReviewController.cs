@@ -2,26 +2,37 @@
 using Microsoft.AspNetCore.Mvc;
 using moldme.data;
 using moldme.DTOs;
+using moldme.Interface;
 using moldme.Models;
 
 namespace moldme.Controllers;
 
-
+/// <summary>
+/// Review Controller
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ReviewController : ControllerBase
+public class ReviewController : ControllerBase, IReview
 {
-    private readonly ApplicationDbContext dbContext;
+    /// <summary>
+    /// Database context
+    /// </summary>
+    private readonly ApplicationDbContext _context;
 
+    /// <summary>
+    /// Constructor for Review Controller
+    /// </summary>
+    /// <param name="reviewContext"></param>
     public ReviewController(ApplicationDbContext reviewContext)
     {
-        dbContext = reviewContext;
+        _context = reviewContext;
     }
     
+    ///<inheritdoc cref="IReview.ReviewCreate"/>
     [Authorize]
     [HttpPost("addReview")]
-    public async Task<IActionResult> AddReview([FromBody] ReviewDto reviewDto)
-    {   
+    public async Task<IActionResult> ReviewCreate([FromBody] ReviewDto reviewDto, string reviewerId, string reviewedId)
+    {
         if (reviewDto == null)
         {
             return BadRequest("Review data is null");
@@ -31,33 +42,29 @@ public class ReviewController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        
-        var reviewer = await dbContext.Employees.FindAsync(reviewDto.ReviewerId);;
-    
+
+        var reviewer = await _context.Employees.FindAsync(reviewerId);
+
         if (reviewer == null)
             return NotFound("Reviewer not found");
-    
-        var reviewedEmployeeEntity = await dbContext.Employees.FindAsync(reviewDto.ReviewedId);
-    
+
+        var reviewedEmployeeEntity = await _context.Employees.FindAsync(reviewedId);
+
         if (reviewedEmployeeEntity == null)
             return NotFound("Reviewed Employee not found");
-    
+
         var review = new Review
         {
-            ReviewID = Guid.NewGuid().ToString().Substring(0, 6), // Gera um ID único de 6 caracteres
             Comment = reviewDto.Comment,
             Stars = reviewDto.Stars,
-            date = DateTime.Now,  // Define a data atual como data da avaliação
-            ReviewerId = reviewer.EmployeeID, // Associa o ID do revisor
-            ReviewedId = reviewedEmployeeEntity.EmployeeID // Associa o ID do avaliado
+            date = DateTime.Now, 
+            ReviewerId = reviewer.EmployeeId, 
+            ReviewedId = reviewedEmployeeEntity.EmployeeId 
         };
-    
-        // Adiciona a avaliação ao banco de dados
-        await dbContext.Reviews.AddAsync(review);
-        await dbContext.SaveChangesAsync();
-    
-        // Retorna uma resposta com sucesso
+
+        await _context.Reviews.AddAsync(review);
+        await _context.SaveChangesAsync();
+
         return Ok("Review added successfully");
     }
-
 }

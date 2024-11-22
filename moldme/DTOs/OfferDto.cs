@@ -2,12 +2,23 @@
 
 namespace moldme.DTOs;
 
-public class OfferDto 
+/// <summary>
+/// Data transfer object for Offer model.
+/// </summary>
+public class OfferDto
 {
-    public string OfferId { get; set; }
-    public string CompanyId { get; set; }
-    public string ProjectId { get; set; }
+    /// <summary>
+    /// Offer's unique identifier.
+    /// </summary>
     public DateTime Date { get; set; }
+
+    /// <summary>
+    /// Offer's unique identifier.
+    /// </summary>
     public Status Status { get; set; }
+
+    /// <summary>
+    /// Offer's unique identifier.
+    /// </summary>
     public string Description { get; set; }
 }
