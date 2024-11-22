@@ -1,13 +1,33 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../services/company_service.dart';
+import '../models/project_dto.dart';
 
-class ProjectPage extends StatelessWidget {
-  const ProjectPage({super.key});
+class ProjectPage extends StatefulWidget {
+  final String projectId; // Recebe o ID do projeto como parâmetro
+
+  const ProjectPage({super.key, required this.projectId});
+
+  @override
+  State<ProjectPage> createState() => _ProjectPageState();
+}
+
+class _ProjectPageState extends State<ProjectPage> {
+  final CompanyService _companyService = CompanyService();
+  late Future<ProjectDto> _projectFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Carregar os dados do projeto ao iniciar a página
+    _projectFuture = _companyService.viewProject(widget.projectId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Injection System for Automobile Production"),
+        title: const Text("Project Details"),
         elevation: 0,
         backgroundColor: const Color(0xFF1D9BF0),
         actions: [
@@ -16,7 +36,7 @@ class ProjectPage extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.search),
               onPressed: () {
-                // Add search functionality here
+                // Adicionar funcionalidade de busca aqui
               },
             ),
           ),
@@ -25,70 +45,78 @@ class ProjectPage extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.notifications),
               onPressed: () {
-                // Add notification functionality here
+                // Adicionar funcionalidade de notificações aqui
               },
             ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Project Information Header
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder<ProjectDto>(
+        future: _projectFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text("Error: ${snapshot.error}"),
+            );
+          } else if (!snapshot.hasData) {
+            return const Center(child: Text("Project not found."));
+          }
+
+          final project = snapshot.data!;
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // Header de informações do projeto
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Injection System for Automobile Production",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            project.name ?? "No name provided",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            project.description ?? "No description provided",
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Incoe Corporation - Hot Runner Systems",
-                        style: TextStyle(color: Colors.grey),
+                      const CircleAvatar(
+                        radius: 20,
+                        backgroundImage: AssetImage('assets/company_logo.png'), // Substitua pela imagem real
                       ),
                     ],
                   ),
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage('assets/company_logo.png'), // Replace with your image
-                  ),
+                  const SizedBox(height: 20),
+
+                  // Seções adicionais (Tasks, Team, Upload Files, etc.)
+                  _buildNewTaskSection(),
+                  const SizedBox(height: 20),
+                  _buildTeamSection(),
+                  const SizedBox(height: 20),
+                  _buildUploadFilesSection(),
+                  const SizedBox(height: 20),
+                  _buildFilesSection(),
                 ],
               ),
-              const SizedBox(height: 20),
-
-              // Create New Task Section
-              _buildNewTaskSection(),
-              const SizedBox(height: 20),
-
-              // Team Section
-              _buildTeamSection(),
-              const SizedBox(height: 20),
-
-              // Upload Files Section
-              _buildUploadFilesSection(),
-              const SizedBox(height: 20),
-
-              // Your Files Section
-              _buildFilesSection(),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
-
-
 
   Widget _buildNewTaskSection() {
     return Column(
@@ -139,7 +167,7 @@ class ProjectPage extends StatelessWidget {
               _buildTeamMember("Jacob Jones", "Web Designer"),
               GestureDetector(
                 onTap: () {
-                  // Add functionality to add a new member
+                  // Adicionar funcionalidade de adicionar membro
                 },
                 child: CircleAvatar(
                   backgroundColor: Colors.grey.shade200,

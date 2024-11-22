@@ -11,7 +11,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +24,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/new-project': (context) => const NewProjectScreen(),
         '/settings': (context) => const SettingsScreen(),
-        '/project': (context) => const ProjectPage()
+        '/project': (context) => const ProjectPage(projectId: '',)
       },
     );
   }
