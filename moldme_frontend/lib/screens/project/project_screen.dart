@@ -1,7 +1,8 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import '../services/company_service.dart';
-import '../models/project_dto.dart';
+import 'package:front_end_moldme/services/project_service.dart';
+
+import '../../models/project_dto.dart';
 
 class ProjectPage extends StatefulWidget {
   final String projectId; // Recebe o ID do projeto como parâmetro
@@ -13,14 +14,15 @@ class ProjectPage extends StatefulWidget {
 }
 
 class _ProjectPageState extends State<ProjectPage> {
-  final CompanyService _companyService = CompanyService();
+  final ProjectService _projectService = ProjectService();
+
   late Future<ProjectDto> _projectFuture;
 
   @override
   void initState() {
     super.initState();
     // Carregar os dados do projeto ao iniciar a página
-    _projectFuture = _companyService.viewProject(widget.projectId);
+    _projectFuture = _projectService.viewProject(widget.projectId) as Future<ProjectDto>;
   }
 
   @override

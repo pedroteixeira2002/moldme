@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:front_end_moldme/screens/new_project_screen.dart';
-import 'package:front_end_moldme/screens/home_screen.dart';
-import 'package:front_end_moldme/screens/project_screen.dart';
-import 'package:front_end_moldme/screens/settings_screen.dart';
+import 'package:front_end_moldme/screens/project/new_project_screen.dart';
+import 'package:front_end_moldme/screens/home/home_screen.dart';
+import 'package:front_end_moldme/screens/project/project_company_list.dart';
+import 'package:front_end_moldme/screens/project/project_screen.dart';
+import 'package:front_end_moldme/screens/settings/settings_screen.dart';
 
 
 void main() {
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomeScreen(),
         '/new-project': (context) => const NewProjectScreen(),
         '/settings': (context) => const SettingsScreen(),
-        '/project': (context) => const ProjectPage(projectId: '',)
+        '/project': (context) => const ProjectPage(projectId: '',),
+        '/project-list': (context) => const ProjectCompanyList(companyId: '',)
       },
     );
   }
