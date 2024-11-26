@@ -9,9 +9,9 @@ public class Review
     /// Gets or sets the unique identifier for the review.
     /// </summary>
     [Key]
-    [StringLength(6)]
+    [StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string ReviewID { get; set; }
+    public string ReviewId { get; set; }
 
     /// <summary>
     /// Gets or sets the comment of the review.
@@ -36,7 +36,7 @@ public class Review
     /// <summary>
     /// Gets or sets the unique identifier for the employee who wrote the review.
     /// </summary>
-    [Required, MaxLength(6)]
+    [Required, StringLength(36)]
     public String ReviewerId { get; set; }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class Review
     /// <summary>
     /// Gets or sets the unique identifier for the employee being reviewed.
     /// </summary>
-    [Required, MaxLength(6)]
+    [Required, MaxLength(36)]
     public string ReviewedId { get; set; }
 
     /// <summary>

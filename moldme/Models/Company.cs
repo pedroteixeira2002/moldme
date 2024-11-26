@@ -10,10 +10,9 @@ public class Company
     /// <summary>
     /// Gets or sets the unique identifier for the company.
     /// </summary>
-    [Key]
-    [StringLength(6)]
+    [Key,StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string CompanyID { get; set; }
+    public string CompanyId { get; set; }
     
     /// <summary>
     /// Gets or sets the name of the company.

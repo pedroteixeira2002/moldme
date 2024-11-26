@@ -11,9 +11,9 @@ public class Message
     /// <summary>
     /// Gets or sets the unique identifier for the message.
     /// </summary>
-    [Key, MaxLength(6)]
+    [Key, MaxLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public String MessageId { get; set; }
+    public string MessageId { get; set; }
 
     /// <summary>
     /// Gets or sets the date and time when the message was sent.
@@ -30,7 +30,7 @@ public class Message
     /// <summary>
     /// Gets or sets the unique identifier for the employee who sent the message.
     /// </summary>
-    [Required, MaxLength(6)]
+    [Required, MaxLength(36)]
     public String EmployeeId { get; set; }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class Message
     /// <summary>
     /// Gets or sets the unique identifier for the chat associated with the message.
     /// </summary>
-    [Required, MaxLength(6)]
+    [Required, MaxLength(36)]
     public String ChatId { get; set; }
 
     /// <summary>

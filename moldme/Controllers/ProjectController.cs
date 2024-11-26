@@ -33,7 +33,7 @@ public class ProjectController : ControllerBase, IProject
     [HttpPost("addProject/{companyId}")]
     public IActionResult ProjectCreate(string companyId, [FromBody] ProjectDto projectDto)
     {
-        var company = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+        var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
 
         if (company == null)
             return NotFound("Company not found");
@@ -42,12 +42,11 @@ public class ProjectController : ControllerBase, IProject
         {
             Name = projectDto.Name,
             Description = projectDto.Description,
-            Status = projectDto.Status,
+            Status = Status.NEW,
             Budget = projectDto.Budget,
             StartDate = projectDto.StartDate,
             EndDate = projectDto.EndDate,
-            CompanyId = company.CompanyID,
-            Employees = []
+            CompanyId = company.CompanyId,
         };
 
 
@@ -62,14 +61,11 @@ public class ProjectController : ControllerBase, IProject
     [HttpPut("editProject/{projectId}")]
     public IActionResult ProjectUpdate(string projectId, [FromBody] ProjectDto updatedProjectDto)
     {
-        // Obtém o projeto existente pelo ID
         var existingProject = _context.Projects.FirstOrDefault(p => p.ProjectId == projectId);
 
-        // Verifica se o projeto existe
         if (existingProject == null)
             return NotFound("Project not found");
 
-        // Atualiza os campos do projeto com os dados do DTO
         existingProject.Name = updatedProjectDto.Name;
         existingProject.Description = updatedProjectDto.Description;
         existingProject.Budget = updatedProjectDto.Budget;
@@ -122,7 +118,7 @@ public class ProjectController : ControllerBase, IProject
 
     ///<inheritdoc cref="IProject.ProjectAssignEmployee(string,string)"/>
     [Authorize]
-    [HttpPost("{projectId}/assignEmployee/{employeeID}")]
+    [HttpPost("{projectId}/assignEmployee/{employeeId}")]
     public IActionResult ProjectAssignEmployee(string employeeId, string projectId)
     {
         if (string.IsNullOrWhiteSpace(employeeId))
@@ -155,7 +151,7 @@ public class ProjectController : ControllerBase, IProject
 
     ///<inheritdoc cref="IProject.ProjectRemoveEmployee(string,string)"/>
     [Authorize]
-    [HttpDelete("{projectId}/removeEmployee/{employeeID}")]
+    [HttpDelete("{projectId}/removeEmployee/{employeeId}")]
     public IActionResult ProjectRemoveEmployee(string employeeId, string projectId)
     {
         if (string.IsNullOrWhiteSpace(employeeId))
@@ -192,7 +188,7 @@ public class ProjectController : ControllerBase, IProject
     [HttpGet("{companyId}/listAllProjects")]
     public async Task<IActionResult> ListAllProjectsFromCompany(string companyId)
     {
-        var companyExists = await _context.Companies.AnyAsync(c => c.CompanyID == companyId);
+        var companyExists = await _context.Companies.AnyAsync(c => c.CompanyId == companyId);
         if (!companyExists)
         {
             return NotFound("Company not found");
@@ -213,7 +209,7 @@ public class ProjectController : ControllerBase, IProject
     [HttpGet("{companyId}/getProjectById/{projectId}")]
     public async Task<IActionResult> GetProjectById(string companyId, string projectId)
     {
-        var companyExists = await _context.Companies.AnyAsync(c => c.CompanyID == companyId);
+        var companyExists = await _context.Companies.AnyAsync(c => c.CompanyId == companyId);
         if (!companyExists)
         {
             return NotFound("Company not found");
@@ -226,4 +222,18 @@ public class ProjectController : ControllerBase, IProject
         }
         return Ok(project);
     }
+    
+    ///<inheritdoc cref="IProject.ProjectGetAllNew()"/>
+    [Authorize]
+    [HttpGet("listAllNewProjects")]
+    public async Task<IActionResult> ProjectGetAllNew()
+    {
+        var projects = await _context.Projects.Where(p => p.Status == Status.NEW).ToListAsync();
+        if (!projects.Any())
+        {
+            return NotFound("No projects found");
+        }
+        return Ok(projects);
+    }
+    
 }

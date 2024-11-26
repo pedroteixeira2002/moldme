@@ -24,7 +24,7 @@ public class ProjectControllerTest
     {
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -43,7 +43,7 @@ public class ProjectControllerTest
             NIF = 123456789,
             Email = "john.doe@example.com",
             Password = "password123",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var project = new Project
@@ -54,7 +54,7 @@ public class ProjectControllerTest
             Budget = 1000,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var offer = new Offer
@@ -88,7 +88,7 @@ public class ProjectControllerTest
             StartDate = new DateTime(2023, 1, 1),
             EndDate = new DateTime(2023, 12, 31),
             CompanyId = "C12345",
-            Company = new Company { CompanyID = "C12345", Name = "Tech Corp" },
+            Company = new Company { CompanyId = "C12345", Name = "Tech Corp" },
             Tasks = new List<Models.Task>
             {
                 new Models.Task() { TaskId = "T1", TitleName = "Task 1", Description = "Task 1 Description" },
@@ -120,7 +120,7 @@ public class ProjectControllerTest
         project.StartDate = new DateTime(2023, 2, 1);
         project.EndDate = new DateTime(2023, 11, 30);
         project.CompanyId = "C67890";
-        project.Company = new Company { CompanyID = "C67890", Name = "New Tech Corp" };
+        project.Company = new Company { CompanyId = "C67890", Name = "New Tech Corp" };
         project.Tasks = new List<Models.Task>
         {
             new Models.Task() { TaskId = "T3", TitleName = "Task 3", Description = "Task 3 Description" }

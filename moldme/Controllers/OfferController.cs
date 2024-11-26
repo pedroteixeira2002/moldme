@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using moldme.data;
 using moldme.DTOs;
 using moldme.Interface;
 using moldme.Models;
 
 namespace moldme.Controllers;
+
 /// <summary>
 /// Controller for Offer
 /// </summary>
@@ -34,7 +36,7 @@ public class OfferController : ControllerBase, IOffer
     public IActionResult OfferSend([FromBody] OfferDto offerDto, string companyId, string projectId)
     {
         // Search for the companyID in the database
-        var company = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+        var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
 
         if (company == null)
             return NotFound("Company not found");
@@ -48,7 +50,7 @@ public class OfferController : ControllerBase, IOffer
         // Create a new Offer entity from the DTO
         var offer = new Offer
         {
-            CompanyId = company.CompanyID,
+            CompanyId = company.CompanyId,
             ProjectId = project.ProjectId,
             Date = offerDto.Date,
             Status = offerDto.Status,
@@ -71,7 +73,7 @@ public class OfferController : ControllerBase, IOffer
     public async Task<IActionResult> OfferAccept(string companyId, string projectId, string offerId)
     {
         // Search for the companyID in the database
-        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyID == companyId);
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
 
         if (company == null)
             return NotFound("Company not found");
@@ -89,7 +91,7 @@ public class OfferController : ControllerBase, IOffer
             return NotFound("Offer not found");
 
         // Verifica se a oferta pertence à empresa correta
-        if (offer.CompanyId != company.CompanyID)
+        if (offer.CompanyId != company.CompanyId)
             return BadRequest("Offer does not belong to the specified company.");
 
         // Verifica se a oferta pertence ao projeto correto
@@ -109,7 +111,7 @@ public class OfferController : ControllerBase, IOffer
     public async Task<IActionResult> OfferReject(string companyId, string projectId, string offerId)
     {
         // Search for the companyID in the database
-        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyID == companyId);
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
 
         if (company == null)
             return NotFound("Company not found");
@@ -127,7 +129,7 @@ public class OfferController : ControllerBase, IOffer
             return NotFound("Offer not found");
 
         // Verifica se a oferta pertence à empresa correta
-        if (offer.CompanyId != company.CompanyID)
+        if (offer.CompanyId != company.CompanyId)
             return BadRequest("Offer does not belong to the specified company.");
 
         // Verifica se a oferta pertence ao projeto correto
@@ -139,5 +141,23 @@ public class OfferController : ControllerBase, IOffer
         await _context.SaveChangesAsync();
 
         return Ok("Offer rejected successfully");
+    }
+
+    ///<inheritdoc cref="IOffer.OfferGetAll(string)"/>
+    [Authorize]
+    [HttpGet("getOffers/{companyId}")]
+    public async Task<IActionResult> OfferGetAll(string companyId)
+    {
+        if (companyId.IsNullOrEmpty())
+            return BadRequest("Company ID is required");
+
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
+
+        if (company == null)
+            return NotFound("Company not found");
+
+        var offers = await _context.Offers.Where(o => o.CompanyId == company.CompanyId).ToListAsync();
+
+        return Ok(offers);
     }
 }

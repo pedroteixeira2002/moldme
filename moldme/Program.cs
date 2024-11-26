@@ -58,9 +58,14 @@ builder.Services.AddSwaggerGen(c =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            new string[] { }
         }
     });
+});
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
 });
 
 // Adicione o TokenGenerator
@@ -71,7 +76,7 @@ builder.Services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>(
 
 // Configuração do DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Adiciona controllers
@@ -114,7 +119,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
-app.UseAuthentication(); // O middleware de autenticação deve ser chamado aqui
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

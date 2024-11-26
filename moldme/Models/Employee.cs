@@ -14,7 +14,7 @@ public class Employee
     /// Gets or sets the unique identifier for the employee.
     /// </summary>
     [Key]
-    [StringLength(6)]
+    [StringLength(36)]
     [Required]  
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string EmployeeId { get; set; }
@@ -63,7 +63,7 @@ public class Employee
     /// <summary>
     /// Gets or sets the unique identifier for the company associated with the employee.
     /// </summary>
-    [Required, StringLength(6)] public string CompanyId { get; set; }
+    [Required, StringLength(36)] public string CompanyId { get; set; }
     
     /// <summary>
     /// Gets or sets the company associated with the employee.

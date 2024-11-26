@@ -24,7 +24,7 @@ public class ReviewControllerTests
     {
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -67,7 +67,7 @@ public class ReviewControllerTests
     {
         var review = new Review
         {
-            ReviewID = "R12345",
+            ReviewId = "R12345",
             Comment = "Great work!",
             date = new DateTime(2023, 10, 1),
             Stars = Stars.Five,
@@ -77,7 +77,7 @@ public class ReviewControllerTests
             Reviewed = new Employee { EmployeeId = "E54321", Name = "Jane Smith" }
         };
 
-        Assert.Equal("R12345", review.ReviewID);
+        Assert.Equal("R12345", review.ReviewId);
         Assert.Equal("Great work!", review.Comment);
         Assert.Equal(new DateTime(2023, 10, 1), review.date);
         Assert.Equal(Stars.Five, review.Stars);

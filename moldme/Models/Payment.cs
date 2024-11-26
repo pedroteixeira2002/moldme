@@ -12,14 +12,14 @@ public class Payment
     /// Gets or sets the unique identifier for the payment.
     /// </summary>
     [Key]
-    [StringLength(6)]
+    [StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public string PaymentID { get; set; }
+    public string PaymentId { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the company making the payment.
     /// </summary>
-    [Required, StringLength(6)] 
+    [Required, StringLength(36)] 
     public string CompanyId { get; set; }
     
     /// <summary>

@@ -43,7 +43,7 @@ public class CompanyControllerTests
     {
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -62,7 +62,7 @@ public class CompanyControllerTests
             NIF = 123456789,
             Email = "john.doe@example.com",
             Password = "password123",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var project = new Project
@@ -73,13 +73,13 @@ public class CompanyControllerTests
             Budget = 1000,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now.AddDays(30),
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var payment = new Payment
         {
-            PaymentID = "PAY001",
-            CompanyId = company.CompanyID,
+            PaymentId = "PAY001",
+            CompanyId = company.CompanyId,
             Date = DateTime.Now,
             Value = 500,
             Plan = SubscriptionPlan.Premium
@@ -121,7 +121,7 @@ public class CompanyControllerTests
     {
         var company = new Company
         {
-            CompanyID = "C12345",
+            CompanyId = "C12345",
             Name = "Tech Corp",
             Address = "123 Tech Street",
             Email = "contact@techcorp.com",
@@ -132,7 +132,7 @@ public class CompanyControllerTests
             Password = "password123"
         };
 
-        Assert.Equal("C12345", company.CompanyID);
+        Assert.Equal("C12345", company.CompanyId);
         Assert.Equal("Tech Corp", company.Name);
         Assert.Equal("123 Tech Street", company.Address);
         Assert.Equal("contact@techcorp.com", company.Email);
@@ -180,7 +180,7 @@ public class CompanyControllerTests
         // Adding a payment to ensure there is data to retrieve
         var payment = new Payment
         {
-            PaymentID = "PAY002",
+            PaymentId = "PAY002",
             CompanyId = "1", // Ensure this matches a valid company ID
             Date = DateTime.Now,
             Value = 600,
@@ -199,7 +199,7 @@ public class CompanyControllerTests
         var payments = result.Value as List<Payment>; // Cast the result value
         Assert.NotNull(payments); // Ensure the payments list is not null
         Assert.Single(payments); // Assert that there's exactly one payment in the list
-        Assert.Equal("PAY002", payments[0].PaymentID);
+        Assert.Equal("PAY002", payments[0].PaymentId);
 
     }
 
@@ -215,7 +215,7 @@ public class CompanyControllerTests
         var companyController = new CompanyController(dbContext, tokenGenerator, passwordHasher);
 
         // Configurar o plano inicial para a empresa
-        var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
+        var existingCompany = dbContext.Companies.FirstOrDefault(c => c.CompanyId == "1");
         if (existingCompany != null)
         {
             existingCompany.Plan = SubscriptionPlan.Basic;
@@ -281,7 +281,7 @@ public class CompanyControllerTests
         Assert.NotNull(result);
         Assert.Equal("Subscription cancelled successfully", result.Value);
 
-        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyID == "1");
+        var company = dbContext.Companies.FirstOrDefault(c => c.CompanyId == "1");
         Assert.NotNull(company);
         Assert.Equal(SubscriptionPlan.None, company.Plan);
     }
@@ -328,7 +328,7 @@ public class CompanyControllerTests
 
         var existingCompany = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Existing Company",
             Address = "123 Street",
             Email = "duplicate@example.com",

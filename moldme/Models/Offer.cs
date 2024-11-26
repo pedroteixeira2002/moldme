@@ -12,14 +12,14 @@ public class Offer
     /// <summary>
     /// Gets or sets the unique identifier for the offer.
     /// </summary>
-    [Key, StringLength(6)]
+    [Key, StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public String OfferId { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the company making the offer.
     /// </summary>
-    [Required, MaxLength(6)] 
+    [Required, MaxLength(36)] 
     public string CompanyId { get; set; }
     
     /// <summary>
@@ -31,7 +31,7 @@ public class Offer
     /// <summary>
     /// Gets or sets the unique identifier for the project associated with the offer.
     /// </summary>
-    [Required, MaxLength(6)] 
+    [Required, MaxLength(36)] 
     public string ProjectId { get; set; }
     
     /// <summary>

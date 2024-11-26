@@ -27,11 +27,12 @@ public class EmployeeController : ControllerBase, IEmployee
     }
 
     ///<inheritdoc cref="IEmployee.EmployeeCreate(string, EmployeeDto)"/>
+    
     [Authorize]
     [HttpPost("{companyId}/addEmployee")]
     public IActionResult EmployeeCreate(string companyId, [FromBody] EmployeeDto employeeDto)
     {
-        var company = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+        var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
         if (company == null)
             return NotFound("Company not found");
 
@@ -43,7 +44,7 @@ public class EmployeeController : ControllerBase, IEmployee
             Email = employeeDto.Email,
             Contact = employeeDto.Contact,
             Password = _employeePasswordHasher.HashPassword(null, employeeDto.Password),
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         _context.Employees.Add(employee);
@@ -56,16 +57,17 @@ public class EmployeeController : ControllerBase, IEmployee
         {
             return StatusCode(500, "An error occurred while saving the employee: " + ex.Message);
         }
+        var token = _tokenGenerator.GenerateToken(employee.Email, "Employee");
 
-        return Ok("Employee created successfully");
+        return Ok(new { Token = token, Message = "Employee created successfully" });
     }
 
     ///<inheritdoc cref="IEmployee.EmployeeUpdate(string, string, EmployeeDto)"/>
-    [HttpPut("{companyId}/editEmployee/{employeeID}")]
+    [HttpPut("{companyId}/editEmployee/{employeeId}")]
     public IActionResult EmployeeUpdate(string companyId, string employeeId,
         [FromBody] EmployeeDto updatedEmployeeDto)
     {
-        var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+        var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
 
         if (existingCompany == null)
             return NotFound("Company not found");
@@ -92,7 +94,7 @@ public class EmployeeController : ControllerBase, IEmployee
     }
 
     ///<inheritdoc cref="IEmployee.EmployeeRemove(string, string)"/>
-    [HttpDelete("{companyId}/removeEmployee/{employeeID}")]
+    [HttpDelete("{companyId}/removeEmployee/{employeeId}")]
     public IActionResult EmployeeRemove(string companyId, string employeeId)
     {
         var existingEmployee = _context.Employees
@@ -115,10 +117,10 @@ public class EmployeeController : ControllerBase, IEmployee
         return Ok("Employee removed successfully");
     }
 
-    /// <inheritdoc cref="IEmployee.EmployeeListAll(string)"/>
+    /// <inheritdoc cref="IEmployee.EmployeeGetAllFromCompany"/>
     [Authorize]
     [HttpGet("{companyId}/listAllEmployees")]
-    public IActionResult EmployeeListAll(string companyId)
+    public IActionResult EmployeeGetAllFromCompany(string companyId)
     {
         var employees = _context.Employees.Where(e => e.CompanyId == companyId).ToList();
         if (!employees.Any())
@@ -129,10 +131,10 @@ public class EmployeeController : ControllerBase, IEmployee
         return Ok(employees);
     }
 
-    /// <inheritdoc cref="IEmployee.GetEmployeeById(string)"/>
+    /// <inheritdoc cref="IEmployee.EmployeeGetById"/>
     [Authorize]
     [HttpGet("getEmployeeById/{employeeId}")]
-    public IActionResult GetEmployeeById(string employeeId)
+    public IActionResult EmployeeGetById(string employeeId)
     {
         var employee = _context.Employees.Find(employeeId); // Adjust to your DbSet
         if (employee == null)
@@ -143,10 +145,10 @@ public class EmployeeController : ControllerBase, IEmployee
         return Ok(employee);
     }
 
-    /// <inheritdoc cref="IEmployee.GetEmployeeProjects(string)"/>
+    /// <inheritdoc cref="IEmployee.EmployeeGetProjects"/>
     [Authorize]
     [HttpGet("employees/{employeeId}/projects")]
-    public async Task<IActionResult> GetEmployeeProjects(string employeeId)
+    public async Task<IActionResult> EmployeeGetProjects(string employeeId)
     {
         var projects = await _context.Projects
             .Where(p => p.Employees.Any(e => e.EmployeeId == employeeId))
@@ -159,4 +161,19 @@ public class EmployeeController : ControllerBase, IEmployee
 
         return Ok(projects);
     }
+    
+    /// <inheritdoc cref="IEmployee.EmployeeGetAll"/>
+    [Authorize]
+    [HttpGet("listAllEmployees")]
+    public async Task<IActionResult> EmployeeGetAll()
+    {
+        var employees = await _context.Employees.ToListAsync();
+        if (!employees.Any())
+        {
+            return NotFound("No employees found");
+        }
+
+        return Ok(employees);
+    }
+    
 }

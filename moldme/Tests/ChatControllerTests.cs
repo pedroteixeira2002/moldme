@@ -22,7 +22,7 @@ namespace moldme.Tests
         {
             var company = new Company
             {
-                CompanyID = "1",
+                CompanyId = "1",
                 Name = "Company 1",
                 Address = "Address 1",
                 Email = "email@example.com",
@@ -41,7 +41,7 @@ namespace moldme.Tests
                 NIF = 123456789,
                 Email = "john.doe@example.com",
                 Password = "password123",
-                CompanyId = company.CompanyID
+                CompanyId = company.CompanyId
             };
 
             var project = new Project
@@ -52,7 +52,7 @@ namespace moldme.Tests
                 Budget = 1000,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
-                CompanyId = company.CompanyID
+                CompanyId = company.CompanyId
             };
 
             var offer = new Offer

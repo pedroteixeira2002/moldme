@@ -49,7 +49,7 @@ namespace moldme.Controllers;
         [HttpGet("{companyId}/listPaymentHistory")]
         public IActionResult ListPaymentHistory(string companyId)
         {
-            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
             if (existingCompany == null)
             {
                 return NotFound("Company not found");
@@ -69,7 +69,7 @@ namespace moldme.Controllers;
         [HttpPut("{companyId}/upgradePlan")]
         public IActionResult UpgradePlan(string companyId, SubscriptionPlan subscriptionPlan)
         {
-            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
             if (existingCompany == null)
             {
                 return NotFound("Company not found");
@@ -92,14 +92,12 @@ namespace moldme.Controllers;
         [HttpPost("{companyId}/subscribePlan")]
         public IActionResult SubscribePlan(string companyId, SubscriptionPlan subscriptionPlan)
         {
-            // Verificar se a empresa existe
-            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
             if (existingCompany == null)
             {
                 return NotFound("Company not found");
             }
 
-            // Obter o valor do plano automaticamente
             float value = SubscriptionPlanHelper.GetPlanPrice(subscriptionPlan);
             if (value == 0 && subscriptionPlan != SubscriptionPlan.None)
             {
@@ -108,14 +106,12 @@ namespace moldme.Controllers;
 
             var newPayment = new Payment
             {
-                PaymentID = Guid.NewGuid().ToString().Substring(0, 6),
                 CompanyId = companyId,
                 Date = DateTime.Now,
                 Value = value,
                 Plan = subscriptionPlan
             };
 
-            // Adicionar o pagamento e salvar
             _context.Payments.Add(newPayment);
             _context.SaveChanges();
 
@@ -128,7 +124,7 @@ namespace moldme.Controllers;
         public IActionResult CancelSubscription(string companyId)
         {
             // Verificar se a empresa existe
-            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyID == companyId);
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
             if (existingCompany == null)
             {
                 return NotFound("Company not found");
@@ -146,7 +142,7 @@ namespace moldme.Controllers;
         }
         
         ///<inheritdoc cref="ICompany.CompanyCreate(CompanyDto)"/>
-        [HttpPost("register")]
+        [HttpPost("/api/register")]
         public IActionResult CompanyCreate([FromBody] CompanyDto companyDto)
         {
             // Verificar se os dados são válidos
@@ -186,11 +182,9 @@ namespace moldme.Controllers;
             _context.SaveChanges();
 
             var token = _tokenGenerator.GenerateToken(company.Email, "Company");
-            SubscribePlan(company.CompanyID, company.Plan);
+            SubscribePlan(company.CompanyId, company.Plan);
             
             return Ok(new { Token = token, Message = "Company registered successfully" });
         }
         
     }
-
-

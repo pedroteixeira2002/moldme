@@ -85,9 +85,14 @@ public class TaskController : ControllerBase, ITask
             Date = taskDto.Date,
             Status = taskDto.Status,
             ProjectId = projectId,
-            EmployeeId = employeeId,
-            FileContent = fileContent
-        };
+            EmployeeId = employeeId
+        }; 
+        if (fileContent != null)
+        {
+            task.FileContent = fileContent;
+            task.FileName = Path.GetFileName(taskDto.FilePath);
+            task.MimeType = GetMimeType(taskDto.FilePath);
+        }
 
         _context.Tasks.Add(task);
         _context.SaveChanges();
@@ -121,6 +126,38 @@ public class TaskController : ControllerBase, ITask
         }
 
         return Ok(task);
+    }
+
+    ///inheritdoc cref="ITask.TaskGetFile(string)"/>
+    [HttpGet("task/{taskId}/file")]
+    public IActionResult TaskGetFile(string taskId)
+    {
+        var task = _context.Tasks.Find(taskId);
+        if (task == null || string.IsNullOrEmpty(task.FileName))
+        {
+            return NotFound("Task or file not found");
+        }
+
+        var fileName = task.FileName;
+        var mimeType = task.MimeType;
+
+
+        return File(task.FileContent, mimeType, fileName);
+    }
+
+    private string GetMimeType(string filePath)
+    {
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".pdf" => "application/pdf",
+            ".doc" or ".docx" => "application/msword",
+            ".txt" => "text/plain",
+            _ => "application/octet-stream", // Default for unknown types
+        };
     }
 
     ///<inheritdoc cref="ITask.TaskUpdate(string, TaskDto)"/>

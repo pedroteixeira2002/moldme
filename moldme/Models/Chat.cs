@@ -11,7 +11,7 @@ public class Chat
     /// <summary>
     /// Gets or sets the unique identifier for the chat.
     /// </summary>
-    [Key, StringLength(6)]
+    [Key, MaxLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public String ChatId { get; set; }
     
@@ -23,7 +23,7 @@ public class Chat
     /// <summary>
     /// Gets or sets the unique identifier for the project associated with the chat.
     /// </summary>
-    [Required, MaxLength(6)] public String ProjectId { get; set; }
+    [Required, MaxLength(36)] public String ProjectId { get; set; }
     
     /// <summary>
     /// Gets or sets the project associated with the chat.

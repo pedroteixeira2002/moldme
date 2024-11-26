@@ -11,7 +11,7 @@ public class Task
     /// <summary>
     /// Gets or sets the unique identifier for the task.
     /// </summary>
-    [Key, StringLength(6)]
+    [Key, StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public String TaskId { get; set; }
 
@@ -42,7 +42,7 @@ public class Task
     /// <summary>
     /// Gets or sets the unique identifier for the project associated with the task.
     /// </summary>
-    [MaxLength(6)]
+    [Required, MaxLength(36)]
     public string ProjectId { get; set; }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class Task
     /// <summary>
     /// Gets or sets the unique identifier for the employee assigned to the task.
     /// </summary>
-    [Required, MaxLength(6)]
+    [Required, MaxLength(36)]
     public String EmployeeId { get; set; }
 
     /// <summary>
@@ -66,6 +66,18 @@ public class Task
     /// <summary>
     /// Gets or sets the file of the task.
     /// </summary>
-    [MaxLength(256)]
+    [MaxLength(10485760)]
     public byte[]? FileContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the file name of the task.
+    /// </summary>
+    [MaxLength(256)]
+    public string? FileName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the file type of the task.
+    /// </summary>
+    [MaxLength(32)]
+    public string? MimeType { get; set; }
 }

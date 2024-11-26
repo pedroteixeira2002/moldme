@@ -56,7 +56,7 @@ public interface IEmployee
     /// - 200 OK: If the employee is found.
     /// - 404 Not Found: If the specified employee is not found.
     /// </returns>
-    IActionResult GetEmployeeById(string employeeId);
+    IActionResult EmployeeGetById(string employeeId);
     
     /// <summary>
     /// Retrieves all projects assigned to a specific employee.
@@ -67,7 +67,7 @@ public interface IEmployee
     /// - 200 OK: If the projects are found.
     /// - 404 Not Found: If the specified employee is not found.
     /// </returns>
-    Task<IActionResult> GetEmployeeProjects(string employeeId);
+    Task<IActionResult> EmployeeGetProjects(string employeeId);
     
     /// <summary>
     /// Lists all employees for a specified company.
@@ -78,6 +78,18 @@ public interface IEmployee
     /// - 200 OK: If the employees are found.
     /// - 404 Not Found: If the specified company is not found.
     /// </returns>
-    IActionResult EmployeeListAll(string companyId);
+    IActionResult EmployeeGetAllFromCompany(string companyId);
+
+    /// <summary>
+    /// Retrieves all employees.
+    /// </summary>
+    /// <returns>
+    /// Returns:
+    /// - 200 OK: If the employees are found.
+    /// - 404 Not Found: If no employees are found.
+    /// </returns>
+    Task<IActionResult> EmployeeGetAll();
+
+
 }
 }

@@ -12,8 +12,8 @@ using moldme.data;
 namespace moldme.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241122152328_new_22_11")]
-    partial class new_22_11
+    [Migration("20241126171448_new1")]
+    partial class new1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,10 +28,10 @@ namespace moldme.Migrations
             modelBuilder.Entity("EmployeeProject", b =>
                 {
                     b.Property<string>("EmployeesEmployeeId")
-                        .HasColumnType("nvarchar(6)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ProjectsProjectId")
-                        .HasColumnType("nvarchar(6)");
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("EmployeesEmployeeId", "ProjectsProjectId");
 
@@ -44,13 +44,13 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("ChatId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.HasKey("ChatId");
 
@@ -62,10 +62,10 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("moldme.Models.Company", b =>
                 {
-                    b.Property<string>("CompanyID")
+                    b.Property<string>("CompanyId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -102,7 +102,7 @@ namespace moldme.Migrations
                     b.Property<int>("TaxId")
                         .HasColumnType("int");
 
-                    b.HasKey("CompanyID");
+                    b.HasKey("CompanyId");
 
                     b.ToTable("Companies");
                 });
@@ -111,13 +111,13 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("EmployeeId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int?>("Contact")
                         .HasColumnType("int");
@@ -156,21 +156,21 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("MessageId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ChatId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -190,13 +190,13 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("OfferId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -208,8 +208,8 @@ namespace moldme.Migrations
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -225,15 +225,15 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("moldme.Models.Payment", b =>
                 {
-                    b.Property<string>("PaymentID")
+                    b.Property<string>("PaymentId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -244,7 +244,7 @@ namespace moldme.Migrations
                     b.Property<float>("Value")
                         .HasColumnType("real");
 
-                    b.HasKey("PaymentID");
+                    b.HasKey("PaymentId");
 
                     b.HasIndex("CompanyId");
 
@@ -255,16 +255,16 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("ProjectId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<decimal>("Budget")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -294,10 +294,10 @@ namespace moldme.Migrations
 
             modelBuilder.Entity("moldme.Models.Review", b =>
                 {
-                    b.Property<string>("ReviewID")
+                    b.Property<string>("ReviewId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Comment")
                         .IsRequired()
@@ -306,13 +306,13 @@ namespace moldme.Migrations
 
                     b.Property<string>("ReviewedId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("ReviewerId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("Stars")
                         .HasColumnType("int");
@@ -320,7 +320,7 @@ namespace moldme.Migrations
                     b.Property<DateTime>("date")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ReviewID");
+                    b.HasKey("ReviewId");
 
                     b.HasIndex("ReviewedId");
 
@@ -333,8 +333,8 @@ namespace moldme.Migrations
                 {
                     b.Property<string>("TaskId")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -346,17 +346,25 @@ namespace moldme.Migrations
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<byte[]>("FileContent")
+                        .HasMaxLength(10485760)
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FileName")
                         .HasMaxLength(256)
-                        .HasColumnType("varbinary(256)");
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("ProjectId")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -483,7 +491,7 @@ namespace moldme.Migrations
                     b.HasOne("moldme.Models.Employee", "Reviewer")
                         .WithMany("Reviews")
                         .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Reviewed");

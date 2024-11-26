@@ -6,9 +6,9 @@
 public enum Status
 {
     /// <summary>
-    /// The entity is to be done.
+    /// The entity is new.
     /// </summary>
-    TODO,
+    NEW,
 
     /// <summary>
     /// The entity is in progress.

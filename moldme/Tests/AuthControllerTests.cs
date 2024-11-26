@@ -45,7 +45,7 @@ public class AuthControllerTests
 
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -66,7 +66,7 @@ public class AuthControllerTests
             Email = "john.doe@example.com",
             // Hashing the password before saving
             Password = employeePasswordHasher.HashPassword(null, "password123"),
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var project = new Project
@@ -77,13 +77,13 @@ public class AuthControllerTests
             Budget = 1000,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now.AddDays(30),
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var payment = new Payment
         {
-            PaymentID = "PAY001",
-            CompanyId = company.CompanyID,
+            PaymentId = "PAY001",
+            CompanyId = company.CompanyId,
             Date = DateTime.Now,
             Value = 500,
             Plan = SubscriptionPlan.Premium

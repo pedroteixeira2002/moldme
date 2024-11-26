@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace moldme.Migrations
 {
     /// <inheritdoc />
-    public partial class new_22_11 : Migration
+    public partial class @new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace moldme.Migrations
                 name: "Companies",
                 columns: table => new
                 {
-                    CompanyID = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     TaxId = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
@@ -27,21 +27,21 @@ namespace moldme.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Companies", x => x.CompanyID);
+                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Employees",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Profession = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     NIF = table.Column<int>(type: "int", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Contact = table.Column<int>(type: "int", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    CompanyId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false)
+                    CompanyId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,7 +50,7 @@ namespace moldme.Migrations
                         name: "FK_Employees_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyID",
+                        principalColumn: "CompanyId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -58,20 +58,20 @@ namespace moldme.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    PaymentID = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    CompanyId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    PaymentId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<float>(type: "real", nullable: false),
                     Plan = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentID);
+                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
                     table.ForeignKey(
                         name: "FK_Payments_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyID",
+                        principalColumn: "CompanyId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -79,14 +79,14 @@ namespace moldme.Migrations
                 name: "Projects",
                 columns: table => new
                 {
-                    ProjectId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    ProjectId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompanyId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false)
+                    CompanyId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,7 +95,7 @@ namespace moldme.Migrations
                         name: "FK_Projects_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyID",
+                        principalColumn: "CompanyId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -103,16 +103,16 @@ namespace moldme.Migrations
                 name: "Reviews",
                 columns: table => new
                 {
-                    ReviewID = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    ReviewId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Stars = table.Column<int>(type: "int", nullable: false),
-                    ReviewerId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    ReviewedId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false)
+                    ReviewerId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ReviewedId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Reviews", x => x.ReviewID);
+                    table.PrimaryKey("PK_Reviews", x => x.ReviewId);
                     table.ForeignKey(
                         name: "FK_Reviews_Employees_ReviewedId",
                         column: x => x.ReviewedId,
@@ -131,8 +131,8 @@ namespace moldme.Migrations
                 name: "Chats",
                 columns: table => new
                 {
-                    ChatId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    ProjectId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false)
+                    ChatId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ProjectId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,8 +149,8 @@ namespace moldme.Migrations
                 name: "EmployeeProject",
                 columns: table => new
                 {
-                    EmployeesEmployeeId = table.Column<string>(type: "nvarchar(6)", nullable: false),
-                    ProjectsProjectId = table.Column<string>(type: "nvarchar(6)", nullable: false)
+                    EmployeesEmployeeId = table.Column<string>(type: "nvarchar(36)", nullable: false),
+                    ProjectsProjectId = table.Column<string>(type: "nvarchar(36)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -173,9 +173,9 @@ namespace moldme.Migrations
                 name: "Offers",
                 columns: table => new
                 {
-                    OfferId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    CompanyId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    ProjectId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    OfferId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ProjectId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
@@ -187,7 +187,7 @@ namespace moldme.Migrations
                         name: "FK_Offers_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyID",
+                        principalColumn: "CompanyId",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Offers_Projects_ProjectId",
@@ -201,14 +201,14 @@ namespace moldme.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    TaskId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    TaskId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     TitleName = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    ProjectId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    EmployeeId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    FileContent = table.Column<byte[]>(type: "varbinary(256)", maxLength: 256, nullable: true)
+                    ProjectId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    FileContent = table.Column<byte[]>(type: "varbinary(max)", maxLength: 10485760, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,11 +231,11 @@ namespace moldme.Migrations
                 name: "Messages",
                 columns: table => new
                 {
-                    MessageId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    MessageId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    EmployeeId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
-                    ChatId = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false)
+                    EmployeeId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
+                    ChatId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false)
                 },
                 constraints: table =>
                 {

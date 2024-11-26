@@ -13,7 +13,7 @@ public class Project
     /// <summary>
     /// Gets or sets the unique identifier for the project.
     /// </summary>
-    [Key, StringLength(6)]
+    [Key, StringLength(36)]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string ProjectId { get; set; }
 
@@ -56,7 +56,7 @@ public class Project
     /// <summary>
     /// Gets or sets the unique identifier for the company associated with the project.
     /// </summary>
-    [Required, StringLength(6)]
+    [Required, StringLength(36)]
     public string CompanyId { get; set; }
 
     /// <summary>

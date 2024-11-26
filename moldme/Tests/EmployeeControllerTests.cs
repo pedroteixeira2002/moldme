@@ -42,7 +42,7 @@ public class EmployeeControllerTests
     {
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "asdasd@gasd.com",
@@ -58,7 +58,7 @@ public class EmployeeControllerTests
             EmployeeId = "1",
             Name = "John Doe",
             Profession = "Software Developer",
-            CompanyId = company.CompanyID,
+            CompanyId = company.CompanyId,
             Email = "johndoe@example.com",
             Password = "password123",
             Projects = new List<Project>
@@ -72,7 +72,7 @@ public class EmployeeControllerTests
                     Status = Status.INPROGRESS,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now,
-                    CompanyId = company.CompanyID
+                    CompanyId = company.CompanyId
                 },
                 new Project
                 {
@@ -83,7 +83,7 @@ public class EmployeeControllerTests
                     Status = Status.DONE,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now,
-                    CompanyId = company.CompanyID
+                    CompanyId = company.CompanyId
                 }
             }
         };
@@ -93,7 +93,7 @@ public class EmployeeControllerTests
             EmployeeId = "2",
             Name = "Jane Doe",
             Profession = "QA Engineer",
-            CompanyId = company.CompanyID,
+            CompanyId = company.CompanyId,
             Email = "janedoe@example.com",
             Password = "password123"
         };
@@ -118,7 +118,7 @@ public class EmployeeControllerTests
             Contact = 987654321,
             Password = "password123",
             CompanyId = "C12345",
-            Company = new Company { CompanyID = "C12345", Name = "Tech Corp" }
+            Company = new Company { CompanyId = "C12345", Name = "Tech Corp" }
         };
 
         // Act & Assert
@@ -140,7 +140,7 @@ public class EmployeeControllerTests
         employee.Contact = 123456789;
         employee.Password = "newpassword123";
         employee.CompanyId = "C67890";
-        employee.Company = new Company { CompanyID = "C67890", Name = "New Tech Corp" };
+        employee.Company = new Company { CompanyId = "C67890", Name = "New Tech Corp" };
 
         Assert.Equal("Jane Doe", employee.Name);
         Assert.Equal("Manager", employee.Profession);
@@ -164,7 +164,7 @@ public class EmployeeControllerTests
 
         
         // Act
-        var result = controller.EmployeeListAll(companyId:"1");
+        var result = controller.EmployeeGetAllFromCompany(companyId:"1");
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -186,7 +186,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext,tokenGenerator,passwordHasher);
 
         // Act
-        var result = controller.GetEmployeeById("1");
+        var result = controller.EmployeeGetById("1");
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -208,7 +208,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext,tokenGenerator, passwordHasher);
 
         // Act
-        var result = controller.GetEmployeeById("999"); // Non-existent employee ID
+        var result = controller.EmployeeGetById("999"); // Non-existent employee ID
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -229,7 +229,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext,tokenGenerator,passwordHasher);
 
         // Executa o método
-        var result = controller.GetEmployeeProjects("1").Result;
+        var result = controller.EmployeeGetProjects("1").Result;
 
         // Verifica se o resultado
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -255,7 +255,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext,tokenGenerator, passwordHasher);
 
         // Act
-        var result = controller.GetEmployeeProjects("999").Result; // Non-existent employee ID
+        var result = controller.EmployeeGetProjects("999").Result; // Non-existent employee ID
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -274,7 +274,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext,tokenGenerator,passwordHasher);
 
         // Act
-        var result = controller.GetEmployeeProjects("2").Result; // Employee with no projects
+        var result = controller.EmployeeGetProjects("2").Result; // Employee with no projects
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -295,7 +295,7 @@ public class EmployeeControllerTests
         // Create and add a company only if it doesn't exist in the in-memory database
         Company company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -307,7 +307,7 @@ public class EmployeeControllerTests
         };
 
         // Only add the company if it doesn't exist
-        if (!dbContext.Companies.Any(c => c.CompanyID == company.CompanyID))
+        if (!dbContext.Companies.Any(c => c.CompanyId == company.CompanyId))
         {
             dbContext.Companies.Add(company);
             dbContext.SaveChanges(); // Save the company first
@@ -328,15 +328,16 @@ public class EmployeeControllerTests
         var employeeController = new EmployeeController(dbContext,tokenGenerator,passwordHasher);
 
         // Act
-        var result = employeeController.EmployeeCreate(company.CompanyID, employeeDto) as OkObjectResult;
+        var result = employeeController.EmployeeCreate(company.CompanyId, employeeDto) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal("Employee created successfully", result.Value);
-
+        Assert.Equal("Employee created successfully", ((dynamic)result.Value).Message);
+        Assert.NotNull(((dynamic)result.Value).Token);
+        
         var addedEmployee = dbContext.Employees.FirstOrDefault(e => e.Email == employeeDto.Email);
         Assert.NotNull(addedEmployee);
-        Assert.Equal(company.CompanyID, addedEmployee.CompanyId);
+        Assert.Equal(company.CompanyId, addedEmployee.CompanyId);
     }
     
     [Fact]
@@ -350,7 +351,7 @@ public class EmployeeControllerTests
         // Seed any necessary data (if applicable)
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -370,7 +371,7 @@ public class EmployeeControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         // Add company and employee to the context and save changes
@@ -384,7 +385,7 @@ public class EmployeeControllerTests
         var controller = new EmployeeController(dbContext, tokenGenerator, passwordHasher);
 
         // Act
-        var result = controller.EmployeeRemove(company.CompanyID, employee.EmployeeId) as OkObjectResult;
+        var result = controller.EmployeeRemove(company.CompanyId, employee.EmployeeId) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result); // Ensure that the result is not null
@@ -407,7 +408,7 @@ public class EmployeeControllerTests
         // Create and add a company
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -428,7 +429,7 @@ public class EmployeeControllerTests
             Email = "employee@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         // Persist changes to the database
@@ -449,7 +450,7 @@ public class EmployeeControllerTests
 
         // Act
         var result =
-            controller.EmployeeUpdate(company.CompanyID, employee.EmployeeId, updatedEmployeeDto) as OkObjectResult;
+            controller.EmployeeUpdate(company.CompanyId, employee.EmployeeId, updatedEmployeeDto) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result); // Check that the result is not null
@@ -475,7 +476,7 @@ public class EmployeeControllerTests
 
         var company = new Company
         {
-            CompanyID = "21", // Use a unique ID
+            CompanyId = "21", // Use a unique ID
             Name = "Company 2",
             Address = "Address 2",
             Email = "email2@example.com",
@@ -495,7 +496,7 @@ public class EmployeeControllerTests
             Email = "employee1@example.com",
             Contact = 987654321,
             Password = "password",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         var employee2 = new Employee
@@ -507,7 +508,7 @@ public class EmployeeControllerTests
             Email = "employee2@example.com",
             Contact = 123456789,
             Password = "password",
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         // Add the company and employees to the context
@@ -517,7 +518,7 @@ public class EmployeeControllerTests
         dbContext.SaveChanges();
 
         // Act
-        var result = controller.EmployeeListAll(company.CompanyID) as OkObjectResult;
+        var result = controller.EmployeeGetAllFromCompany(company.CompanyId) as OkObjectResult;
 
         // Assert
         Assert.NotNull(result);

@@ -91,7 +91,7 @@ namespace moldme.Interface
         /// - 404 Not Found: If the specified company is not found.
         /// </returns>
         Task<IActionResult> ListAllProjectsFromCompany(string companyId);
-
+        
         /// <summary>
         /// Retrieves the details of a specific project by its ID and company ID.
         /// </summary>
@@ -103,5 +103,15 @@ namespace moldme.Interface
         /// - 404 Not Found: If the specified company or project is not found, or if the project does not belong to the specified company.
         /// </returns>
         Task<IActionResult> GetProjectById(string companyId, string projectId);
+
+        /// <summary>
+        /// Retrieves all projects which Status is NEW.
+        /// </summary>
+        /// <returns>
+        /// Returns:
+        /// - 200 OK: If the projects are found.
+        /// - 404 Not Found: If no projects are found.
+        /// </returns>
+        Task<IActionResult> ProjectGetAllNew();
     }
 }

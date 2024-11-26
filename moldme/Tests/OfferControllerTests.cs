@@ -23,7 +23,7 @@ public class OfferControllerTests
     {
         var company = new Company
         {
-            CompanyID = "1",
+            CompanyId = "1",
             Name = "Company 1",
             Address = "Address 1",
             Email = "email@example.com",
@@ -43,7 +43,7 @@ public class OfferControllerTests
             Status = Status.INPROGRESS,
             StartDate = DateTime.Now,
             EndDate = DateTime.Now,
-            CompanyId = company.CompanyID
+            CompanyId = company.CompanyId
         };
 
         dbContext.Companies.Add(company);
@@ -64,7 +64,7 @@ public class OfferControllerTests
             Description = "Offer Description",
             Company = new Company
             {
-                CompanyID = "1",
+                CompanyId = "1",
                 Name = "Company 1",
                 Address = "Address 1",
                 Email = "email@example.com",
@@ -105,7 +105,7 @@ public class OfferControllerTests
         offer.Description = "Updated Offer Description";
         offer.Company = new Company
         {
-            CompanyID = "2",
+            CompanyId = "2",
             Name = "Company 2",
             Address = "Address 2",
             Email = "email2@example.com",

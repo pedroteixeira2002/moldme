@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase,IAuthentication
     }
     
     ///<inheritdoc cref="IAuthentication.Login(LoginDto)"/>
-    [HttpPost("login")]
+    [HttpPost("/api/login")]
     public IActionResult Login([FromBody] LoginDto request)
     {
         var user = _context.Companies.FirstOrDefault(c => c.Email == request.Email) ??

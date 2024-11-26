@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using moldme.data;
 using moldme.DTOs;
 using moldme.Interface;
@@ -66,5 +68,18 @@ public class ReviewController : ControllerBase, IReview
         await _context.SaveChangesAsync();
 
         return Ok("Review added successfully");
+    }
+    
+    public async Task<IActionResult> ReviewGetAll(string employeeId)
+    {
+        if (employeeId.IsNullOrEmpty())
+            return BadRequest("No employee identification provided");
+        
+        var reviews = await _context.Reviews.Where(r => r.ReviewedId == employeeId).ToListAsync();
+
+        if (reviews == null)
+            return NotFound("No reviews found");
+
+        return Ok(reviews);
     }
 }

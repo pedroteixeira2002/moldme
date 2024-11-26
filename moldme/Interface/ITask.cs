@@ -37,6 +37,20 @@ namespace moldme.Interface
         IActionResult TaskGetById(string taskId);
 
         /// <summary>
+        /// Get the file of a task
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns>
+        /// Returns:
+        /// - 200 OK: If the file is found and returned successfully.
+        /// - 400 Bad Request: If the task ID is invalid.
+        /// - 404 Not Found: If the specified task is not found.
+        /// - 500 Internal Server Error: If the file is not found.
+        /// - 415 Unsupported Media Type: If the file type is not supported.
+        /// </returns>
+        IActionResult TaskGetFile(string taskId);
+        
+        /// <summary>
         /// Update a task
         /// </summary>
         /// <param name="taskId">The Task Identification we need to update</param>

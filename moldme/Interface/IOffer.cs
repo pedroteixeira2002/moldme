@@ -46,5 +46,17 @@ namespace moldme.Interface
         /// - 404 Not Found: If the specified company, project, or offer is not found.
         /// </returns>
         Task<IActionResult> OfferReject(string companyId, string projectId, string offerId);
+        
+        /// <summary>
+        /// Get all offers from a project
+        /// </summary>
+        /// <param name="projectId">The Unique Identification of the project which we need the list of offers.</param>
+        /// <returns>
+        /// Returns:
+        /// - 200 OK: If the offers are found and returned successfully.
+        /// - 404 Not Found: If the specified project is not found.
+        /// - 404 Not Found: If the specified project has no offers.
+        /// </returns>
+        Task<IActionResult> OfferGetAll(string projectId);
     }
 }
