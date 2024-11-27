@@ -69,7 +69,9 @@ public class ReviewController : ControllerBase, IReview
 
         return Ok("Review added successfully");
     }
-    
+    ///<inheritdoc cref="IReview.ReviewGetAll"/>
+    [Authorize]
+    [HttpPost("getReviews")]
     public async Task<IActionResult> ReviewGetAll(string employeeId)
     {
         if (employeeId.IsNullOrEmpty())
