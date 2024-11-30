@@ -123,8 +123,7 @@ namespace moldme.Migrations
                         name: "FK_Reviews_Employees_ReviewerId",
                         column: x => x.ReviewerId,
                         principalTable: "Employees",
-                        principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "EmployeeId");
                 });
 
             migrationBuilder.CreateTable(
@@ -160,13 +159,13 @@ namespace moldme.Migrations
                         column: x => x.EmployeesEmployeeId,
                         principalTable: "Employees",
                         principalColumn: "EmployeeId",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeProject_Projects_ProjectsProjectId",
                         column: x => x.ProjectsProjectId,
                         principalTable: "Projects",
                         principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,13 +187,13 @@ namespace moldme.Migrations
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "CompanyId",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Offers_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "ProjectId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,7 +207,9 @@ namespace moldme.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: false),
-                    FileContent = table.Column<byte[]>(type: "varbinary(max)", maxLength: 10485760, nullable: true)
+                    FileContent = table.Column<byte[]>(type: "varbinary(max)", maxLength: 10485760, nullable: true),
+                    FileName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    MimeType = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true)
                 },
                 constraints: table =>
                 {

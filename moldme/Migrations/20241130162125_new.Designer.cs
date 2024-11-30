@@ -12,8 +12,8 @@ using moldme.data;
 namespace moldme.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241126171448_new1")]
-    partial class new1
+    [Migration("20241130162125_new")]
+    partial class @new
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -448,7 +448,7 @@ namespace moldme.Migrations
                         .IsRequired();
 
                     b.HasOne("moldme.Models.Project", "Project")
-                        .WithMany()
+                        .WithMany("Offers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -532,6 +532,8 @@ namespace moldme.Migrations
                 {
                     b.Navigation("Chat")
                         .IsRequired();
+
+                    b.Navigation("Offers");
 
                     b.Navigation("Tasks");
                 });
