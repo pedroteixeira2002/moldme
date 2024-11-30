@@ -1,3 +1,5 @@
+import 'package:front_end_moldme/mappers/project_mapper.dart';
+
 import '../dtos/chat_dto.dart';
 import '../models/chat.dart';
 
@@ -8,8 +10,8 @@ class ChatMapper {
   static Chat fromDto(ChatDto dto) {
     return Chat(
       chatId: dto.chatId,
-      messages: [],
-      project: ,
+      projectId: dto.projectId,
+      project: ProjectMapper.fromDto(dto.project)
     );
   }
 
@@ -18,6 +20,7 @@ class ChatMapper {
     return ChatDto(
       chatId: chat.chatId,
       projectId: chat.project.projectId,
+      project: ProjectMapper.toDto(chat.project)
     );
   }  
 }

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:front_end_moldme/dtos/task_dto..dart';
+import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:dio/dio.dart';
 
 class TaskService {

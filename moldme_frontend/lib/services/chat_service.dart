@@ -6,7 +6,7 @@ class ChatService {
   static const String _baseUrl = 'https://localhost:7168/api/Chat';
 
   /// Creates a new chat associated with a project ID.
-  static Future<bool> createChat(String projectId) async {
+  Future<bool> createChat(String projectId) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/createChat'),
       headers: {'Content-Type': 'application/json'},
@@ -17,7 +17,7 @@ class ChatService {
   }
 
   /// Deletes a chat by its ID.
-  static Future<bool> deleteChat(String chatId) async {
+  Future<bool> deleteChat(String chatId) async {
     final response = await http.delete(
       Uri.parse('$_baseUrl/deleteChat/$chatId'),
     );
@@ -26,7 +26,7 @@ class ChatService {
   }
 
   /// Fetches a chat by its ID and returns a ChatDto.
-  static Future<ChatDto> getChat(String chatId) async {
+  Future<ChatDto> getChat(String chatId) async {
     final response = await http.get(
       Uri.parse('$_baseUrl/get/$chatId'),
     );
