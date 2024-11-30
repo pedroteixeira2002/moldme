@@ -61,9 +61,11 @@ public class ReviewController : ControllerBase, IReview
             Stars = reviewDto.Stars,
             date = DateTime.Now, 
             ReviewerId = reviewer.EmployeeId, 
-            ReviewedId = reviewedEmployeeEntity.EmployeeId 
+            Reviewer = reviewer,
+            ReviewedId = reviewedEmployeeEntity.EmployeeId,
+            Reviewed = reviewedEmployeeEntity
         };
-
+        
         await _context.Reviews.AddAsync(review);
         await _context.SaveChangesAsync();
 

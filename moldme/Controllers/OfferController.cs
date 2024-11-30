@@ -54,7 +54,9 @@ public class OfferController : ControllerBase, IOffer
             ProjectId = project.ProjectId,
             Date = offerDto.Date,
             Status = offerDto.Status,
-            Description = offerDto.Description
+            Description = offerDto.Description,
+            Company = company,
+            Project = project
         };
 
         // Query the database to add the offer

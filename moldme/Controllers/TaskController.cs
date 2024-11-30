@@ -85,7 +85,9 @@ public class TaskController : ControllerBase, ITask
             Date = taskDto.Date,
             Status = taskDto.Status,
             ProjectId = projectId,
-            EmployeeId = employeeId
+            EmployeeId = employeeId,
+            Employee = employee,
+            Project = project
         }; 
         if (fileContent != null)
         {
