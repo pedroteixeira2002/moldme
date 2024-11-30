@@ -1,9 +1,36 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../dtos/companyDto.dart';
 import '../models/project_dto.dart';
 
 class CompanyService {
   final String baseUrl = "http://localhost:5213/api/Company";
+
+  Future<bool> registerCompany(CompanyDTO company) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/register'),
+      headers: {'Content-Type': 'application/json'}, 
+      body: jsonEncode(company.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      print("Company registered successfully: ${response.body}");
+      return true;
+    } else {
+      print("Failed to register company: ${response.body}");
+      return false;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
   
   Future<String> addProject(ProjectDto project, String companyId) async {
     const String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhdWRpQGdtYWlsLnB0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczMzkzMzk0MCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.AhLZw4rh0_qJ9WLBRx3CjGCe4ja5Thv8r4LfxknFVGc";
