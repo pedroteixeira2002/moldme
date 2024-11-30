@@ -44,7 +44,8 @@ public class EmployeeController : ControllerBase, IEmployee
             Email = employeeDto.Email,
             Contact = employeeDto.Contact,
             Password = _employeePasswordHasher.HashPassword(null, employeeDto.Password),
-            CompanyId = company.CompanyId
+            CompanyId = company.CompanyId,
+            Company = company
         };
 
         _context.Employees.Add(employee);

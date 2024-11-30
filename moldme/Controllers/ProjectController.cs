@@ -47,6 +47,7 @@ public class ProjectController : ControllerBase, IProject
             StartDate = projectDto.StartDate,
             EndDate = projectDto.EndDate,
             CompanyId = company.CompanyId,
+            Company = company
         };
 
 
