@@ -16,7 +16,7 @@ class LoginScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('lib/images/register.png'), // Substitua pelo caminho da sua imagem
                         fit: BoxFit.cover,
@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min, // Apenas ocupa o espaço necessário
                           crossAxisAlignment: CrossAxisAlignment.start, // Alinha à esquerda
                           children: [
-                            Text(
+                            const Text(
                               "Login",
                               style: TextStyle(
                                 fontSize: 28,
@@ -45,7 +45,7 @@ class LoginScreen extends StatelessWidget {
                                 color: Colors.black,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               "Please fill your information below",
                               style: TextStyle(
@@ -53,7 +53,7 @@ class LoginScreen extends StatelessWidget {
                                 color: Colors.grey[600],
                               ),
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             // Campo de Email ou TaxID
                             TextField(
                               decoration: InputDecoration(
@@ -61,10 +61,10 @@ class LoginScreen extends StatelessWidget {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                prefixIcon: Icon(Icons.email),
+                                prefixIcon: const Icon(Icons.email),
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             // Campo de Senha
                             TextField(
                               obscureText: true,
@@ -73,10 +73,10 @@ class LoginScreen extends StatelessWidget {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                prefixIcon: Icon(Icons.lock),
+                                prefixIcon: const Icon(Icons.lock),
                               ),
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             // Botão de próxima
                             ElevatedButton(
                               onPressed: () {
@@ -84,13 +84,13 @@ class LoginScreen extends StatelessWidget {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue, // Cor do botão
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 32, vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text("Next"),
@@ -99,13 +99,13 @@ class LoginScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             // Link "Forgot your password?"
                             GestureDetector(
                               onTap: () {
                                 // Navegar para recuperação de senha
                               },
-                              child: Text(
+                              child: const Text(
                                 "Forgot your password ?",
                                 style: TextStyle(
                                   fontSize: 14,

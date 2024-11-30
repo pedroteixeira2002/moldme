@@ -12,7 +12,7 @@ class RegisterScreen2 extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('lib/images/register2.png'), // Substitua pelo caminho da imagem
                   fit: BoxFit.cover,
@@ -31,14 +31,14 @@ class RegisterScreen2 extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Sign Up',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Please fill your information below',
                       style: TextStyle(
@@ -46,46 +46,46 @@ class RegisterScreen2 extends StatelessWidget {
                         color: Colors.grey[600],
                       ),
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
                     // Campo "Company Name"
-                    TextField(
+                    const TextField(
                       decoration: InputDecoration(
                         labelText: 'Company Name',
                         prefixIcon: Icon(Icons.business),
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Campo "Tax Information"
-                    TextField(
+                    const TextField(
                       decoration: InputDecoration(
                         labelText: 'Tax Information',
                         prefixIcon: Icon(Icons.receipt),
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Campo "E-mail"
-                    TextField(
+                    const TextField(
                       decoration: InputDecoration(
                         labelText: 'E-mail',
                         prefixIcon: Icon(Icons.email),
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Dropdown "Work Area"
                     DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Work Area',
                         prefixIcon: Icon(Icons.work),
                         border: OutlineInputBorder(),
                       ),
-                      items: [
+                      items: const [
                         DropdownMenuItem(
                           value: 'Injection Systems',
                           child: Text('We do Injection Systems'),
@@ -101,10 +101,10 @@ class RegisterScreen2 extends StatelessWidget {
                       ],
                       onChanged: (value) {},
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Campo "Password"
-                    TextField(
+                    const TextField(
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Password',
@@ -112,10 +112,10 @@ class RegisterScreen2 extends StatelessWidget {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // Campo "Repeat your password"
-                    TextField(
+                    const TextField(
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'Repeat your password',
@@ -123,7 +123,7 @@ class RegisterScreen2 extends StatelessWidget {
                         border: OutlineInputBorder(),
                       ),
                     ),
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
                     // Botão "Finish"
                     SizedBox(
@@ -131,9 +131,9 @@ class RegisterScreen2 extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: Text('Finish'),
+                        child: const Text('Finish'),
                       ),
                     ),
                   ],

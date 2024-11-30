@@ -17,7 +17,7 @@ class CheckEmailScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('lib/images/register.png'), // Substitua pelo caminho da sua imagem
                         fit: BoxFit.cover,
@@ -36,7 +36,7 @@ class CheckEmailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center, // Centraliza verticalmente
                       crossAxisAlignment: CrossAxisAlignment.center, // Centraliza horizontalmente
                       children: [
-                        Text(
+                        const Text(
                           "We’re all done",
                           style: TextStyle(
                             fontSize: 28,
@@ -45,7 +45,7 @@ class CheckEmailScreen extends StatelessWidget {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           "Please check your email to use MouldMe!",
                           style: TextStyle(
@@ -54,20 +54,20 @@ class CheckEmailScreen extends StatelessWidget {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 32),
+                        const SizedBox(height: 32),
                         // Ícone de check verde
-                        Icon(
+                        const Icon(
                           Icons.check_circle,
                           color: Colors.green,
                           size: 100,
                         ),
-                        SizedBox(height: 32),
+                        const SizedBox(height: 32),
                         // Link para login
                         GestureDetector(
                           onTap: () {
                             // Navegação ou lógica para login
                           },
-                          child: Text(
+                          child: const Text(
                             "Login to your account",
                             style: TextStyle(
                               fontSize: 16,

@@ -16,7 +16,7 @@ class RecoverPasswordScreen extends StatelessWidget {
                 Expanded(
                   flex: 1,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('lib/images/register.png'), // Substitua pelo caminho da sua imagem
                         fit: BoxFit.cover,

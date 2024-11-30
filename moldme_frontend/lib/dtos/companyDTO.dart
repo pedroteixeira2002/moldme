@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 /// Represents a data transfer object for a company.
 class CompanyDTO {

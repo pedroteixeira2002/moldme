@@ -12,7 +12,7 @@ class RegisterScreen extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('lib/images/register.png'), // Substitua pelo caminho da imagem
                   fit: BoxFit.cover,
@@ -30,14 +30,14 @@ class RegisterScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Sign Up',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Please fill your information below',
                     style: TextStyle(
@@ -45,37 +45,37 @@ class RegisterScreen extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
                   // Campo "Company Name"
-                  TextField(
+                  const TextField(
                     decoration: InputDecoration(
                       labelText: 'Company Name',
                       prefixIcon: Icon(Icons.business),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Campo "Tax Information"
-                  TextField(
+                  const TextField(
                     decoration: InputDecoration(
                       labelText: 'Tax Information',
                       prefixIcon: Icon(Icons.receipt),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Campo "E-mail"
-                  TextField(
+                  const TextField(
                     decoration: InputDecoration(
                       labelText: 'E-mail',
                       prefixIcon: Icon(Icons.email),
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
                   // Botão "Next"
                   SizedBox(
@@ -83,22 +83,22 @@ class RegisterScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: Text('Next'),
+                      child: const Text('Next'),
                     ),
                   ),
 
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Link "Already have an account"
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? '),
+                      const Text('Already have an account? '),
                       GestureDetector(
                         onTap: () {}, // Adicione lógica de navegação aqui
-                        child: Text(
+                        child: const Text(
                           'Login to your account',
                           style: TextStyle(
                             color: Colors.blue,

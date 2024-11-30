@@ -13,7 +13,7 @@ class PlanSelectionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Título principal
-              Text(
+              const Text(
                 'Simple, transparent pricing',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -21,7 +21,7 @@ class PlanSelectionScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               // Subtítulo
               Text(
                 'Lorem ipsum dolor sit amet consectetur adipiscing elit dolor posuere vel venenatis eu sit massa volutpat.',
@@ -31,7 +31,7 @@ class PlanSelectionScreen extends StatelessWidget {
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
 
               // Cards de preços
               Row(
@@ -43,7 +43,7 @@ class PlanSelectionScreen extends StatelessWidget {
                     planName: 'Basic',
                     price: '\$99',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: [
+                    features: const [
                       'All analytics features',
                       'Up to 250,000 tracked visits',
                       'Normal support',
@@ -52,14 +52,14 @@ class PlanSelectionScreen extends StatelessWidget {
                     buttonText: 'Get started',
                     isPopular: false,
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   // Card 2: Pro (Popular)
                   PricingCard(
                     planType: 'For startups',
                     planName: 'Pro',
                     price: '\$199',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: [
+                    features: const [
                       'All analytics features',
                       'Up to 1,000,000 tracked visits',
                       'Premium support',
@@ -68,14 +68,14 @@ class PlanSelectionScreen extends StatelessWidget {
                     buttonText: 'Get started',
                     isPopular: true,
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   // Card 3: Enterprise
                   PricingCard(
                     planType: 'For big companies',
                     planName: 'Enterprise',
                     price: '\$399',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: [
+                    features: const [
                       'All analytics features',
                       'Up to 5,000,000 tracked visits',
                       'Dedicated support',
@@ -103,7 +103,7 @@ class PricingCard extends StatelessWidget {
   final String buttonText;
   final bool isPopular;
 
-  PricingCard({
+  const PricingCard({super.key, 
     required this.planType,
     required this.planName,
     required this.price,
@@ -128,7 +128,7 @@ class PricingCard extends StatelessWidget {
             BoxShadow(
               color: Colors.grey.shade200,
               blurRadius: 8,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -139,12 +139,12 @@ class PricingCard extends StatelessWidget {
             // Tag de "Popular" (apenas para o plano Pro)
             if (isPopular)
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: const Text(
                   'Popular',
                   style: TextStyle(
                     color: Colors.white,
@@ -153,7 +153,7 @@ class PricingCard extends StatelessWidget {
                   ),
                 ),
               ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // Informações do plano
             Text(
@@ -165,12 +165,12 @@ class PricingCard extends StatelessWidget {
             ),
             Text(
               planName,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               description,
               style: TextStyle(
@@ -178,12 +178,12 @@ class PricingCard extends StatelessWidget {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Preço
             Text(
               price,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -196,7 +196,7 @@ class PricingCard extends StatelessWidget {
                 color: Colors.grey[600],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Lista de features
             ...features.map(
@@ -204,16 +204,16 @@ class PricingCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.check_circle,
                       color: Colors.blue,
                       size: 20,
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         feature,
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
                     ),
                   ],
@@ -221,7 +221,7 @@ class PricingCard extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Botão
             SizedBox(
@@ -230,14 +230,14 @@ class PricingCard extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: Text(
                   buttonText,
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ),
