@@ -1,105 +1,170 @@
 import 'dart:convert';
-import 'package:front_end_moldme/models/project_dto.dart';
 import 'package:http/http.dart' as http;
+import '../dtos/project_dto.dart';
 
 class ProjectService {
-  final String baseUrl = "http://localhost:5213/api/Project";
+  final String baseUrl = "http://localhost:5213";
+  static const String token ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA";
 
-
-  // Create a new project
-  Future<void> createProject(String companyId, ProjectDto project) async {
-    final url = Uri.parse('$baseUrl/addProject/$companyId');
+  /// Adds a new project for a specific company.
+  Future<String> addProject(String companyId, ProjectDto projectDto) async {
+    final url = Uri.parse('$baseUrl/api/Project/addProject/$companyId');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(project.toJson()),
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+      body: json.encode(projectDto.toJson()),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to create project: ${response.body}');
+    if (response.statusCode == 200) {
+    // Verifique se o corpo é JSON ou texto
+    try {
+      final data = json.decode(response.body); // Tenta processar como JSON
+      return data['Message'] ?? 'Project added successfully';
+    } catch (e) {
+      // Se falhar, retorne o texto diretamente
+      return response.body; // Texto como "Project added successfully"
+    }
+  } else {
+    // Caso de erro
+    try {
+      final error = json.decode(response.body)['error'];
+      throw Exception(error ?? "Failed to add project");
+    } catch (_) {
+      throw Exception("Failed to add project");
     }
   }
+}
 
-  // Update an existing project
-  Future<void> updateProject(String projectId, ProjectDto updatedProject) async {
-    final url = Uri.parse('$baseUrl/editProject/$projectId');
+  /// Updates an existing project.
+  Future<String> updateProject(String projectId, ProjectDto projectDto) async {
+    final url = Uri.parse('$baseUrl/api/Project/editProject/$projectId');
     final response = await http.put(
       url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(updatedProject.toJson()),
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+      body: json.encode(projectDto.toJson()),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update project: ${response.body}');
+    if (response.statusCode == 200) {
+      return json.decode(response.body); // Success message
+    } else {
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to update project");
     }
   }
 
-  // View a single project
-  Future<ProjectDto> viewProject(String projectId) async {
-    final url = Uri.parse('$baseUrl/viewProject/$projectId');
-    final response = await http.get(url);
+  /// Fetches a specific project by ID.
+  Future<ProjectDto> getProjectById(String companyId, String projectId) async {
+    final url = Uri.parse(
+        '$baseUrl/api/Project/$companyId/getProjectById/$projectId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return ProjectDto.fromJson(data);
     } else {
-      throw Exception('Failed to fetch project: ${response.body}');
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to fetch project");
     }
   }
 
-  // Delete a project
-  Future<void> deleteProject(String projectId) async {
-    final url = Uri.parse('$baseUrl/RemoveProject/$projectId');
-    final response = await http.delete(url);
+  /// Removes a project by ID.
+  Future<String> removeProject(String projectId) async {
+    final url = Uri.parse('$baseUrl/api/Project/RemoveProject/$projectId');
+    final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete project: ${response.body}');
-    }
-  }
-
-  // Assign an employee to a project
-  Future<void> assignEmployee(String projectId, String employeeId) async {
-    final url = Uri.parse('$baseUrl/$projectId/assignEmployee/$employeeId');
-    final response = await http.post(url);
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to assign employee: ${response.body}');
-    }
-  }
-
-  // Remove an employee from a project
-  Future<void> removeEmployee(String projectId, String employeeId) async {
-    final url = Uri.parse('$baseUrl/$projectId/removeEmployee/$employeeId');
-    final response = await http.delete(url);
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to remove employee: ${response.body}');
-    }
-  }
-
-  // List all projects for a specific company
-  Future<List<ProjectDto>> listAllProjects(String companyId) async {
-    final url = Uri.parse('$baseUrl/$companyId/listAllProjects');
-    final response = await http.get(url);
+    );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((item) => ProjectDto.fromJson(item)).toList();
+      return json.decode(response.body); // Success message
     } else {
-      throw Exception('Failed to fetch projects: ${response.body}');
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to remove project");
     }
   }
 
-  // List all projects with Status.NEW
-  Future<List<ProjectDto>> listAllNewProjects(String companyId) async {
-    final url = Uri.parse('$baseUrl/listAllNewProjects');
-    final response = await http.get(url);
+  /// Assigns an employee to a project.
+  Future<String> assignEmployee(String projectId, String employeeId) async {
+    final url =
+        Uri.parse('$baseUrl/api/Project/$projectId/assignEmployee/$employeeId');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+
+    );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      return data.map((item) => ProjectDto.fromJson(item)).toList();
+      return json.decode(response.body); // Success message
     } else {
-      throw Exception('Failed to fetch new projects: ${response.body}');
+      throw Exception(json.decode(response.body)['error'] ??
+          "Failed to assign employee to project");
+    }
+  }
+
+  /// Removes an employee from a project.
+  Future<String> removeEmployee(String projectId, String employeeId) async {
+    final url = Uri.parse(
+        '$baseUrl/api/Project/$projectId/removeEmployee/$employeeId');
+    final response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body); // Success message
+    } else {
+      throw Exception(json.decode(response.body)['error'] ??
+          "Failed to remove employee from project");
+    }
+  }
+
+  /// Lists all projects associated with a company.
+  Future<List<ProjectDto>> listAllProjectsFromCompany(String companyId) async {
+    final url = Uri.parse('$baseUrl/api/Project/$companyId/listAllProjects');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List<dynamic>;
+      return data.map((e) => ProjectDto.fromJson(e)).toList();
+    } else {
+      throw Exception(json.decode(response.body)['error'] ??
+          "Failed to fetch projects for company");
+    }
+  }
+
+  /// Lists all new projects.
+  Future<List<ProjectDto>> listAllNewProjects() async {
+    final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json',
+      "Authorization": "Bearer $token",},
+
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List<dynamic>;
+      return data.map((e) => ProjectDto.fromJson(e)).toList();
+    } else {
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to fetch new projects");
     }
   }
 }

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:front_end_moldme/screens/project/new_project_screen.dart';
-import 'package:front_end_moldme/screens/home/home_screen.dart';
-import 'package:front_end_moldme/screens/project/project-page.dart';
-import 'package:front_end_moldme/screens/project/project_proposal.dart';
-import 'package:front_end_moldme/screens/settings/settings_screen.dart';
+
+import 'routes/app_routes.dart'; // Importa as rotas da aplicação
 
 void main() {
   runApp(const MyApp());
@@ -11,24 +8,18 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  // Este widget é a raiz da sua aplicação.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Sidebar Navigation',
+      title: 'Moldme',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomeScreen(),
-        '/new-project': (context) => const NewProjectPage(
-              companyId: '',
-            ),
-        '/project-proposal': (context) => const ProjectScreen(),
-        '/settings': (context) => const SettingsScreen(),
-        '/project-page': (context) => const ProjectPage(),
-      },
+      initialRoute: '/new-project', // Rota inicial da aplicação
+      routes: AppRoutes.routes,
     );
   }
 }

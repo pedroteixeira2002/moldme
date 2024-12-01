@@ -79,4 +79,9 @@ public class Project
     /// Gets or sets the chat associated with the project.
     /// </summary>
     public Chat Chat { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the list of offers associated with the project.
+    /// </summary>
+    public List<Offer> Offers { get; set; } = new List<Offer>();
 }

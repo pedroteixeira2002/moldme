@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:front_end_moldme/widgets/nav_bar.dart';
 
 class AppDrawer extends StatelessWidget {
   final Widget child; // O conteúdo principal da página será passado como um widget
@@ -29,7 +28,7 @@ class AppDrawer extends StatelessWidget {
                   leading: const Icon(Icons.assignment),
                   title: const Text("Projects"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/project-list');
+                    Navigator.pushReplacementNamed(context, '/project-page');
                   },
                 ),
                 ListTile(

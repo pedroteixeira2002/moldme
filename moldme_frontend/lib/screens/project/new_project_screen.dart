@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/dtos/project_dto.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart';
 import 'package:intl/intl.dart';
-import '../../models/project_dto.dart';
 import '../../services/project_service.dart';
 
 class NewProjectPage extends StatefulWidget {
@@ -17,6 +17,7 @@ class NewProjectPage extends StatefulWidget {
 class _NewProjectPageState extends State<NewProjectPage> {
   final _formKey = GlobalKey<FormState>();
   final _service = ProjectService();
+  final String companyId ="bf498b3e-74df-4a7c-ac5a-b9b00d097498";
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -35,21 +36,28 @@ class _NewProjectPageState extends State<NewProjectPage> {
       }
 
       try {
+        // Validar campos obrigatórios
+        if (_startDate == null || _endDate == null) {
+          throw Exception('Both start and end dates must be selected');
+        }
+
         final newProject = ProjectDto(
           name: _nameController.text,
           description: _descriptionController.text,
-          status: _selectedStatus,
+          status: _selectedStatus, // Converte o status para string
           budget: double.parse(_budgetController.text),
-          startDate: _startDate!.toIso8601String(),
-          endDate: _endDate!.toIso8601String(),
+          startDate: _startDate!, // Mantém DateTime
+          endDate: _endDate!, // Mantém DateTime
+          
         );
-
-        await _service.createProject(widget.companyId, newProject);
+        
+        await _service.addProject(companyId, newProject);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Project created successfully!')),
         );
 
+        // Resetar o formulário
         _nameController.clear();
         _descriptionController.clear();
         _budgetController.clear();
@@ -65,6 +73,7 @@ class _NewProjectPageState extends State<NewProjectPage> {
           SnackBar(content: Text('Failed to create project: $e')),
         );
       }
+
     }
   }
 

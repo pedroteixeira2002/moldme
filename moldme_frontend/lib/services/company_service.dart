@@ -1,127 +1,112 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class CompanyService {
-  final String baseUrl = "http://localhost:5213/api/Company";
-  static const String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-      "AhLZw4rh0_qJ9WLBRx3CjGCe4ja5Thv8r4LfxknFVGc";
+import '../dtos/company_dto.dart';
 
-  /// Add a new project
-  Future<String> addProject(Map<String, dynamic> project, String companyId) async {
-    final url = Uri.parse('$baseUrl/addProject/$companyId');
+class CompanyService {
+  final String baseUrl = "http://localhost:5213";
+  final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA"; // Replace with actual token
+
+  /// Registers a new company.
+  Future<Map<String, dynamic>> registerCompany(CompanyDto companyDto) async {
+    final url = Uri.parse('$baseUrl/register');
     final response = await http.post(
       url,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
-      body: json.encode(project),
+      body: json.encode(companyDto.toJson()),
     );
 
     if (response.statusCode == 200) {
-      return "Project added successfully";
+      return json.decode(response.body);
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to add project");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to register company",
+      );
     }
   }
 
-  /// List payment history
+  /// Lists the payment history for a specific company.
   Future<List<dynamic>> listPaymentHistory(String companyId) async {
     final url = Uri.parse('$baseUrl/$companyId/listPaymentHistory');
     final response = await http.get(
       url,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body) as List<dynamic>;
+      return json.decode(response.body);
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to fetch payment history");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to fetch payment history",
+      );
     }
   }
 
-  /// Upgrade subscription plan
+  /// Upgrades the subscription plan for a company.
   Future<String> upgradePlan(String companyId, String subscriptionPlan) async {
     final url = Uri.parse('$baseUrl/$companyId/upgradePlan');
     final response = await http.put(
       url,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
-      body: json.encode({"plan": subscriptionPlan}),
+      body: json.encode(subscriptionPlan),
     );
 
     if (response.statusCode == 200) {
-      return "Plan upgraded successfully";
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to upgrade plan");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to upgrade plan",
+      );
     }
   }
 
-  /// Subscribe to a plan
+  /// Subscribes the company to a plan.
   Future<String> subscribePlan(String companyId, String subscriptionPlan) async {
     final url = Uri.parse('$baseUrl/$companyId/subscribePlan');
     final response = await http.post(
       url,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
-      body: json.encode({"plan": subscriptionPlan}),
+      body: json.encode(subscriptionPlan),
     );
 
     if (response.statusCode == 200) {
-      return "Plan subscription successful";
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to subscribe to plan");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to subscribe to plan",
+      );
     }
   }
 
-  /// Cancel subscription
+  /// Cancels the subscription for a company.
   Future<String> cancelSubscription(String companyId) async {
     final url = Uri.parse('$baseUrl/$companyId/cancelSubscription');
     final response = await http.put(
       url,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      return "Subscription cancelled successfully";
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to cancel subscription");
-    }
-  }
-
-  /// Register a company
-  Future<String> registerCompany(Map<String, dynamic> companyDto) async {
-    final url = Uri.parse('$baseUrl/register');
-    final response = await http.post(
-      url,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-      body: json.encode(companyDto),
-    );
-
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
-      return responseBody['message'] ?? "Company registered successfully";
-    } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to register company");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to cancel subscription",
+      );
     }
   }
 }
