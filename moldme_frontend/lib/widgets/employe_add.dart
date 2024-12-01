@@ -35,71 +35,14 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
         const SnackBar(content: Text("Employee assigned successfully!")),
       );
       setState(() {
-        _employees = _employeeService.listAllEmployeesFromCompany(widget.companyId);
+        _employees =
+            _employeeService.listAllEmployeesFromCompany(widget.companyId);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to assign employee: $e")),
       );
     }
-  }
-
-  void _showAssignEmployeeDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Assign Employee"),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: FutureBuilder<List<EmployeeDto>>(
-              future: _employees,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text("Error: ${snapshot.error}");
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Text("No employees found.");
-                }
-
-                final employees = snapshot.data!;
-                return ListView.builder(
-                  itemCount: employees.length,
-                  itemBuilder: (context, index) {
-                    final employee = employees[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: const AssetImage(
-                            'assets/images/placeholder.png'), // Use um placeholder caso não tenha imagem
-                        child: employee.name.isNotEmpty
-                            ? null
-                            : const Icon(Icons.person),
-                      ),
-                      title: Text(employee.name),
-                      subtitle: Text(employee.profession),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () {
-                          _assignEmployee(employee.employeeId);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Close"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -116,49 +59,69 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
         }
 
         final employees = snapshot.data!;
-        return Row(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: employees.length,
-                itemBuilder: (context, index) {
-                  final employee = employees[index];
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: const AssetImage(
-                                'assets/images/placeholder.png'), // Placeholder de imagem
-                            radius: 24,
-                            child: employee.name.isNotEmpty
-                                ? null
-                                : const Icon(Icons.person),
-                          ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            employee.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(employee.profession),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+        return ListView.separated(
+          separatorBuilder: (context, index) => const Divider(),
+          itemCount: employees.length,
+          itemBuilder: (context, index) {
+            final employee = employees[index];
+            return Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1), // changes position of shadow
+                  ),
+                ],
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle, color: Colors.green),
-              onPressed: _showAssignEmployeeDialog,
-            ),
-          ],
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage:
+                        const AssetImage('lib/assets/app-icon-person.png'),
+                    radius: 24,
+                    child: employee.name.isNotEmpty
+                        ? null
+                        : const Icon(Icons.person),
+                  ),
+                  const SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          employee.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          employee.profession,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add_circle, color: Colors.green),
+                    onPressed: () {
+                      _assignEmployee(employee.employeeId);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

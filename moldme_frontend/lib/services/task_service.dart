@@ -1,11 +1,13 @@
 import 'dart:io';
-import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:dio/dio.dart';
+import 'package:front_end_moldme/dtos/task_dto.dart';
 
 class TaskService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: "https://your-backend-url.com/api/task"));
+  final Dio _dio =
+      Dio(BaseOptions(baseUrl: "https://your-backend-url.com/api/task"));
 
-  Future<String> createTask(TaskDto taskDto, String projectId, String employeeId) async {
+  Future<String> createTask(
+      TaskDto taskDto, String projectId, String employeeId) async {
     try {
       final response = await _dio.post(
         '/createTask',
@@ -21,7 +23,9 @@ class TaskService {
   Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
     try {
       final response = await _dio.get('/project/$projectId/tasks');
-      return (response.data as List).map((json) => TaskDto.fromJson(json)).toList();
+      return (response.data as List)
+          .map((json) => TaskDto.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception("Failed to fetch tasks: $e");
     }
