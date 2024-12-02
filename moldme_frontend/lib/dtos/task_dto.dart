@@ -6,12 +6,12 @@ import '../mappers/project_mapper.dart';
 
 /// Represents a Task Data Transfer Object (DTO).
 class TaskDto {
-  final String taskId;
+  final String? taskId;
   final String titleName;
   final String description;
   final String date; // ISO 8601 formatted string
   final int status; // Enum as string
-  final String? projectId;
+  final String projectId;
   final ProjectDto project;
   final String employeeId;
   final EmployeeDto employee;
@@ -20,7 +20,7 @@ class TaskDto {
   final String? mimeType;
 
   const TaskDto({
-    required this.taskId,
+    this.taskId,
     required this.titleName,
     required this.description,
     required this.date,

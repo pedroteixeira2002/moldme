@@ -50,6 +50,7 @@ class CompanyDto {
       password: json['password'],
     );
   }
+
   factory CompanyDto.empty() {
     return CompanyDto(companyId: '', name: '',taxId: 0,address: "",contact: 0,email: "",sector: "",plan: "",password: "");
   }

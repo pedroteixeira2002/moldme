@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import '../dtos/company_dto.dart';
 
 class CompanyService {
