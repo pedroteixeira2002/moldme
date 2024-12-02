@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatelessWidget {
-  final Widget child; // O conteúdo principal da página será passado como um widget
+  final Widget
+      child; // O conteúdo principal da página será passado como um widget
 
   const AppDrawer({super.key, required this.child});
 
@@ -17,7 +18,7 @@ class AppDrawer extends StatelessWidget {
             color: const Color.fromRGBO(158, 187, 214, 1),
             child: Column(
               children: [
-                 ListTile(
+                ListTile(
                   leading: const Icon(Icons.person),
                   title: const Text("My Profile"),
                   onTap: () {
@@ -28,7 +29,14 @@ class AppDrawer extends StatelessWidget {
                   leading: const Icon(Icons.assignment),
                   title: const Text("Projects"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/project-page');
+                    Navigator.pushReplacementNamed(context, '/projects-list');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.assignment_add),
+                  title: const Text("New Project"),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/new-project');
                   },
                 ),
                 ListTile(
@@ -39,27 +47,12 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: const Text("Calendar"),
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/calendar');
-                  },
-                ),
-                ListTile(
                   leading: const Icon(Icons.settings),
                   title: const Text("Settings"),
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/settings');
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.assignment_add),
-                  title: const Text("New Project"),
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/new-project');
-                  },
-                ),
-                
                 const Spacer(),
                 ListTile(
                   leading: const Icon(Icons.logout),
@@ -85,4 +78,3 @@ class AppDrawer extends StatelessWidget {
     );
   }
 }
-

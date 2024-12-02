@@ -5,7 +5,7 @@ class ProjectDto {
   final String? projectId;
   final String name;
   final String description;
-  final int status; // Use string to match enum values from the backend.
+  final int status; // Enum values from the backend as integers.
   final double budget;
   final DateTime startDate;
   final DateTime endDate;
@@ -27,15 +27,17 @@ class ProjectDto {
   /// Converts a JSON map into a ProjectDto.
   factory ProjectDto.fromJson(Map<String, dynamic> json) {
     return ProjectDto(
-      projectId: json['projectId'],
-      name: json['name'],
-      description: json['description'],
-      status: json['status'],
-      budget: json['budget'],
-      startDate: DateTime.parse(json['startDate']),
-      endDate: DateTime.parse(json['endDate']),
-      companyId: json['companyId'],
-      company: CompanyDto.fromJson(json['company']),
+      projectId: json['projectId'] as String?,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      status: json['status'] as int,
+      budget: (json['budget'] as num).toDouble(),
+      startDate: DateTime.parse(json['startDate'] as String),
+      endDate: DateTime.parse(json['endDate'] as String),
+      companyId: json['companyId'] as String?,
+      company: json['company'] != null
+          ? CompanyDto.fromJson(json['company'] as Map<String, dynamic>)
+          : null, // Handle null `company`
     );
   }
 

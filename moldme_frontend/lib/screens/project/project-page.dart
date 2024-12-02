@@ -1,323 +1,245 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/project/edit_project.dart';
+import 'package:front_end_moldme/services/project_service.dart';
+import 'package:front_end_moldme/widgets/employe_add.dart';
+import 'package:front_end_moldme/widgets/nav_bar.dart';
+import 'package:front_end_moldme/widgets/team_project.dart';
+import 'package:front_end_moldme/widgets/app_drawer.dart';
+import 'package:front_end_moldme/dtos/project_dto.dart';
 
-class ProjectPage extends StatelessWidget {
-  const ProjectPage({super.key});
+class ProjectPage extends StatefulWidget {
+  final String companyId; // ID da empresa
+  final String projectId; // ID do projeto
+
+  const ProjectPage(
+      {super.key, required this.companyId, required this.projectId});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Figma to Flutter',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const DashboardPage(),
-    );
-  }
+  _ProjectPageState createState() => _ProjectPageState();
 }
 
-class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+class _ProjectPageState extends State<ProjectPage> {
+  final ProjectService _projectService =
+      ProjectService(); // Instância do serviço
+  bool _showEmployeeList =
+      false; // Controle de exibição da lista de funcionários
+  ProjectDto? _project; // Detalhes do projeto
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProjectDetails(); // Busca os detalhes do projeto ao carregar a página
+  }
+
+  // Método para buscar os detalhes do projeto usando projectView
+  Future<void> _fetchProjectDetails() async {
+    try {
+      final project = await _projectService.projectView(
+        widget.companyId,
+        widget.projectId,
+      );
+      setState(() {
+        _project = project; // Define os detalhes do projeto no estado
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to fetch project details: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          // Sidebar
-          Container(
-            width: 250,
-            color: const Color(0xFFEEF3FC),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'MOULDME',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue[700],
-                    ),
+      appBar: const CustomNavigationBar(), // Usa a nova AppBar
+      body: AppDrawer(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Verifica se os detalhes do projeto foram carregados
+              if (_project != null) ...[
+                // Título com o nome do projeto
+                Text(
+                  _project!.name,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
                   ),
                 ),
-                const ListTile(
-                  leading: Icon(Icons.account_circle),
-                  title: Text('My Profile'),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.work),
-                  title: Text('Projects'),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.people),
-                  title: Text('Staff'),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.calendar_today),
-                  title: Text('Calendar'),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Sign out'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.blue,
-                      side: const BorderSide(color: Colors.blue),
-                    ),
+                const SizedBox(height: 8),
+                // Descrição do projeto
+                Text(
+                  _project!.description,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black54,
                   ),
                 ),
-              ],
-            ),
-          ),
-          // Main Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  color: Colors.white,
+                const SizedBox(height: 8),
+                // Datas de início e fim do projeto
+                Text(
+                  "Start Date: ${_project!.startDate.toLocal().toString().split(' ')[0]}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+                Text(
+                  "End Date: ${_project!.endDate.toLocal().toString().split(' ')[0]}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ] else
+                // Indicador de carregamento enquanto os detalhes do projeto são buscados
+                const Center(child: CircularProgressIndicator()),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditProjectPage(projectId: widget.projectId),
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _fetchProjectDetails(); // Recarrega os detalhes do projeto após a edição
+                    }
+                  });
+                },
+              ),
+
+              // Conteúdo principal
+              Expanded(
+                child: SingleChildScrollView(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          const Text(
-                            'Projects',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(width: 16),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Companies'),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: 300,
-                        height: 40,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search job or company here...',
-                            prefixIcon: const Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                      // Coluna da esquerda
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            Card(
+                              elevation: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Assign Employees',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Botão para mostrar/ocultar a lista de funcionários
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          _showEmployeeList =
+                                              !_showEmployeeList;
+                                        });
+                                      },
+                                      child: Text(_showEmployeeList
+                                          ? 'Close Employee List'
+                                          : 'Show Employee List'),
+                                    ),
+                                    if (_showEmployeeList)
+                                      const SizedBox(height: 16),
+                                    if (_showEmployeeList)
+                                      Container(
+                                        height: 500,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                        child: const SingleChildScrollView(
+                                          child: EmployeeListWidget(
+                                            companyId:
+                                                'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
+                                            projectId:
+                                                '122749e9-f568-4c4b-b35b-6e8986442f21',
+                                          ),
+                                        ),
+                                      ),
+                                    const SizedBox(height: 16),
+                                    // Time do projeto
+                                    const ProjectTeamWidget(
+                                      projectId:
+                                          '122749e9-f568-4c4b-b35b-6e8986442f21',
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Coluna da direita
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            Card(
+                              elevation: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Write an update',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      maxLines: 3,
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            'Tell us how this project’s going...',
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        // Post update
+                                      },
+                                      child: const Text('Post Update'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Body Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Title Section
-                          const Text(
-                            'INJECTION SYSTEM FOR AUTOMOBILE PRODUCTION',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Left Column
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  children: [
-                                    // Create New Task Card
-                                    Card(
-                                      elevation: 2,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              'Create New Task',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            TextField(
-                                              maxLines: 3,
-                                              decoration: InputDecoration(
-                                                hintText: 'Description...',
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            ElevatedButton(
-                                              onPressed: () {},
-                                              child: const Text('Create Task'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    // Task List
-                                    ...List.generate(
-                                      2,
-                                      (index) => Card(
-                                        elevation: 1,
-                                        child: ListTile(
-                                          title: const Text(
-                                            'Task: Deliver Physical Component',
-                                          ),
-                                          subtitle: const Text(
-                                            'Sint et excepteur prodient adipisicing occaecat pariatur.',
-                                          ),
-                                          trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(Icons.date_range),
-                                              SizedBox(width: 4),
-                                              Text('Mar 14'),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              // Right Column
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    // Write an Update Card
-                                    Card(
-                                      elevation: 2,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              'Write an update',
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            TextField(
-                                              maxLines: 3,
-                                              decoration: InputDecoration(
-                                                hintText:
-                                                    'Tell us how this project’s going...',
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 16),
-                                            ElevatedButton(
-                                              onPressed: () {},
-                                              child: const Text('Post Update'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // Team and Files Section
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Team Members
-                              Expanded(
-                                child: Card(
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          'Team',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 8),
-                                        ListTile(
-                                          leading: CircleAvatar(),
-                                          title: Text('Andhika Sudarman'),
-                                          subtitle:
-                                              Text('Chief Executive Officer'),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              // File Upload Section
-                              Expanded(
-                                child: Card(
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: const [
-                                        Text('Upload Files'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

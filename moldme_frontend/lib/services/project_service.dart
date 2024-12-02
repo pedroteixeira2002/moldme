@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:http/http.dart' as http;
 import '../dtos/project_dto.dart';
 
@@ -52,10 +53,22 @@ class ProjectService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body); // Success message
+      // Verifica se o corpo da resposta é JSON ou texto
+      try {
+        final data = json.decode(response.body); // Tenta decodificar como JSON
+        return data['Message'] ?? 'Project updated successfully';
+      } catch (e) {
+        // Se falhar, assume que a resposta é uma string simples
+        return response.body; // Retorna a mensagem como está
+      }
     } else {
-      throw Exception(
-          json.decode(response.body)['error'] ?? "Failed to update project");
+      // Trata erros
+      try {
+        final error = json.decode(response.body)['error'];
+        throw Exception(error ?? "Failed to update project");
+      } catch (_) {
+        throw Exception("Failed to update project");
+      }
     }
   }
 
@@ -119,7 +132,7 @@ class ProjectService {
   }
 
   /// Assigns an employee to a project.
-  Future<String> assignEmployee(String projectId, String employeeId) async {
+  Future<void> assignEmployee(String projectId, String employeeId) async {
     final url =
         Uri.parse('$baseUrl/api/Project/$projectId/assignEmployee/$employeeId');
     final response = await http.post(
@@ -131,10 +144,13 @@ class ProjectService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body); // Success message
+      // Atribuição bem-sucedida; não retorna nada
+      return;
     } else {
-      throw Exception(json.decode(response.body)['error'] ??
-          "Failed to assign employee to project");
+      // Levanta uma exceção com a mensagem de erro apropriada
+      final errorMessage = json.decode(response.body)['error'] ??
+          "Failed to assign employee to project";
+      throw Exception(errorMessage);
     }
   }
 
@@ -195,6 +211,26 @@ class ProjectService {
     } else {
       throw Exception(json.decode(response.body)['error'] ??
           "Failed to fetch new projects");
+    }
+  }
+
+  /// Fetches all employees assigned to a specific project.
+  Future<List<EmployeeDto>> getEmployeesByProject(String projectId) async {
+    final url = Uri.parse('$baseUrl/api/Project/$projectId/employees');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body) as List<dynamic>;
+      return data.map((e) => EmployeeDto.fromJson(e)).toList();
+    } else {
+      throw Exception(json.decode(response.body)['error'] ??
+          "Failed to fetch employees for project");
     }
   }
 }
