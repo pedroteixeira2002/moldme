@@ -47,6 +47,7 @@ public class ProjectController : ControllerBase, IProject
             StartDate = projectDto.StartDate,
             EndDate = projectDto.EndDate,
             CompanyId = company.CompanyId,
+            Company = company
         };
 
 
@@ -235,5 +236,32 @@ public class ProjectController : ControllerBase, IProject
         }
         return Ok(projects);
     }
+    [Authorize]
+    [HttpGet("{projectId}/employees")]
+    public IActionResult GetEmployeesByProject(string projectId)
+    {
+        if (string.IsNullOrWhiteSpace(projectId))
+            return BadRequest("Project ID cannot be null or empty.");
+
+        var project = _context.Projects
+            .Include(p => p.Employees)
+            .FirstOrDefault(p => p.ProjectId == projectId);
+
+        if (project == null)
+            return NotFound("Project not found.");
+
+        var employees = project.Employees
+            .Select(e => new
+            {
+                e.EmployeeId,
+                e.Name,
+                e.Profession,
+                e.Email,
+                e.Contact
+            }).ToList();
+
+        return Ok(employees);
+    }
+
     
 }

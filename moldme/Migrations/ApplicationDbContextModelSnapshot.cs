@@ -445,7 +445,7 @@ namespace moldme.Migrations
                         .IsRequired();
 
                     b.HasOne("moldme.Models.Project", "Project")
-                        .WithMany()
+                        .WithMany("Offers")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -529,6 +529,8 @@ namespace moldme.Migrations
                 {
                     b.Navigation("Chat")
                         .IsRequired();
+
+                    b.Navigation("Offers");
 
                     b.Navigation("Tasks");
                 });
