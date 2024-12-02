@@ -1,6 +1,3 @@
-import 'chat_dto.dart';
-import 'employee_dto.dart';
-
 /// Represents a Data Transfer Object (DTO) for a message.
 class MessageDto {
   /// The unique identifier for the message.
@@ -18,13 +15,11 @@ class MessageDto {
   /// The employee who sent the message.
   //final EmployeeDto employee;
 
-
   /// The unique identifier for the chat associated with the message.
   final String chatId;
 
   /// The chat associated with the message.
   //final ChatDto chat;
-
 
 
 

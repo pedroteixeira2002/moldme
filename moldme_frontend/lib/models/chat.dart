@@ -7,12 +7,12 @@ class Chat {
 
   /// The associated project (nullable until explicitly fetched).
   final Project project;
-  final String projectId;
+  final String? projectId;
 
   /// Constructor for ChatEntity.
   Chat({
     required this.chatId,
     required this.project,
-    required this.projectId,
+    this.projectId,
   });
 }

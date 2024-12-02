@@ -22,10 +22,10 @@ class Task {
   final Status status;
 
   /// The project associated with the task.
-  final Project project;
+  final Project? project;
 
   /// The employee assigned to the task.
-  final Employee employee;
+  final Employee? employee;
 
   /// The file content of the task.
   final Uint8List? fileContent;
@@ -43,8 +43,8 @@ class Task {
     required this.description,
     required this.date,
     required this.status,
-    required this.project,
-    required this.employee,
+    this.project,
+    this.employee,
     this.fileContent,
     this.fileName,
     this.mimeType,

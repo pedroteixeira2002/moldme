@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:front_end_moldme/models/status.dart';
 import 'package:front_end_moldme/screens/project/edit_project.dart';
 import 'package:front_end_moldme/services/project_service.dart';
+import 'package:front_end_moldme/widgets/chat_cart.dart';
 import 'package:front_end_moldme/widgets/employe_add.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart';
+import 'package:front_end_moldme/widgets/task_new.dart';
 import 'package:front_end_moldme/widgets/team_project.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
@@ -197,20 +199,18 @@ class _ProjectPageState extends State<ProjectPage> {
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                         ),
-                                        child: const SingleChildScrollView(
+                                        child:  SingleChildScrollView(
                                           child: EmployeeListWidget(
-                                            companyId:
-                                                'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
-                                            projectId:
-                                                '122749e9-f568-4c4b-b35b-6e8986442f21',
+                                            companyId:widget.companyId,
+                                            projectId:widget.projectId,
                                           ),
                                         ),
                                       ),
                                     const SizedBox(height: 16),
                                     // Time do projeto
-                                    const ProjectTeamWidget(
-                                      projectId:
-                                          '122749e9-f568-4c4b-b35b-6e8986442f21',
+                                    ProjectTeamWidget(
+                                      projectId:widget.projectId,
+                                      
                                     ),
                                   ],
                                 ),
@@ -222,49 +222,26 @@ class _ProjectPageState extends State<ProjectPage> {
                       const SizedBox(width: 16),
                       // Coluna da direita
                       Expanded(
-                        flex: 1,
-                        child: Column(
-                          children: [
-                            Card(
-                              elevation: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Write an update',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    TextField(
-                                      maxLines: 3,
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            'Tell us how this project’s going...',
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        // Post update
-                                      },
-                                      child: const Text('Post Update'),
-                                    ),
-                                  ],
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                CreateTaskCard(
+                                  projectId: widget.projectId,
+                                  employeeId: '9d738649-8773-4bf2-b046-39ac3c6f3113', // Ajuste conforme necessário
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                          Expanded(
+  flex: 1,
+  child: Column(
+    children: [
+      ChatCard(
+        chatId: '1001', // Substitua pelo ID do chat apropriado
+      ),
+    ],
+  ),
+),
                     ],
                   ),
                 ),
