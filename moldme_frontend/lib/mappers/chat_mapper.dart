@@ -9,11 +9,12 @@ class ChatMapper {
  /// Converts a ChatDto to a Chat model.
   static Chat fromDto(ChatDto dto) {
     return Chat(
-      chatId: dto.chatId,
+      chatId: dto.chatId!,
       projectId: dto.projectId,
       project: ProjectMapper.fromDto(dto.project)
     );
   }
+
 
   /// Converts a Chat model to a ChatDto.
   static ChatDto toDto(Chat chat) {

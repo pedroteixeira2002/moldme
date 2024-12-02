@@ -12,7 +12,7 @@ class TaskMapper {
   /// Converts a `TaskDTO` to a `TaskEntity`.
   static Task fromDTO(TaskDto dto) {
     return Task(
-      taskId: dto.taskId,
+      taskId: dto.taskId!,
       titleName: dto.titleName,
       description: dto.description,
       date: DateTime.parse(dto.date),

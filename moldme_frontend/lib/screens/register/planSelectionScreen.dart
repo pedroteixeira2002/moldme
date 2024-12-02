@@ -34,7 +34,7 @@ class PlanSelectionScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // Cards de preços
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Card 1: Basic
@@ -43,7 +43,7 @@ class PlanSelectionScreen extends StatelessWidget {
                     planName: 'Basic',
                     price: '\$99',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: const [
+                    features: [
                       'All analytics features',
                       'Up to 250,000 tracked visits',
                       'Normal support',
@@ -52,14 +52,14 @@ class PlanSelectionScreen extends StatelessWidget {
                     buttonText: 'Get started',
                     isPopular: false,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   // Card 2: Pro (Popular)
                   PricingCard(
                     planType: 'For startups',
                     planName: 'Pro',
                     price: '\$199',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: const [
+                    features: [
                       'All analytics features',
                       'Up to 1,000,000 tracked visits',
                       'Premium support',
@@ -68,14 +68,14 @@ class PlanSelectionScreen extends StatelessWidget {
                     buttonText: 'Get started',
                     isPopular: true,
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   // Card 3: Enterprise
                   PricingCard(
                     planType: 'For big companies',
                     planName: 'Enterprise',
                     price: '\$399',
                     description: 'Lorem ipsum dolor sit amet',
-                    features: const [
+                    features: [
                       'All analytics features',
                       'Up to 5,000,000 tracked visits',
                       'Dedicated support',

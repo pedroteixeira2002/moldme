@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'package:front_end_moldme/dtos/create_task_dto.dart';
 import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:dio/dio.dart';
 
 class TaskService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: "https://your-backend-url.com/api/task"));
+  final Dio _dio = Dio(BaseOptions(baseUrl: "http://localhost:5213/api/Task"));
 
-  Future<String> createTask(TaskDto taskDto, String projectId, String employeeId) async {
+  Future<String> createTask(CreateTaskDto taskDto, String projectId, String employeeId) async {
     try {
+      
       final response = await _dio.post(
         '/createTask',
         queryParameters: {'projectId': projectId, 'employeeId': employeeId},
@@ -18,14 +20,40 @@ class TaskService {
     }
   }
 
-  Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
-    try {
-      final response = await _dio.get('/project/$projectId/tasks');
-      return (response.data as List).map((json) => TaskDto.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception("Failed to fetch tasks: $e");
+Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
+  try {
+    final response = await _dio.get('/project/$projectId/tasks');
+
+    // Check if the response data contains the $values key
+    if (response.data is Map<String, dynamic>) {
+      final tasksData = response.data['\$values']; // Corrected: Use the correct string key '$values'
+      if (tasksData is List) {
+        // Map each item to a TaskDto and filter out nulls
+        return tasksData
+            .map((json) {
+              if (json is Map<String, dynamic>) {
+                return TaskDto.fromJson(json); // Convert to TaskDto if it's a valid map
+              } else {
+                return null; // Return null if the item is a reference or invalid
+              }
+            })
+            .whereType<TaskDto>() // Remove null values
+            .toList(); // Convert to List<TaskDto>
+      } else {
+        throw Exception("Expected a list of tasks, but got: ${tasksData.runtimeType}");
+      }
+    } else {
+      throw Exception("Unexpected response format: ${response.data.runtimeType}");
     }
+  } catch (e) {
+    throw Exception("Failed to fetch tasks: $e");
   }
+}
+
+
+
+
+
 
   Future<TaskDto> getTaskById(String taskId) async {
     try {

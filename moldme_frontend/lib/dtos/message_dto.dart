@@ -1,6 +1,3 @@
-import 'chat_dto.dart';
-import 'employee_dto.dart';
-
 /// Represents a Data Transfer Object (DTO) for a message.
 class MessageDto {
   /// The unique identifier for the message.
@@ -16,13 +13,13 @@ class MessageDto {
   final String employeeId;
 
   /// The employee who sent the message.
-  final EmployeeDto employee;
+  //final EmployeeDto employee;
 
   /// The unique identifier for the chat associated with the message.
   final String chatId;
 
   /// The chat associated with the message.
-  final ChatDto chat;
+  //final ChatDto chat;
 
 
 
@@ -33,8 +30,8 @@ class MessageDto {
     required this.text,
     required this.employeeId,
     required this.chatId,
-    required this.employee,
-    required this.chat,
+    //required this.employee,
+    //required this.chat,
   });
 
   /// Converts a JSON map into a MessageDto.
@@ -45,8 +42,8 @@ class MessageDto {
       text: json['text'] as String,
       employeeId: json['employeeId'] as String,
       chatId: json['chatId'] as String,
-      employee: EmployeeDto.fromJson(json['employee']),
-      chat: ChatDto.fromJson(json['chat']),
+      //employee: EmployeeDto.fromJson(json['employee']),
+      //chat: ChatDto.fromJson(json['chat']),
     );
   }
 
@@ -58,8 +55,8 @@ class MessageDto {
       'text': text,
       'employeeId': employeeId,
       'chatId': chatId,
-      'employee': employee.toJson(),
-      'chat': chat.toJson(),
+      //'employee': employee.toJson(),
+      //'chat': chat.toJson(),
     };
   }
 }
