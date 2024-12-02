@@ -156,6 +156,7 @@ class _ProjectPageState extends State<ProjectPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Coluna da esquerda
+                      
                       Expanded(
                         flex: 2,
                         child: Column(
@@ -219,10 +220,20 @@ class _ProjectPageState extends State<ProjectPage> {
                           ],
                         ),
                       ),
+                      Expanded(
+  flex: 3,
+  child: Column(
+    children: [
+      ChatCard(
+        chatId: '1001', // Substitua pelo ID do chat apropriado
+      ),
+    ],
+  ),
+),
                       const SizedBox(width: 16),
                       // Coluna da direita
                       Expanded(
-                            flex: 1,
+                            flex: 2,
                             child: Column(
                               children: [
                                 CreateTaskCard(
@@ -232,16 +243,7 @@ class _ProjectPageState extends State<ProjectPage> {
                               ],
                             ),
                           ),
-                          Expanded(
-  flex: 1,
-  child: Column(
-    children: [
-      ChatCard(
-        chatId: '1001', // Substitua pelo ID do chat apropriado
-      ),
-    ],
-  ),
-),
+                          
                     ],
                   ),
                 ),
