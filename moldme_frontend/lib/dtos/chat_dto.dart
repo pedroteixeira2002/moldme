@@ -9,6 +9,7 @@ class ChatDto {
   /// Constructor for ChatDTO.
   ChatDto({
     this.chatId,
+
     required this.projectId,
     required this.project,
   });

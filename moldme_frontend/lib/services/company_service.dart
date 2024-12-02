@@ -1,66 +1,111 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../dtos/project_dto.dart';
+import '../dtos/company_dto.dart';
+
 class CompanyService {
-  final String baseUrl = "http://localhost:5213/api/Company";
-  
-  Future<String> addProject(ProjectDto project, String companyId) async {
-    const String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhdWRpQGdtYWlsLnB0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczMzkzMzk0MCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.AhLZw4rh0_qJ9WLBRx3CjGCe4ja5Thv8r4LfxknFVGc";
-    final url = Uri.parse('$baseUrl/addProject/$companyId');
+  final String baseUrl = "http://localhost:5213";
+  final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA"; // Replace with actual token
+
+  /// Registers a new company.
+  Future<Map<String, dynamic>> registerCompany(CompanyDto companyDto) async {
+    final url = Uri.parse('$baseUrl/register');
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/json",
-      "Authorization": "Bearer $token"},
-      
-      body: json.encode(project.toJson()),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(companyDto.toJson()),
     );
 
     if (response.statusCode == 200) {
-      return "Project added successfully";
+      return json.decode(response.body);
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to add project");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to register company",
+      );
     }
   }
 
-  Future<String> editProject(String projectId, ProjectDto updatedProject) async {
-    final url = Uri.parse('$baseUrl/EditProject/$projectId');
+  /// Lists the payment history for a specific company.
+  Future<List<dynamic>> listPaymentHistory(String companyId) async {
+    final url = Uri.parse('$baseUrl/$companyId/listPaymentHistory');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to fetch payment history",
+      );
+    }
+  }
+
+  /// Upgrades the subscription plan for a company.
+  Future<String> upgradePlan(String companyId, String subscriptionPlan) async {
+    final url = Uri.parse('$baseUrl/$companyId/upgradePlan');
     final response = await http.put(
       url,
-      headers: {"Content-Type": "application/json"},
-      body: json.encode(updatedProject.toJson()),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(subscriptionPlan),
     );
 
     if (response.statusCode == 200) {
-      return "Project updated successfully";
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to update project");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to upgrade plan",
+      );
     }
   }
 
-  Future<ProjectDto> viewProject(String projectId) async {
-    final url = Uri.parse('$baseUrl/ViewProject/$projectId');
-    final response = await http.get(url, headers: {"Content-Type": "application/json"});
+  /// Subscribes the company to a plan.
+  Future<String> subscribePlan(String companyId, String subscriptionPlan) async {
+    final url = Uri.parse('$baseUrl/$companyId/subscribePlan');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(subscriptionPlan),
+    );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      return ProjectDto.fromJson(data);
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to fetch project");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to subscribe to plan",
+      );
     }
   }
 
-  Future<String> removeProject(String projectId) async {
-    final url = Uri.parse('$baseUrl/RemoveProject/$projectId');
-    final response = await http.delete(url, headers: {"Content-Type": "application/json"});
+  /// Cancels the subscription for a company.
+  Future<String> cancelSubscription(String companyId) async {
+    final url = Uri.parse('$baseUrl/$companyId/cancelSubscription');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
-      return "Project removed successfully";
+      return response.body;
     } else {
-      final Map<String, dynamic> errorResponse = json.decode(response.body);
-      throw Exception(errorResponse['message'] ?? "Failed to remove project");
+      throw Exception(
+        json.decode(response.body)['error'] ?? "Failed to cancel subscription",
+      );
     }
   }
 }

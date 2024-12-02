@@ -7,7 +7,6 @@ class Chat {
 
   /// The associated project (nullable until explicitly fetched).
   final Project project;
-
   final String projectId;
 
   /// Constructor for ChatEntity.

@@ -8,7 +8,6 @@ class TaskService {
 
   Future<String> createTask(CreateTaskDto taskDto, String projectId, String employeeId) async {
     try {
-      
       final response = await _dio.post(
         '/createTask',
         queryParameters: {'projectId': projectId, 'employeeId': employeeId},
@@ -49,11 +48,6 @@ Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
     throw Exception("Failed to fetch tasks: $e");
   }
 }
-
-
-
-
-
 
   Future<TaskDto> getTaskById(String taskId) async {
     try {

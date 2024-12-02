@@ -14,12 +14,12 @@ class ProjectMapper {
       projectId: dto.projectId,
       name: dto.name,
       description: dto.description,
-      status: Status.values.firstWhere((e) => e.toString().split('.').last == dto.status),
+      status: Status.fromInt(dto.status),
       budget: dto.budget,
       startDate: dto.startDate,
       endDate: dto.endDate,
       companyId: dto.companyId,
-      company: CompanyMapper.fromDto(dto.company)
+      company: dto.company != null ? CompanyMapper.fromDto(dto.company!) : null
     );
   }
 
@@ -29,12 +29,12 @@ class ProjectMapper {
       projectId: project.projectId,
       name: project.name,
       description: project.description,
-      status: project.status.toString().split('.').last, // Convert enum to string
+      status:  project.status.toInt(), // Convert enum to string
       budget: project.budget,
       startDate: project.startDate,
       endDate: project.endDate,
       companyId: project.companyId,
-      company: CompanyMapper.toDto(project.company),
+      company: project.company != null ? CompanyMapper.toDto(project.company!) : null,
     );
   }
 }
