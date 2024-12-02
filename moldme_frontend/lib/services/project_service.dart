@@ -167,10 +167,21 @@ class ProjectService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body); // Success message
+      try {
+        // Tenta processar a resposta como JSON
+        final data = json.decode(response.body);
+        return data['message'] ?? "Employee removed successfully";
+      } catch (_) {
+        // Se falhar, trata como texto simples
+        return response.body; // Texto simples da resposta
+      }
     } else {
-      throw Exception(json.decode(response.body)['error'] ??
-          "Failed to remove employee from project");
+      try {
+        final error = json.decode(response.body)['error'];
+        throw Exception(error ?? "Failed to remove employee");
+      } catch (_) {
+        throw Exception("Failed to remove employee");
+      }
     }
   }
 

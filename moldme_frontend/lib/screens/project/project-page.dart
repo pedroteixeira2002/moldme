@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/models/status.dart';
 import 'package:front_end_moldme/screens/project/edit_project.dart';
 import 'package:front_end_moldme/services/project_service.dart';
 import 'package:front_end_moldme/widgets/employe_add.dart';
@@ -48,6 +49,29 @@ class _ProjectPageState extends State<ProjectPage> {
     }
   }
 
+  String _statusToString(int status) {
+    switch (Status.fromInt(status)) {
+      case Status.newEntity:
+        return "New";
+      case Status.inProgress:
+        return "In Progress";
+      case Status.done:
+        return "Done";
+      case Status.closed:
+        return "Closed";
+      case Status.canceled:
+        return "Canceled";
+      case Status.pending:
+        return "Pending";
+      case Status.accepted:
+        return "Accepted";
+      case Status.denied:
+        return "Denied";
+      default:
+        return "Unknown";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +118,14 @@ class _ProjectPageState extends State<ProjectPage> {
                     color: Colors.black54,
                   ),
                 ),
+                Text(
+                  "Status: ${_statusToString(_project!.status)}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+
                 const SizedBox(height: 16),
               ] else
                 // Indicador de carregamento enquanto os detalhes do projeto são buscados

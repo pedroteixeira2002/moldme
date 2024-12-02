@@ -19,7 +19,27 @@ class _ProjectTeamWidgetState extends State<ProjectTeamWidget> {
   @override
   void initState() {
     super.initState();
-    _teamMembers = _projectService.getEmployeesByProject(widget.projectId);
+    _loadTeamMembers(); // Carregar membros da equipe ao inicializar
+  }
+
+  Future<void> _loadTeamMembers() async {
+    setState(() {
+      _teamMembers = _projectService.getEmployeesByProject(widget.projectId);
+    });
+  }
+
+  Future<void> _removeEmployee(String employeeId) async {
+    try {
+      await _projectService.removeEmployee(widget.projectId, employeeId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Employee removed successfully!")),
+      );
+      _loadTeamMembers(); // Recarregar membros da equipe após remoção
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to remove employee: $e")),
+      );
+    }
   }
 
   @override
@@ -87,6 +107,16 @@ class _ProjectTeamWidgetState extends State<ProjectTeamWidget> {
                               color: Colors.grey,
                             ),
                             textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8.0),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.remove_circle,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              _removeEmployee(employee.employeeId);
+                            },
                           ),
                         ],
                       ),
