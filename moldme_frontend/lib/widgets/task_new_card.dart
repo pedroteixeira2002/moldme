@@ -5,41 +5,30 @@ import 'package:flutter/material.dart';
 import '../dtos/create_task_dto.dart';
 import '../services/task_service.dart';
 
-<<<<<<< Updated upstream:moldme_frontend/lib/widgets/task_new.dart
-void main() {
-  runApp(MaterialApp(
-    home: CreateTaskScreen(),
-  ));
-=======
-void main() => runApp(const MaterialApp(
+void main() => runApp(
+      const MaterialApp(
         home: CreateTaskCard(
-      projectId: '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08',
-      employeeId: '675943a6-6a50-40b9-a1c3-168b9dfc87a9',
-    )));
+          projectId: '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08',
+          employeeId: '675943a6-6a50-40b9-a1c3-168b9dfc87a9',
+        ),
+      ),
+    );
 
 class CreateTaskCard extends StatefulWidget {
   final String projectId;
   final String employeeId;
 
   const CreateTaskCard({
-    super.key,
+    Key? key,
     required this.projectId,
     required this.employeeId,
-  });
+  }) : super(key: key);
 
   @override
   _CreateTaskCardState createState() => _CreateTaskCardState();
->>>>>>> Stashed changes:moldme_frontend/lib/widgets/task_new_card.dart
 }
 
-class CreateTaskScreen extends StatefulWidget {
-  const CreateTaskScreen({super.key});
-
-  @override
-  _CreateTaskScreenState createState() => _CreateTaskScreenState();
-}
-
-class _CreateTaskScreenState extends State<CreateTaskScreen> {
+class _CreateTaskCardState extends State<CreateTaskCard> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -48,11 +37,6 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
   String? _mimeType;
 
   final _taskService = TaskService();
-
-  // Replace these with actual values from your app
-  final String projectId =  "356cc104-af87-40c5-8351-bfb7a0095be3";
-  final String employeeId = "9d738649-8773-4bf2-b046-39ac3c6f3113";
-  final String companyId =  "bf498b3e-74df-4a7c-ac5a-b9b00d097498";
 
   bool _isLoading = false;
 
@@ -77,28 +61,21 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     try {
       // Create the TaskDto object
       final taskDto = CreateTaskDto(
-<<<<<<< Updated upstream:moldme_frontend/lib/widgets/task_new.dart
         titleName: _titleController.text,
         description: _descriptionController.text,
         date: DateTime.now(),
         status: 0,
-        filePath: "D:\\OneDrive\\Imagens\\descarregar.png"
+        fileContent: _fileBytes,
+        fileName: _fileName,
+        mimeType: _mimeType,
       );
 
-      // Call TaskService to create the task
-      final response = await _taskService.createTask(taskDto, projectId, employeeId);
-=======
-          titleName: _titleController.text,
-          description: _descriptionController.text,
-          date: DateTime.now(),
-          status: 0,
-          fileContent: _fileBytes,
-          fileName: _fileName,
-          mimeType: _mimeType);
-
       final response = await _taskService.createTask(
-          taskDto, widget.projectId, widget.employeeId);
->>>>>>> Stashed changes:moldme_frontend/lib/widgets/task_new_card.dart
+        taskDto,
+        widget.projectId,
+        widget.employeeId,
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(response)),
       );
@@ -159,7 +136,6 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-<<<<<<< Updated upstream:moldme_frontend/lib/widgets/task_new.dart
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -170,13 +146,21 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               ),
               const SizedBox(height: 16.0),
 
+              // File Picker
+              ElevatedButton(
+                onPressed: _pickFile,
+                child: Text(_fileName == null ? 'Upload File' : 'Change File'),
+              ),
+              if (_fileName != null) Text('Selected file: $_fileName'),
+              const SizedBox(height: 16.0),
+
               // Submit Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _createTask,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue, // Button color
+                    backgroundColor: Colors.blue,
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -191,26 +175,6 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
-=======
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: _pickFile,
-                    child:
-                        Text(_fileName == null ? 'Upload File' : 'Change File'),
-                  ),
-                  if (_fileName != null) Text('Selected file: $_fileName'),
-                  const SizedBox(height: 16.0),
-                  // Botão de envio
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _createTask,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // Cor do botão
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
->>>>>>> Stashed changes:moldme_frontend/lib/widgets/task_new_card.dart
                         ),
                 ),
               ),
