@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:front_end_moldme/screens/new_project_screen.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,14 +1,18 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:front_end_moldme/dtos/create_task_dto.dart';
 import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 class TaskService {
-  final Dio _dio = Dio(BaseOptions(baseUrl: "https://your-backend-url.com/api/task"));
-
-  Future<String> createTask(TaskDto taskDto, String projectId, String employeeId) async {
+  final Dio _dio = Dio(BaseOptions(baseUrl: "http://localhost:5213/api/Task"));
+  final String baseUrl = 'http://localhost:5213/api/Task';
+  Future<String> createTask(
+      CreateTaskDto taskDto, String projectId, String employeeId) async {
     try {
+      
       final response = await _dio.post(
-        '/createTask',
+        '/webTaskcreate',
         queryParameters: {'projectId': projectId, 'employeeId': employeeId},
         data: taskDto.toJson(),
       );
@@ -21,11 +25,21 @@ class TaskService {
   Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
     try {
       final response = await _dio.get('/project/$projectId/tasks');
-      return (response.data as List).map((json) => TaskDto.fromJson(json)).toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonResponse = response.data;
+        return jsonResponse.map((json) => TaskDto.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load tasks');
+      }
     } catch (e) {
-      throw Exception("Failed to fetch tasks: $e");
+      throw Exception("Failed to load tasks: $e");
     }
   }
+
+
+
+
+
 
   Future<TaskDto> getTaskById(String taskId) async {
     try {
@@ -36,37 +50,39 @@ class TaskService {
     }
   }
 
-  Future<String> updateTask(String taskId, TaskDto taskDto) async {
+  Future<void> updateTask(TaskDto task) async {
     try {
       final response = await _dio.put(
-        '/updateTask/$taskId',
-        data: taskDto.toJson(),
+        '/updateTask/${task.taskId}',
+        data: task.toJson(),
       );
-      return response.data; // "Task updated successfully"
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update task');
+      }
     } catch (e) {
       throw Exception("Failed to update task: $e");
     }
   }
 
-  Future<String> deleteTask(String taskId) async {
+  Future<void> deleteTask(String taskId) async {
     try {
       final response = await _dio.delete('/delete/$taskId');
-      return response.data; // "Task deleted successfully"
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete task');
+      }
     } catch (e) {
       throw Exception("Failed to delete task: $e");
     }
   }
 
-  Future<void> downloadFile(String taskId, String savePath) async {
-    try {
-      final response = await _dio.get(
-        '/task/$taskId/file',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final file = File(savePath);
-      await file.writeAsBytes(response.data);
-    } catch (e) {
-      throw Exception("Failed to download file: $e");
+  Future<Uint8List> downloadFile(String taskId) async {
+    final url = '$baseUrl/task/$taskId/file';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to download file');
     }
   }
 }

@@ -27,6 +27,46 @@ public class TaskController : ControllerBase, ITask
     {
         _context = context;
     }
+    ///<inheritdoc cref="ITask.TaskCreate(TaskDto,string,string)"/>
+    [HttpPost("webTaskcreate")]
+    public IActionResult TaskCreateWeb([FromBody] TaskDto taskDto, string projectId, string employeeId)
+    {
+        if (taskDto == null)
+        {
+            return BadRequest("Task is null");
+        }
+
+        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+        if (project == null)
+        {
+            return NotFound("Project not found");
+        }
+
+        var employee = _context.Employees.FirstOrDefault(e => e.EmployeeId == employeeId);
+        if (employee == null)
+        {
+            return NotFound("Employee not found");
+        }
+        
+
+        var task = new Task
+        {
+            TitleName = taskDto.TitleName,
+            Description = taskDto.Description,
+            Date = taskDto.Date,
+            Status = taskDto.Status,
+            ProjectId = projectId,
+            EmployeeId = employeeId,
+            FileContent = taskDto.FileContent,
+            FileName = taskDto.FileName,
+            MimeType = GetMimeType(taskDto.FileName)
+        }; 
+
+        _context.Tasks.Add(task);
+        _context.SaveChanges();
+
+        return Ok("Task created successfully");
+    }
 
     ///<inheritdoc cref="ITask.TaskCreate(TaskDto,string,string)"/>
     [HttpPost("createTask")]
@@ -86,8 +126,6 @@ public class TaskController : ControllerBase, ITask
             Status = taskDto.Status,
             ProjectId = projectId,
             EmployeeId = employeeId,
-            Employee = employee,
-            Project = project
         }; 
         if (fileContent != null)
         {
@@ -140,6 +178,7 @@ public class TaskController : ControllerBase, ITask
             return NotFound("Task or file not found");
         }
 
+        
         var fileName = task.FileName;
         var mimeType = task.MimeType;
 
@@ -158,7 +197,16 @@ public class TaskController : ControllerBase, ITask
             ".pdf" => "application/pdf",
             ".doc" or ".docx" => "application/msword",
             ".txt" => "text/plain",
-            _ => "application/octet-stream", // Default for unknown types
+            ".csv" => "text/csv",
+            ".xls" or ".xlsx" => "application/vnd.ms-excel",
+            ".ppt" or ".pptx" => "application/vnd.ms-powerpoint",
+            ".zip" => "application/zip",
+            ".rar" => "application/x-rar-compressed",
+            ".7z" => "application/x-7z-compressed",
+            ".tar" => "application/x-tar",
+            ".mp3" => "audio/mpeg",
+            ".mp4" => "video/mp4",
+            _ => "application/octet-stream", 
         };
     }
 
