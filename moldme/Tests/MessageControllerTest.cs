@@ -143,13 +143,21 @@ namespace moldme.Tests
         {
             using (var dbContext = GetInMemoryDbContext())
             {
+                var chat1 = new Chat
+                {
+                    ChatId = "2",
+                    ProjectId = "2"
+                };
+                dbContext.Chats.Add(chat1);
+                dbContext.SaveChanges();
+
                 var message1 = new Message
                 {
                     MessageId = "3",
                     Text = "Hello, World!",
                     EmployeeId = "user1",
                     Date = DateTime.Now,
-                    ChatId = "1"
+                    ChatId = "2"
                 };
 
                 var message2 = new Message
@@ -158,26 +166,17 @@ namespace moldme.Tests
                     Text = "Hi there!",
                     EmployeeId = "user2",
                     Date = DateTime.Now,
-                    ChatId = "1"
+                    ChatId = "2"
                 };
 
-                var chat1 = new Chat
-                {
-                    ChatId = "2",
-                    ProjectId = "2",
-                   // Messages = { message1, message2 }
-                };
                 dbContext.Messages.Add(message1);
                 dbContext.Messages.Add(message2);
-                dbContext.Chats.Add(chat1);
-
                 dbContext.SaveChanges();
 
                 var controller = new MessageController(dbContext);
 
                 var result = controller.GetMessages("2").Result;
                 var okResult = result.Result as OkObjectResult;
-
 
                 Assert.NotNull(okResult);
                 var messages = okResult.Value as List<Message>;
