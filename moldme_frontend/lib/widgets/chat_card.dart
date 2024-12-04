@@ -9,7 +9,7 @@ void main() {
 class ChatCard extends StatefulWidget {
   final String chatId;
 
-  const ChatCard({Key? key, required this.chatId}) : super(key: key);
+  const ChatCard({super.key, required this.chatId});
 
   @override
   _ChatCardState createState() => _ChatCardState();

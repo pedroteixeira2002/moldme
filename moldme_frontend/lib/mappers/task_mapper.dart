@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:front_end_moldme/dtos/task_dto.dart';
-import '../models/task.dart';
+import '../dtos/task_dto.dart';
 import '../models/status.dart';
+<<<<<<< Updated upstream
 import 'employee_mapper.dart';
 import 'project_mapper.dart';
 
@@ -12,7 +12,7 @@ class TaskMapper {
   /// Converts a `TaskDTO` to a `TaskEntity`.
   static Task fromDTO(TaskDto dto) {
     return Task(
-      taskId: dto.taskId!,
+      taskId: dto.taskId,
       titleName: dto.titleName,
       description: dto.description,
       date: DateTime.parse(dto.date),
@@ -25,6 +25,7 @@ class TaskMapper {
     );
   }
 
+<<<<<<< Updated upstream
   /// Converts a `TaskEntity` to a `TaskDTO`.
   static TaskDto toDTO(Task entity) {
     return TaskDto(
@@ -43,3 +44,6 @@ class TaskMapper {
     );
   }
 }
+=======
+}
+>>>>>>> Stashed changes

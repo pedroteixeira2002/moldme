@@ -6,29 +6,37 @@ import '../mappers/project_mapper.dart';
 
 /// Represents a Task Data Transfer Object (DTO).
 class TaskDto {
-  final String? taskId;
+  final String taskId;
   final String titleName;
   final String description;
   final String date; // ISO 8601 formatted string
   final int status; // Enum as string
   final String projectId;
+<<<<<<< Updated upstream
   final ProjectDto project;
   final String employeeId;
   final EmployeeDto employee;
+=======
+  final String employeeId;
+>>>>>>> Stashed changes
   final String? fileContent; // Base64 encoded string for file content
   final String? fileName;
   final String? mimeType;
 
   const TaskDto({
-    this.taskId,
+    required this.taskId,
     required this.titleName,
     required this.description,
     required this.date,
     required this.status,
     required this.projectId,
+<<<<<<< Updated upstream
     required this.project,
     required this.employeeId,
     required this.employee,
+=======
+    required this.employeeId,
+>>>>>>> Stashed changes
     this.fileContent,
     this.fileName,
     this.mimeType,
