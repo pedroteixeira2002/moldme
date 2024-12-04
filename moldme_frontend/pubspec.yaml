@@ -63,8 +63,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  assets:
-    - lib/assets/moldme.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -79,6 +77,8 @@ flutter:
     - lib/images/paypal.png
     - lib/images/mainHomeScreen.png
     - lib/images/logo.png
+    - lib/assets/moldme.png
+    - lib/assets/app-icon-person.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
