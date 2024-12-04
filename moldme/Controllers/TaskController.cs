@@ -86,8 +86,8 @@ public class TaskController : ControllerBase, ITask
             Status = taskDto.Status,
             ProjectId = projectId,
             EmployeeId = employeeId,
-            Employee = employee,
-            Project = project
+            //Employee = employee,
+            //Project = project
         }; 
         if (fileContent != null)
         {

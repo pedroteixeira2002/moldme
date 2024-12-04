@@ -36,18 +36,16 @@ public class Message
     /// <summary>
     /// Gets or sets the employee who sent the message.
     /// </summary>
-    [ForeignKey("EmployeeId")]
-    public Employee Employee { get; set; }
+    //[ForeignKey("EmployeeId")] public Employee Employee { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the chat associated with the message.
     /// </summary>
-    [Required, MaxLength(36)]
+    [Required, MaxLength(36)] 
     public String ChatId { get; set; }
 
     /// <summary>
     /// Gets or sets the chat associated with the message.
     /// </summary>
-    [ForeignKey("ChatId")]
-    public Chat Chat { get; set; }
+    //[ForeignKey("ChatId")] public Chat Chat { get; set; }
 }

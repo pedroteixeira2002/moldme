@@ -25,18 +25,20 @@ class EmployeeDto {
 
   // Convert JSON from backend to DTO
   factory EmployeeDto.fromJson(Map<String, dynamic> json) {
-    return EmployeeDto(
-      employeeId: json['employeeId'],
-      name: json['name'],
-      profession: json['profession'],
-      nif: json['nif'],
-      email: json['email'],
-      contact: json['contact'],
-      password: json['password'],
-      companyId: json['companyId'],
-      company: CompanyDto.fromJson(json['company']),
-    );
-  }
+  return EmployeeDto(
+    employeeId: json['employeeId'] ?? '',
+    name: json['name'] ?? '',
+    profession: json['profession'] ?? '',
+    nif: json['nif'] ?? 0, // Garanta que `nif` tenha um valor padrão.
+    email: json['email'] ?? '',
+    contact: json['contact'] ?? 0,
+    password: json['password'] ?? '',
+    companyId: json['companyId'] ?? '',
+    company: json['company'] != null
+        ? CompanyDto.fromJson(json['company'] as Map<String, dynamic>)
+        : CompanyDto.empty(), // Retorna um objeto vazio se `company` for `null`.
+  );
+}
   
   // Convert DTO to JSON for API communication
   Map<String, dynamic> toJson() {

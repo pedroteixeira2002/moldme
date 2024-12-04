@@ -31,7 +31,7 @@ namespace moldme.Controllers;
 
             Chat chat = new Chat();
             chat.ProjectId = ProjectId;
-            chat.Project = Project;
+            //chat.Project = Project;
 
             _context.Chats.Add(chat);
             _context.SaveChanges();

@@ -49,8 +49,8 @@ public class MessageController : ControllerBase, IMessage
         {
             EmployeeId = employeeId,
             ChatId = chatId,
-            Employee = sender,
-            Chat = chat,
+           // Employee = sender,
+           // Chat = chat,
             Date = DateTime.UtcNow,
             Text = messageDto.Text
         };
