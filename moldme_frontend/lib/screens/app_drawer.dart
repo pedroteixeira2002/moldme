@@ -1,4 +1,3 @@
-// FILE: lib/app_drawer.dart
 import 'package:flutter/material.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -26,81 +25,56 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                 ),
+                // Botão para ir à página de Todos os Funcionários
                 ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text("My Profile"),
+                  leading: Icon(Icons.people),
+                  title: Text("All Employees"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/');
+                    Navigator.pushNamed(
+                      context,
+                      '/all-employees',
+                      arguments:
+                          "aaf284e6-8a87-4954-ba5e-8fea15b7e93c", // companyId
+                    );
+                  },
+                ),
+                // Botão para ir à página de Perfil da Empresa
+                ListTile(
+                  leading: const Icon(Icons.business),
+                  title: const Text("Company Profile"),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/company-profile');
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.assignment),
-                  title: const Text("Projects"),
+                  leading: const Icon(Icons.work),
+                  title: const Text("Available Projects"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/project-list');
+                    Navigator.pushReplacementNamed(
+                        context, '/available-projects');
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.people),
-                  title: const Text("Staff"),
+                  leading: const Icon(Icons.add_business),
+                  title: const Text("Propose Service"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/staff');
+                    Navigator.pushReplacementNamed(context, '/propose-service',
+                        arguments: {
+                          'projectId': 'example-project-id',
+                          'companyId': 'example-company-id',
+                        });
                   },
                 ),
+                // Botão para Login
                 ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: const Text("Calendar"),
+                  leading: const Icon(Icons.login),
+                  title: const Text("Login"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/calendar');
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text("Settings"),
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/settings');
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.assignment_add),
-                  title: const Text("New Project"),
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/new-project');
+                    Navigator.pushNamed(context, '/login'); // Rota de Login
                   },
                 ),
                 const Spacer(),
-                ListTile(
-                  leading: const Icon(Icons.person_add),
-                  title: const Text("Add Employee"),
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/add-employee',
-                      arguments: {
-                        'companyId': '94631481-d008-43df-8ad4-bf1fec866c6a',
-                        'token':
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzdHJpbmdAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNDM2MTE0OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.5Hlukw8IVK1LVKi3mzvJ3MgbT_Jdwac29MyYQA-Spw8', // Pass the token here
-                      },
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text("Edit Employee"),
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/edit-employee',
-                      arguments: {
-                        'companyId': '94631481-d008-43df-8ad4-bf1fec866c6a',
-                        'employeeId':
-                            '706d5046-cff8-4691-b95f-3a833e90d188', // Replace with actual employee ID
-                        'token':
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzdHJpbmdAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNDM2MTE0OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.5Hlukw8IVK1LVKi3mzvJ3MgbT_Jdwac29MyYQA-Spw8', // Pass the token here
-                      },
-                    );
-                  },
-                ),
+                // Botão para sair
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: const Text("Sign Out"),

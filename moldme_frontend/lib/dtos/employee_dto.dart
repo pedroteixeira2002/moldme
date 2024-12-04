@@ -9,7 +9,7 @@ class EmployeeDto {
   final int? contact;
   final String password;
   final String companyId;
-  final CompanyDto company;
+  final CompanyDto? company; // Tornar nullable para evitar erros
 
   EmployeeDto({
     required this.employeeId,
@@ -20,9 +20,10 @@ class EmployeeDto {
     this.contact,
     required this.password,
     required this.companyId,
-    required this.company,
+    this.company, // Permite null
   });
-// Convert JSON from API to DTO
+
+  // Convert JSON from API to DTO
   factory EmployeeDto.fromJson(Map<String, dynamic> json) {
     return EmployeeDto(
       employeeId: json['employeeId'],
@@ -33,10 +34,12 @@ class EmployeeDto {
       contact: json['contact'],
       password: json['password'],
       companyId: json['companyId'],
-      company: CompanyDto.fromJson(json['company']),
+      company: json['company'] != null
+          ? CompanyDto.fromJson(json['company'])
+          : null, // Verificação para evitar erro
     );
   }
-  
+
   // Convert DTO to JSON for API communication
   Map<String, dynamic> toJson() {
     return {
@@ -48,9 +51,7 @@ class EmployeeDto {
       'contact': contact,
       'password': password,
       'companyId': companyId,
-      'company': company.toJson(),
+      'company': company?.toJson(), // Evita null pointer exception
     };
   }
-
-  
 }

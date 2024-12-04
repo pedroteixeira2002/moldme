@@ -3,7 +3,6 @@ import 'package:front_end_moldme/mappers/company_mapper.dart';
 import 'package:front_end_moldme/models/employee.dart';
 
 class EmployeeMapper {
-
   // Convert DTO to Model
   static Employee fromDto(EmployeeDto dto) {
     return Employee(
@@ -15,7 +14,9 @@ class EmployeeMapper {
       contact: dto.contact,
       password: dto.password,
       companyId: dto.companyId,
-      company: CompanyMapper.fromDto(dto.company),
+      company: dto.company != null
+          ? CompanyMapper.fromDto(dto.company!)
+          : null, // Trata o caso em que dto.company é null
     );
   }
 
@@ -30,7 +31,9 @@ class EmployeeMapper {
       contact: employee.contact,
       password: employee.password,
       companyId: employee.companyId,
-      company: CompanyMapper.toDto(employee.company),
+      company: employee.company != null
+          ? CompanyMapper.toDto(employee.company!)
+          : null, // Trata o caso em que employee.company é null
     );
   }
 }

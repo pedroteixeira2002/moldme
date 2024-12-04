@@ -6,7 +6,7 @@ class CompanyDto {
   final int contact;
   final String email;
   final String sector;
-  final String plan; // Assuming SubscriptionPlan is a String here
+  final String plan;
   final String password;
 
   CompanyDto({
@@ -21,21 +21,6 @@ class CompanyDto {
     required this.password,
   });
 
-  // Convert DTO to JSON for API communication
-  Map<String, dynamic> toJson() {
-    return {
-      'companyId': companyId,
-      'name': name,
-      'taxId': taxId,
-      'address': address,
-      'contact': contact,
-      'email': email,
-      'sector': sector,
-      'plan': plan,
-      'password': password,
-    };
-  }
-
   // Convert JSON from API to DTO
   factory CompanyDto.fromJson(Map<String, dynamic> json) {
     return CompanyDto(
@@ -49,5 +34,20 @@ class CompanyDto {
       plan: json['plan'],
       password: json['password'],
     );
+  }
+
+  // Convert DTO to JSON for API communication
+  Map<String, dynamic> toJson() {
+    return {
+      'companyId': companyId,
+      'name': name,
+      'taxId': taxId,
+      'address': address,
+      'contact': contact,
+      'email': email,
+      'sector': sector,
+      'plan': plan,
+      'password': password,
+    };
   }
 }
