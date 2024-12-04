@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'routes/app_routes.dart'; // Importa as rotas da aplicação
 
-import 'package:front_end_moldme/routes/app_routes.dart';
-
 void main() {
   runApp(const MyApp());
 }
