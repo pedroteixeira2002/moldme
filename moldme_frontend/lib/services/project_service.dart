@@ -125,20 +125,34 @@ class ProjectService {
     }
   }
 
-  /// Lists all new projects.
+/// Lists all new projects.
   Future<List<ProjectDto>> listAllNewProjects() async {
-    final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
+    final url = Uri.parse('$baseUrl/listAllNewProjects');
+    const String token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJFbXBsb3llZSIsImV4cCI6MTczNDk3MzQ2MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.FJBSAB0HLBRptEdxkf2AXqOQa-XAGFsbaXrwbHuISTo";
+
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body) as List<dynamic>;
-      return data.map((e) => ProjectDto.fromJson(e)).toList();
+      final data = json.decode(response.body);
+
+      // Acessa a chave "$values" no JSON retornado pela API
+      if (data['\$values'] != null) {
+        final projects = data['\$values'] as List<dynamic>;
+        return projects.map((e) => ProjectDto.fromJson(e)).toList();
+      } else {
+        throw Exception("Projects not found in the response");
+      }
     } else {
-      throw Exception(
-          json.decode(response.body)['error'] ?? "Failed to fetch new projects");
+      throw Exception(json.decode(response.body)['error'] ??
+          "Failed to fetch new projects");
     }
   }
+
 }

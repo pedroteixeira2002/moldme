@@ -1,5 +1,3 @@
-
-/// Represents a data transfer object for a company.
 class CompanyDTO {
   final String name;
   final int taxId;
@@ -7,7 +5,7 @@ class CompanyDTO {
   final int contact;
   final String email;
   final String sector;
-  final String plan; // SubscriptionPlan será representado como string (ou enum futuramente)
+  final int plan;
   final String password;
 
   CompanyDTO({
@@ -22,16 +20,16 @@ class CompanyDTO {
   });
 
   /// Factory para criar o DTO a partir de um JSON.
-  factory CompanyDTO.fromJson(Map<String, dynamic> json) {
+factory CompanyDTO.fromJson(Map<String, dynamic> json) {
     return CompanyDTO(
-      name: json['name'],
-      taxId: json['taxId'],
-      address: json['address'],
-      contact: json['contact'],
-      email: json['email'],
-      sector: json['sector'],
-      plan: json['plan'], // 'plan' pode ser string ou enum
-      password: json['password'],
+      name: json['name'] ?? 'Unknown Name',
+      taxId: json['taxId'] ?? 0,
+      address: json['address'] ?? 'Unknown Address',
+      contact: json['contact'] ?? 0,
+      email: json['email'] ?? 'Unknown Email',
+      sector: json['sector'] ?? 'Unknown Sector',
+      plan: json['plan'] ?? 0,
+      password: json['password'] ?? '',
     );
   }
 
@@ -48,18 +46,4 @@ class CompanyDTO {
       'password': password,
     };
   }
-/*
-  /// Validações simples para os campos do DTO.
-  bool validate() {
-    return name.isNotEmpty &&
-        taxId.toString().length == 9 &&
-        address.isNotEmpty &&
-        contact.toString().length == 9 &&
-        email.contains('@') &&
-        sector.isNotEmpty &&
-        password.length >= 8; // Exemplo de validação para password
-  }
-  */
 }
-
-

@@ -1,19 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/dtos/project_dto.dart';
+import 'package:front_end_moldme/services/project_service.dart';
 
-class AvailableProjectsScreen extends StatelessWidget {
+class AvailableProjectsScreen extends StatefulWidget {
+  @override
+  _AvailableProjectsScreenState createState() =>
+      _AvailableProjectsScreenState();
+}
+
+class _AvailableProjectsScreenState extends State<AvailableProjectsScreen> {
+  late Future<List<ProjectDto>> _projectsFuture;
+  List<ProjectDto> _allProjects = [];
+  List<ProjectDto> _filteredProjects = [];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _projectsFuture = ProjectService().listAllNewProjects();
+    _loadProjects();
+    _searchController.addListener(_filterProjects);
+  }
+
+  Future<void> _loadProjects() async {
+    try {
+      final projects = await _projectsFuture;
+      setState(() {
+        _allProjects = projects;
+        _filteredProjects = projects;
+      });
+    } catch (e) {
+      // Trate o erro se necessário
+      print("Error loading projects: $e");
+    }
+  }
+
+  void _filterProjects() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        _filteredProjects = _allProjects;
+      } else {
+        _filteredProjects = _allProjects.where((project) {
+          return project.name.toLowerCase().contains(query) ||
+              project.description.toLowerCase().contains(query);
+        }).toList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F9FF),
+      backgroundColor: const Color(0xFFF6F9FF),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        title: Text(
+        title: const Text(
           "Available Projects",
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -22,9 +76,10 @@ class AvailableProjectsScreen extends StatelessWidget {
           children: [
             // Barra de Busca
             TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: "Search projects...",
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
                   borderSide: BorderSide.none,
@@ -33,18 +88,35 @@ class AvailableProjectsScreen extends StatelessWidget {
                 filled: true,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Lista de Projetos
             Expanded(
-              child: ListView.builder(
-                itemCount: 5, // Número de projetos
-                itemBuilder: (context, index) {
-                  return _buildProjectRow(
-                    context: context,
-                    title: "Project ${index + 1}",
-                    date: "2023-12-${index + 10}",
-                    status: index % 2 == 0 ? "Open" : "Closed",
+              child: FutureBuilder<List<ProjectDto>>(
+                future: _projectsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("No projects available"));
+                  }
+
+                  return ListView.builder(
+                    itemCount: _filteredProjects.length,
+                    itemBuilder: (context, index) {
+                      final project = _filteredProjects[index];
+                      return _buildProjectRow(
+                        context: context,
+                        title: project.name,
+                        date: project.startDate
+                            .toLocal()
+                            .toString()
+                            .split(' ')[0],
+                        status: project.status,
+                      );
+                    },
                   );
                 },
               ),
@@ -63,7 +135,6 @@ class AvailableProjectsScreen extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        // Navegar para a página detalhada do projeto
         Navigator.pushNamed(context, '/public-project', arguments: {
           'title': title,
           'date': date,
@@ -86,12 +157,12 @@ class AvailableProjectsScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     "Date: $date",
                     style: TextStyle(

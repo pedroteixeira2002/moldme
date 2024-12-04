@@ -12,7 +12,7 @@ class Project {
   final DateTime startDate;
   final DateTime endDate;
   final String companyId;
-  final Company company;
+  final Company? company;
 
   Project({
     required this.projectId,
@@ -23,6 +23,6 @@ class Project {
     required this.startDate,
     required this.endDate,
     required this.companyId,
-    required this.company,
+    this.company,
   });
 }

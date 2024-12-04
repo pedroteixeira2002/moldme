@@ -13,9 +13,6 @@ Future<String> addEmployee(
     const String token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJFbXBsb3llZSIsImV4cCI6MTczNDk3MzQ2MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.FJBSAB0HLBRptEdxkf2AXqOQa-XAGFsbaXrwbHuISTo";
 
-    print('Tentando acessar URL: $url');
-    print('Payload enviado: ${json.encode(payload)}');
-
     final response = await http.post(
       url,
       headers: {
@@ -24,9 +21,6 @@ Future<String> addEmployee(
       },
       body: json.encode(payload),
     );
-
-    print('Status Code: ${response.statusCode}');
-    print('Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

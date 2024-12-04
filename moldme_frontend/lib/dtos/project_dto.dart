@@ -10,7 +10,8 @@ class ProjectDto {
   final DateTime startDate;
   final DateTime endDate;
   final String companyId;
-  final CompanyDto company;
+  final CompanyDto? company;
+
 
   ProjectDto({
     required this.projectId,
@@ -30,12 +31,13 @@ class ProjectDto {
       projectId: json['projectId'],
       name: json['name'],
       description: json['description'],
-      status: json['status'],
-      budget: json['budget'],
+      status: json['status'].toString(), // Converte o `int` para `String`
+      budget: (json['budget'] as num).toDouble(),
       startDate: DateTime.parse(json['startDate']),
       endDate: DateTime.parse(json['endDate']),
       companyId: json['companyId'],
-      company: CompanyDto.fromJson(json['company']),
+      company:
+          json['company'] != null ? CompanyDto.fromJson(json['company']) : null,
     );
   }
 
@@ -50,7 +52,7 @@ class ProjectDto {
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'companyId': companyId,
-      'company': company.toJson(),
+      'company': company?.toJson(),
     };
   }
 }

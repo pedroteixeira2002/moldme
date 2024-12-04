@@ -40,10 +40,11 @@ class AppDrawer extends StatelessWidget {
                 ),
                 // Botão para ir à página de Perfil da Empresa
                 ListTile(
-                  leading: const Icon(Icons.business),
-                  title: const Text("Company Profile"),
+                  leading: const Icon(
+                      Icons.business), // Ícone representando empresas
+                  title: const Text("Available Companies"), // Título do botão
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/company-profile');
+                    Navigator.pushNamed(context, '/list-companies');
                   },
                 ),
                 ListTile(
