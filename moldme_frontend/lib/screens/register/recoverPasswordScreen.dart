@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/register/loginScreen.dart';
+import 'package:front_end_moldme/services/company_service.dart';
 
 class RecoverPasswordScreen extends StatelessWidget {
-  const RecoverPasswordScreen({super.key});
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController repeatPasswordController = TextEditingController();
+  final CompanyService companyService = CompanyService();
+  RecoverPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +57,11 @@ class RecoverPasswordScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 32),
                         // Input fields
-                        const TextField(
-                          decoration: InputDecoration(
+                        TextField(
+                          controller: emailController,
+                          decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.email_outlined),
-                            hintText: "Email or TaxID",
+                            hintText: "Email",
                             border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(8)),
@@ -62,9 +69,10 @@ class RecoverPasswordScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
+                        TextField(
+                          controller: passwordController,
                           obscureText: true,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.lock_outline),
                             hintText: "Password",
                             border: OutlineInputBorder(
@@ -74,9 +82,10 @@ class RecoverPasswordScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const TextField(
+                        TextField(
+                          controller: repeatPasswordController,
                           obscureText: true,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.lock_outline),
                             hintText: "Repeat Password",
                             border: OutlineInputBorder(
@@ -90,7 +99,27 @@ class RecoverPasswordScreen extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final email = emailController.text;
+                              final password = passwordController.text;
+                              final repeatPassword = repeatPasswordController.text;
+                              if (password != repeatPassword) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Passwords don't match"),
+                                  ),
+                                );
+                                return;
+                              }
+                              await companyService.updatePasswordByEmail(email, password);
+                              // Navigate to login screen
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               padding: const EdgeInsets.symmetric(

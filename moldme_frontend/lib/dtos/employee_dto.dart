@@ -1,7 +1,7 @@
 import 'package:front_end_moldme/dtos/company_dto.dart';
 
 class EmployeeDto {
-  final String employeeId;
+  final String? employeeId;
   final String name;
   final String profession;
   final int nif;
@@ -12,7 +12,7 @@ class EmployeeDto {
   final CompanyDto company;
 
   EmployeeDto({
-    required this.employeeId,
+    this.employeeId,
     required this.name,
     required this.profession,
     required this.nif,
@@ -22,7 +22,8 @@ class EmployeeDto {
     required this.companyId,
     required this.company,
   });
-// Convert JSON from API to DTO
+
+  // Convert JSON from backend to DTO
   factory EmployeeDto.fromJson(Map<String, dynamic> json) {
   return EmployeeDto(
     employeeId: json['employeeId'] ?? '',

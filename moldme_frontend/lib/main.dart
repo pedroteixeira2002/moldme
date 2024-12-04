@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // Este widget é a raiz da sua aplicação.
+  // Este widget é a raiz da sua aplicação.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: '/new-project', // Rota inicial da aplicação
+      initialRoute: '/', // Rota inicial da aplicação
       routes: AppRoutes.routes,
     );
   }

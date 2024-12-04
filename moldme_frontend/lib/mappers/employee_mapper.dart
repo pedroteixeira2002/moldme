@@ -7,7 +7,7 @@ class EmployeeMapper {
   // Convert DTO to Model
   static Employee fromDto(EmployeeDto dto) {
     return Employee(
-      employeeId: dto.employeeId,
+      employeeId: dto.employeeId ?? '',
       name: dto.name,
       profession: dto.profession,
       nif: dto.nif,

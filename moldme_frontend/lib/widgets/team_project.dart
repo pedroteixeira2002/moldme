@@ -115,7 +115,9 @@ class _ProjectTeamWidgetState extends State<ProjectTeamWidget> {
                               color: Colors.red,
                             ),
                             onPressed: () {
-                              _removeEmployee(employee.employeeId);
+                               if (employee.employeeId != null) {
+                                 _removeEmployee(employee.employeeId!);
+                               }
                             },
                           ),
                         ],

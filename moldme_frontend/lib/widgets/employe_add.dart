@@ -138,7 +138,9 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
                   IconButton(
                     icon: const Icon(Icons.add_circle, color: Colors.green),
                     onPressed: () {
-                      _assignEmployee(employee.employeeId);
+                      if (employee.employeeId != null) {
+                        _assignEmployee(employee.employeeId!);
+                      }
                     },
                   ),
                 ],

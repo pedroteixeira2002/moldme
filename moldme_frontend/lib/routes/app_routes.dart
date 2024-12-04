@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/homescreen/homeScreen.dart';
+import 'package:front_end_moldme/screens/register/loginScreen.dart';
+import 'package:front_end_moldme/screens/register/recoverPasswordScreen.dart';
+import 'package:front_end_moldme/screens/register/registerScreen.dart';
 import 'package:front_end_moldme/screens/project/new_project_screen.dart';
 import 'package:front_end_moldme/screens/project/project-page.dart';
 import 'package:front_end_moldme/screens/project/project_company_list.dart';
@@ -11,6 +15,11 @@ import 'package:front_end_moldme/widgets/task_new.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
+    '/' : (context) => const Homescreen(),
+    '/login': (context) => LoginScreen(),
+    '/register': (context) => const RegisterScreen(),
+    '/recoverPassword': (context) => RecoverPasswordScreen(),
+
     '/new-project': (context) => const NewProjectPage(
           companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
         ),
