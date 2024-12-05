@@ -39,4 +39,10 @@ public class TaskDto
     /// </summary>
     [StringLength(256)]
     public String? FilePath { get; set; } 
+    
+    public byte[]? FileContent { get; set; }
+    
+    public String? MimeType { get; set; }
+    
+    public String? FileName { get; set; }
 }

@@ -7,12 +7,9 @@ import 'package:front_end_moldme/services/project_service.dart';
 class EmployeeListWidget extends StatefulWidget {
   final String companyId;
   final String projectId;
+  final dynamic currentUserId;
 
-  const EmployeeListWidget({
-    Key? key,
-    required this.companyId,
-    required this.projectId,
-  }) : super(key: key);
+  const EmployeeListWidget({Key? key, required this.companyId, required this.projectId, required this.currentUserId}) : super(key: key);
 
   @override
   _EmployeeListWidgetState createState() => _EmployeeListWidgetState();
@@ -52,6 +49,7 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
             builder: (context) => ProjectPage(
                   projectId: widget.projectId,
                   companyId: widget.companyId,
+                  currentUserId: widget.currentUserId,
                 )),
       );
     } catch (e) {
@@ -62,6 +60,7 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
             builder: (context) => ProjectPage(
                   projectId: widget.projectId,
                   companyId: widget.companyId,
+                  currentUserId: widget.currentUserId,
                 )),
       );
     }

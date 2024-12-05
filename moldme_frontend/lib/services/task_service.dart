@@ -1,15 +1,17 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:front_end_moldme/dtos/create_task_dto.dart';
 import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 class TaskService {
   final Dio _dio = Dio(BaseOptions(baseUrl: "http://localhost:5213/api/Task"));
-
-  Future<String> createTask(CreateTaskDto taskDto, String projectId, String employeeId) async {
+  final String baseUrl = 'http://localhost:5213/api/Task';
+  Future<String> createTask(
+      CreateTaskDto taskDto, String projectId, String employeeId) async {
     try {
       final response = await _dio.post(
-        '/createTask',
+        '/webTaskcreate',
         queryParameters: {'projectId': projectId, 'employeeId': employeeId},
         data: taskDto.toJson(),
       );
@@ -19,35 +21,19 @@ class TaskService {
     }
   }
 
-Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
-  try {
-    final response = await _dio.get('/project/$projectId/tasks');
-
-    // Check if the response data contains the $values key
-    if (response.data is Map<String, dynamic>) {
-      final tasksData = response.data['\$values']; // Corrected: Use the correct string key '$values'
-      if (tasksData is List) {
-        // Map each item to a TaskDto and filter out nulls
-        return tasksData
-            .map((json) {
-              if (json is Map<String, dynamic>) {
-                return TaskDto.fromJson(json); // Convert to TaskDto if it's a valid map
-              } else {
-                return null; // Return null if the item is a reference or invalid
-              }
-            })
-            .whereType<TaskDto>() // Remove null values
-            .toList(); // Convert to List<TaskDto>
+  Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
+    try {
+      final response = await _dio.get('/project/$projectId/tasks');
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonResponse = response.data;
+        return jsonResponse.map((json) => TaskDto.fromJson(json)).toList();
       } else {
-        throw Exception("Expected a list of tasks, but got: ${tasksData.runtimeType}");
+        throw Exception('Failed to load tasks');
       }
-    } else {
-      throw Exception("Unexpected response format: ${response.data.runtimeType}");
+    } catch (e) {
+      throw Exception("Failed to load tasks: $e");
     }
-  } catch (e) {
-    throw Exception("Failed to fetch tasks: $e");
   }
-}
 
   Future<TaskDto> getTaskById(String taskId) async {
     try {
@@ -58,37 +44,39 @@ Future<List<TaskDto>> getTasksByProjectId(String projectId) async {
     }
   }
 
-  Future<String> updateTask(String taskId, TaskDto taskDto) async {
+  Future<void> updateTask(TaskDto task) async {
     try {
       final response = await _dio.put(
-        '/updateTask/$taskId',
-        data: taskDto.toJson(),
+        '/updateTask/${task.taskId}',
+        data: task.toJson(),
       );
-      return response.data; // "Task updated successfully"
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update task');
+      }
     } catch (e) {
       throw Exception("Failed to update task: $e");
     }
   }
 
-  Future<String> deleteTask(String taskId) async {
+  Future<void> deleteTask(String taskId) async {
     try {
       final response = await _dio.delete('/delete/$taskId');
-      return response.data; // "Task deleted successfully"
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete task');
+      }
     } catch (e) {
       throw Exception("Failed to delete task: $e");
     }
   }
 
-  Future<void> downloadFile(String taskId, String savePath) async {
-    try {
-      final response = await _dio.get(
-        '/task/$taskId/file',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final file = File(savePath);
-      await file.writeAsBytes(response.data);
-    } catch (e) {
-      throw Exception("Failed to download file: $e");
+  Future<Uint8List> downloadFile(String taskId) async {
+    final url = '$baseUrl/task/$taskId/file';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      throw Exception('Failed to download file');
     }
   }
 }

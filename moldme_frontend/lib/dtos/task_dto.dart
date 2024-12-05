@@ -1,25 +1,24 @@
-
 /// Represents a Task Data Transfer Object (DTO).
 class TaskDto {
-  final String? taskId;
+  final String taskId;
   final String titleName;
   final String description;
   final String date; // ISO 8601 formatted string
   final int status; // Enum as string
-  final String? projectId;
-  final String? employeeId;
+  final String projectId;
+  final String employeeId;
   final String? fileContent; // Base64 encoded string for file content
   final String? fileName;
   final String? mimeType;
 
   const TaskDto({
-    this.taskId,
+    required this.taskId,
     required this.titleName,
     required this.description,
     required this.date,
     required this.status,
-    this.projectId,
-    this.employeeId,
+    required this.projectId,
+    required this.employeeId,
     this.fileContent,
     this.fileName,
     this.mimeType,

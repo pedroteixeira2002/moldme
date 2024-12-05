@@ -8,8 +8,9 @@ import 'package:front_end_moldme/widgets/app_drawer.dart';
 
 class ProjectsListWidget extends StatefulWidget {
   final String companyId;
+  final dynamic currentUserId;
 
-  const ProjectsListWidget({Key? key, required this.companyId})
+  const ProjectsListWidget({Key? key, required this.companyId, required this.currentUserId})
       : super(key: key);
 
   @override
@@ -19,6 +20,7 @@ class ProjectsListWidget extends StatefulWidget {
 class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   final ProjectService _projectService = ProjectService();
   late Future<List<ProjectDto>> _projects;
+  
 
   @override
   void initState() {
@@ -92,6 +94,7 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
         builder: (context) => ProjectPage(
           projectId: projectId,
           companyId: widget.companyId,
+          currentUserId: widget.currentUserId,
         ),
       ),
     );
