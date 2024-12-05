@@ -2,42 +2,42 @@ import 'package:front_end_moldme/dtos/company_dto.dart';
 
 /// Data Transfer Object (DTO) for a project.
 class ProjectDto {
-  final String projectId;
+  final String? projectId;
   final String name;
   final String description;
-  final String status; // Use string to match enum values from the backend.
+  final int status; // Enum values from the backend as integers.
   final double budget;
   final DateTime startDate;
   final DateTime endDate;
-  final String companyId;
+  final String? companyId;
   final CompanyDto? company;
 
-
   ProjectDto({
-    required this.projectId,
+    this.projectId,
     required this.name,
     required this.description,
     required this.status,
     required this.budget,
     required this.startDate,
     required this.endDate,
-    required this.companyId,
-    required this.company,
+    this.companyId,
+    this.company,
   });
 
   /// Converts a JSON map into a ProjectDto.
   factory ProjectDto.fromJson(Map<String, dynamic> json) {
     return ProjectDto(
-      projectId: json['projectId'],
-      name: json['name'],
-      description: json['description'],
-      status: json['status'].toString(), // Converte o `int` para `String`
+      projectId: json['projectId'] as String?,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      status: json['status'] as int,
       budget: (json['budget'] as num).toDouble(),
-      startDate: DateTime.parse(json['startDate']),
-      endDate: DateTime.parse(json['endDate']),
-      companyId: json['companyId'],
-      company:
-          json['company'] != null ? CompanyDto.fromJson(json['company']) : null,
+      startDate: DateTime.parse(json['startDate'] as String),
+      endDate: DateTime.parse(json['endDate'] as String),
+      companyId: json['companyId'] as String?,
+      company: json['company'] != null
+          ? CompanyDto.fromJson(json['company'] as Map<String, dynamic>)
+          : null, // Handle null `company`
     );
   }
 

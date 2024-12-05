@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:front_end_moldme/models/company.dart';
+import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/services/company_service.dart';
 import 'package:front_end_moldme/screens/app_drawer.dart';
 
@@ -7,12 +7,12 @@ class CompanyProfileScreen extends StatelessWidget {
   final String companyId;
 
   // Construtor para aceitar o companyId
-  CompanyProfileScreen({required this.companyId});
+  const CompanyProfileScreen({required this.companyId});
 
   @override
   Widget build(BuildContext context) {
     return AppDrawer(
-      child: FutureBuilder<Company>(
+      child: FutureBuilder<CompanyDto>(
         future: CompanyService().getCompanyById(companyId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -118,7 +118,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                   const Icon(Icons.location_on,
                                       size: 16, color: Colors.grey),
                                   const SizedBox(width: 4),
-                                  Text(company.address),
+                                  Text(company.address ?? 'No address available'),   // Possível erro ou não
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -156,7 +156,7 @@ class CompanyProfileScreen extends StatelessWidget {
                         _buildDetailRow("Tax ID", company.taxId.toString()),
                         _buildDetailRow("Contact", company.contact.toString()),
                         _buildDetailRow("Sector", company.sector),
-                        _buildDetailRow("Plan", company.plan),
+                        _buildDetailRow("Plan", company.plan.toString()),  // Possível erro ou não
                       ],
                     ),
                   ),

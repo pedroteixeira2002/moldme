@@ -18,15 +18,16 @@ public class Chat
     /// <summary>
     /// Gets or sets the list of messages in the chat.
     /// </summary>
-    public List<Message> Messages { get; set; } = new List<Message>();
+   // public List<Message> Messages { get; set; } = new List<Message>();
     
     /// <summary>
     /// Gets or sets the unique identifier for the project associated with the chat.
     /// </summary>
     [Required, MaxLength(36)] public String ProjectId { get; set; }
     
+    
     /// <summary>
     /// Gets or sets the project associated with the chat.
     /// </summary>
-    [ForeignKey("ProjectId")] public Project Project { get; set; }
+   // [ForeignKey("ProjectId")] public Project Project { get; set; }
 }

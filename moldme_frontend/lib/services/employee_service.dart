@@ -4,14 +4,13 @@ import '../dtos/employee_dto.dart';
 
 class EmployeeService {
   final String baseUrl = "http://localhost:5213/api/Employee";
+  final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA"; // Replace with actual token
 
 
   /// Adds a new employee to a company.
 Future<String> addEmployee(
       String companyId, Map<String, dynamic> payload) async {
     final url = Uri.parse('$baseUrl/$companyId/addEmployee');
-    const String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJwcEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJFbXBsb3llZSIsImV4cCI6MTczNDk3MzQ2MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.FJBSAB0HLBRptEdxkf2AXqOQa-XAGFsbaXrwbHuISTo";
 
     final response = await http.post(
       url,
@@ -65,7 +64,8 @@ Future<String> updateEmployee(
         Uri.parse('$baseUrl/api/Employee/$companyId/removeEmployee/$employeeId');
     final response = await http.delete(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',},
     );
 
     if (response.statusCode == 200) {
@@ -108,7 +108,8 @@ Future<String> updateEmployee(
     final url = Uri.parse('$baseUrl/api/Employee/getEmployeeById/$employeeId');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',},
     );
 
     if (response.statusCode == 200) {
@@ -126,7 +127,8 @@ Future<String> updateEmployee(
         Uri.parse('$baseUrl/api/Employee/employees/$employeeId/projects');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',},
     );
 
     if (response.statusCode == 200) {
@@ -142,7 +144,8 @@ Future<String> updateEmployee(
     final url = Uri.parse('$baseUrl/api/Employee/listAllEmployees');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',},
     );
 
     if (response.statusCode == 200) {

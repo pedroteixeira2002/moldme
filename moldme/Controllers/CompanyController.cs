@@ -242,4 +242,24 @@ namespace moldme.Controllers;
 
         
         
+        /// <summary>
+        ///  Update company password by email
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("/api/updatePasswordByEmail")]
+        public IActionResult UpdatePasswordByEmail([FromBody] RecoverPasswordDto request)
+        {
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.Email == request.Email);
+
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+
+            existingCompany.Password = _companyPasswordHasher.HashPassword(null, request.NewPassword);
+            _context.SaveChanges();
+
+            return Ok("Password updated successfully");
+        }
     }

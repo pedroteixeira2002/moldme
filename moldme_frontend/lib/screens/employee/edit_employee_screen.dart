@@ -32,7 +32,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
 
     employee = args['employee'] as EmployeeDto;
     companyId = args['companyId'] as String;
-    employeeId = employee.employeeId;
+    employeeId = employee.employeeId!;              // Corrigido
 
     // Preenche os campos com os dados do funcionário
     nameController.text = employee.name;

@@ -1,26 +1,21 @@
 /// Represents the status of an entity.
 enum Status {
-  /// The entity is new.
   newEntity,
-
-  /// The entity is in progress.
   inProgress,
-
-  /// The entity is done.
   done,
-
-  /// The entity is closed.
   closed,
-
-  /// The entity is canceled.
   canceled,
-
-  /// The entity is pending.
   pending,
-
-  /// The entity is accepted.
   accepted,
+  denied;
 
-  /// The entity is denied.
-  denied,
+  /// Converts an integer from the backend to a Status enum.
+  static Status fromInt(int value) {
+    return Status.values[value];
+  }
+
+  /// Converts a Status enum to an integer for the backend.
+  int toInt() {
+    return Status.values.indexOf(this);
+  }
 }

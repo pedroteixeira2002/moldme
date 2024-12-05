@@ -65,7 +65,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = null; 
 });
 
 // Adicione o TokenGenerator
@@ -113,6 +113,7 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "MoldMe API");
     c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
 });
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

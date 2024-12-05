@@ -42,6 +42,7 @@ public class AuthenticationController : ControllerBase,IAuthentication
 
         var role = user is Company ? "Company" : "Employee";
         var token = _tokenGenerator.GenerateToken(request.Email, role);
-        return Ok(new { access_token = token });
+        var userId = user is Company ? ((Company)user).CompanyId : ((Employee)user).EmployeeId;
+        return Ok(new { access_token = token, user_id = userId });
     }
 }

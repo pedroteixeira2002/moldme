@@ -114,7 +114,7 @@ class _AvailableProjectsScreenState extends State<AvailableProjectsScreen> {
                             .toLocal()
                             .toString()
                             .split(' ')[0],
-                        status: project.status,
+                        status: project.status.toString(),  // Possivel Erro aqui ou não 
                       );
                     },
                   );

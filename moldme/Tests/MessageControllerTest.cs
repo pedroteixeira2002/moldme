@@ -29,18 +29,18 @@ namespace moldme.Tests
                 Text = "Hello, World!",
                 Date = new DateTime(2023, 10, 1),
                 EmployeeId = "E12345",
-                Employee = new Employee { EmployeeId = "E12345", Name = "John Doe" },
+                //Employee = new Employee { EmployeeId = "E12345", Name = "John Doe" },
                 ChatId = "C12345",
-                Chat = new Chat { ChatId = "C12345", ProjectId = "P12345" }
+                //Chat = new Chat { ChatId = "C12345", ProjectId = "P12345" }
             };
 
             Assert.Equal("M12345", message.MessageId);
             Assert.Equal("Hello, World!", message.Text);
             Assert.Equal(new DateTime(2023, 10, 1), message.Date);
             Assert.Equal("E12345", message.EmployeeId);
-            Assert.Equal("John Doe", message.Employee.Name);
+            //Assert.Equal("John Doe", message.Employee.Name);
             Assert.Equal("C12345", message.ChatId);
-            Assert.Equal("P12345", message.Chat.ProjectId);
+            //Assert.Equal("P12345", message.Chat.ProjectId);
         }
 
         [Fact]
@@ -143,13 +143,21 @@ namespace moldme.Tests
         {
             using (var dbContext = GetInMemoryDbContext())
             {
+                var chat1 = new Chat
+                {
+                    ChatId = "2",
+                    ProjectId = "2"
+                };
+                dbContext.Chats.Add(chat1);
+                dbContext.SaveChanges();
+
                 var message1 = new Message
                 {
                     MessageId = "3",
                     Text = "Hello, World!",
                     EmployeeId = "user1",
                     Date = DateTime.Now,
-                    ChatId = "1"
+                    ChatId = "2"
                 };
 
                 var message2 = new Message
@@ -158,26 +166,17 @@ namespace moldme.Tests
                     Text = "Hi there!",
                     EmployeeId = "user2",
                     Date = DateTime.Now,
-                    ChatId = "1"
+                    ChatId = "2"
                 };
 
-                var chat1 = new Chat
-                {
-                    ChatId = "2",
-                    ProjectId = "2",
-                    Messages = { message1, message2 }
-                };
                 dbContext.Messages.Add(message1);
                 dbContext.Messages.Add(message2);
-                dbContext.Chats.Add(chat1);
-
                 dbContext.SaveChanges();
 
                 var controller = new MessageController(dbContext);
 
                 var result = controller.GetMessages("2").Result;
                 var okResult = result.Result as OkObjectResult;
-
 
                 Assert.NotNull(okResult);
                 var messages = okResult.Value as List<Message>;

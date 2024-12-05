@@ -15,7 +15,7 @@ class _AvailableCompaniesScreenState extends State<AvailableCompaniesScreen> {
   @override
   void initState() {
     super.initState();
-    _companiesFuture = CompanyService().listAllCompanies();
+    _companiesFuture = CompanyService().listAllCompanies() as Future<List<Company>>; // Possivel Erro aqui ou não
   }
 
   @override

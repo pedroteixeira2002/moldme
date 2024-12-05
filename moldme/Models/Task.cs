@@ -48,8 +48,7 @@ public class Task
     /// <summary>
     /// Gets or sets the project associated with the task.
     /// </summary>
-    [ForeignKey("ProjectId")]
-    public Project Project { get; set; }
+   // [ForeignKey("ProjectId")] public Project Project { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier for the employee assigned to the task.
@@ -60,8 +59,7 @@ public class Task
     /// <summary>
     /// Gets or sets the employee assigned to the task.
     /// </summary>
-    [ForeignKey("EmployeeId")]
-    public Employee Employee { get; set; }
+    //[ForeignKey("EmployeeId")] public Employee Employee { get; set; }
 
     /// <summary>
     /// Gets or sets the file of the task.
