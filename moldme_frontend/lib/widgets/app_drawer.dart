@@ -20,7 +20,7 @@ class AppDrawer extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.person),
-                  title: const Text("My Profile"),
+                  title: const Text("Home"),
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/');
                   },
@@ -47,13 +47,45 @@ class AppDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text("Settings"),
+                  leading: Icon(Icons.people),
+                  title: Text("All Employees"),
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/settings');
+                    Navigator.pushNamed(
+                      context,
+                      '/all-employees',
+                      arguments:
+                          "aaf284e6-8a87-4954-ba5e-8fea15b7e93c", // companyId
+                    );
                   },
                 ),
-                const Spacer(),
+                ListTile(
+                  leading: const Icon(
+                      Icons.business), // Ícone representando empresas
+                  title: const Text("Available Companies"), // Título do botão
+                  onTap: () {
+                    Navigator.pushNamed(context, '/list-companies');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.work),
+                  title: const Text("Available Projects"),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(
+                        context, '/available-projects');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add_business),
+                  title: const Text("Propose Service"),
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/propose-service',
+                        arguments: {
+                          'projectId': 'example-project-id',
+                          'companyId': 'example-company-id',
+                        });
+                  },
+                ),
+                
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: const Text("Sign Out"),

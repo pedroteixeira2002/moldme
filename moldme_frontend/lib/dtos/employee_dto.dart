@@ -9,7 +9,7 @@ class EmployeeDto {
   final int? contact;
   final String password;
   final String companyId;
-  final CompanyDto company;
+  final CompanyDto? company;
 
   EmployeeDto({
     this.employeeId,
@@ -20,27 +20,32 @@ class EmployeeDto {
     this.contact,
     required this.password,
     required this.companyId,
-    required this.company,
+    this.company,
   });
 
-  // Convert JSON from backend to DTO
   factory EmployeeDto.fromJson(Map<String, dynamic> json) {
-  return EmployeeDto(
-    employeeId: json['employeeId'] ?? '',
-    name: json['name'] ?? '',
-    profession: json['profession'] ?? '',
-    nif: json['nif'] ?? 0, // Garanta que `nif` tenha um valor padrão.
-    email: json['email'] ?? '',
-    contact: json['contact'] ?? 0,
-    password: json['password'] ?? '',
-    companyId: json['companyId'] ?? '',
-    company: json['company'] != null
-        ? CompanyDto.fromJson(json['company'] as Map<String, dynamic>)
-        : CompanyDto.empty(), // Retorna um objeto vazio se `company` for `null`.
-  );
-}
-  
-  // Convert DTO to JSON for API communication
+    try {
+      return EmployeeDto(
+        employeeId: json['employeeId'] ?? '',
+        name: json['name'] ?? '',
+        profession: json['profession'] ?? '',
+        nif: int.tryParse(json['nif']?.toString() ?? '0') ?? 0, // Garantir int
+        email: json['email'] ?? '',
+        contact:
+            int.tryParse(json['contact']?.toString() ?? '0'), // Garantir int
+        password: json['password'] ?? '',
+        companyId: json['companyId'] ?? '',
+        company: json['company'] != null
+            ? CompanyDto.fromJson(json['company'] as Map<String, dynamic>)
+            : null,
+      );
+    } catch (e) {
+      print("Erro ao converter EmployeeDto: $e");
+      print("Dados recebidos: $json");
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'employeeId': employeeId,
@@ -51,9 +56,7 @@ class EmployeeDto {
       'contact': contact,
       'password': password,
       'companyId': companyId,
-      'company': company.toJson(),
+      'company': company?.toJson(),
     };
   }
-
-  
 }

@@ -187,6 +187,61 @@ namespace moldme.Controllers;
             return Ok(new { Token = token, Message = "Company registered successfully" });
         }
         
+        [HttpGet("listAllCompanies")]
+        public IActionResult ListAllCompanies()
+        {
+            var companies = _context.Companies.ToList();
+            if (!companies.Any())
+            {
+                return NotFound("No companies found");
+            }
+
+            // Mapeie os dados para a DTO
+            var response = companies.Select(c => new
+            {
+                c.CompanyId, // Inclui o ID aqui
+                c.Name,
+                c.TaxId,
+                c.Address,
+                c.Contact,
+                c.Email,
+                c.Sector,
+                c.Plan
+            });
+
+            // Retorne as empresas como JSON
+            return Ok(response);
+        }
+        [HttpGet("{companyId}/getCompanyById")]
+        public IActionResult GetCompanyById(string companyId)
+        {
+            // Busca a empresa pelo ID no banco de dados
+            var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
+
+            if (company == null)
+            {
+                return NotFound(new { Message = "Company not found" });
+            }
+
+            // Cria um objeto para retorno que inclui o ID
+            var response = new
+            {
+                CompanyId = company.CompanyId,
+                Name = company.Name,
+                TaxId = company.TaxId,
+                Address = company.Address,
+                Contact = company.Contact, 
+                Email = company.Email,
+                Sector = company.Sector,
+                Plan = company.Plan,
+                
+            };
+
+            return Ok(response);
+        }
+
+        
+        
         /// <summary>
         ///  Update company password by email
         /// </summary>

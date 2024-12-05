@@ -117,7 +117,7 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseCors("AllowSpecificOrigin");
 app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();

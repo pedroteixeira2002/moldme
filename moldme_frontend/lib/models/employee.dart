@@ -9,7 +9,8 @@ class Employee {
   final int? contact;
   final String password;
   final String companyId;
-  final Company company;
+  final Company?
+      company; // Torne nullable para lidar com o caso de ausência de company
 
   Employee({
     required this.employeeId,
@@ -20,6 +21,6 @@ class Employee {
     this.contact,
     required this.password,
     required this.companyId,
-    required this.company,
+    this.company, // Nullable
   });
 }

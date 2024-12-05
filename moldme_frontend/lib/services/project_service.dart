@@ -162,7 +162,8 @@ class ProjectService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": "Bearer $token",
+        "Authorization":
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJsZW9uZWxAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNTEzOTEwNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.qzU2McQ9tpCCXKEHsoxyIGpni7fK1dwjsp3AmJnz7XA",
       },
     );
 
@@ -205,9 +206,12 @@ class ProjectService {
     }
   }
 
-  /// Lists all new projects.
+/// Lists all new projects.
   Future<List<ProjectDto>> listAllNewProjects() async {
     final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
+    const String token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJsZW9uZWxAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNTEzOTEwNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.qzU2McQ9tpCCXKEHsoxyIGpni7fK1dwjsp3AmJnz7XA";
+
     final response = await http.get(
       url,
       headers: {
@@ -217,11 +221,23 @@ class ProjectService {
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body) as List<dynamic>;
+      if (response.body.isEmpty) {
+        throw Exception("Resposta da API está vazia");
+      }
+
+      final List<dynamic> data = json.decode(response.body);
+
+      // Mapeia diretamente a lista JSON para uma lista de ProjectDto
       return data.map((e) => ProjectDto.fromJson(e)).toList();
     } else {
-      throw Exception(json.decode(response.body)['error'] ??
-          "Failed to fetch new projects");
+      // Trata erros retornados pela API
+      try {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['error'] ?? "Erro desconhecido na API");
+      } catch (_) {
+        throw Exception(
+            "Falha ao buscar novos projetos: ${response.statusCode}");
+      }
     }
   }
 
@@ -244,4 +260,5 @@ class ProjectService {
           "Failed to fetch employees for project");
     }
   }
+
 }

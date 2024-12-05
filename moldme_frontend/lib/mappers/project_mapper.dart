@@ -1,15 +1,12 @@
 import 'package:front_end_moldme/mappers/company_mapper.dart';
 import 'package:front_end_moldme/models/project.dart';
 import 'package:front_end_moldme/models/status.dart';
-
 import '../dtos/project_dto.dart';
-
 
 /// Maps between Project and ProjectDto.
 class ProjectMapper {
   /// Converts a ProjectDto to a Project model.
-  static Project fromDto(ProjectDto dto) 
-  {
+  static Project fromDto(ProjectDto dto) {
     return Project(
       projectId: dto.projectId,
       name: dto.name,
