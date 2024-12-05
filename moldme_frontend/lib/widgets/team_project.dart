@@ -5,8 +5,7 @@ import 'package:front_end_moldme/services/project_service.dart';
 class ProjectTeamWidget extends StatefulWidget {
   final String projectId;
 
-  const ProjectTeamWidget({Key? key, required this.projectId})
-      : super(key: key);
+  const ProjectTeamWidget({super.key, required this.projectId});
 
   @override
   _ProjectTeamWidgetState createState() => _ProjectTeamWidgetState();
@@ -83,7 +82,7 @@ class _ProjectTeamWidgetState extends State<ProjectTeamWidget> {
                         children: [
                           CircleAvatar(
                             radius: 30,
-                            backgroundImage: AssetImage(
+                            backgroundImage: const AssetImage(
                               'lib/assets/app-icon-person.png', // Placeholder para avatar
                             ),
                             child: employee.name.isNotEmpty
