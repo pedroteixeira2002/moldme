@@ -110,9 +110,8 @@ class CompanyService {
     }
   }
 
-  /// Lista todas as empresas
   Future<List<CompanyDto>> listAllCompanies() async {
-    final url = Uri.parse('$_baseUrl/listAllCompanies');
+    final url = Uri.parse('$_baseUrl/Company/listAllCompanies');
     const String token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // Substitua pelo token válido
 
@@ -125,31 +124,43 @@ class CompanyService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      final List<dynamic> values = data['\$values'];
+      // Tenta decodificar a resposta diretamente como lista
+      final List<dynamic> data = json.decode(response.body);
 
-      return values.map((e) => CompanyDto.fromJson(e)).toList();
+      // Converte cada item da lista em um CompanyDto
+      return data
+          .map((e) => CompanyDto.fromJson(e as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception("Failed to fetch companies");
     }
   }
 
   /// Busca uma empresa pelo ID
-  Future<CompanyDto> getCompanyById(String companyId) async {
-    final url = Uri.parse('$_baseUrl/$companyId/getCompanyById');
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer your_token_here', // Insira o token aqui
-      },
-    );
+Future<CompanyDto> getCompanyById(String companyId) async {
+    final url = Uri.parse(
+        'http://localhost:5213/api/Company/$companyId/getCompanyById');
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return CompanyDto.fromJson(data);
-    } else {
-      throw Exception("Failed to fetch company: ${response.statusCode}");
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer your_token_here', // Substitua pelo token válido
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return CompanyDto.fromJson(data);
+      } else if (response.statusCode == 404) {
+        throw Exception("Company not found: $companyId");
+      } else {
+        throw Exception("Failed to fetch company: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error fetching company: $e");
     }
   }
 }

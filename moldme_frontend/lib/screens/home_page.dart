@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
-import 'app_drawer.dart'; // Certifique-se de que o caminho está correto.
+import 'package:front_end_moldme/widgets/app_drawer.dart';
+import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
 
-class HomePage extends StatelessWidget {
+class HomePageCompany extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return AppDrawer(
-      child: Center(
-        child: Text(
-          "Bem-vindo à Home Page!",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+    return Scaffold(
+      body: Column(
+        children: [
+          const CustomNavigationBar(), // Adiciona a CustomNavigationBar no topo
+          Expanded(
+            child: AppDrawer(
+              child: Center(
+                child: Text(
+                  "Bem-vindo à Home Page!",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

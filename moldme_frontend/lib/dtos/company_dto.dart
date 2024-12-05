@@ -39,19 +39,26 @@ class CompanyDto {
   }
 
   // Convert JSON from API to DTO
-  factory CompanyDto.fromJson(Map<String, dynamic> json) {
+factory CompanyDto.fromJson(Map<String, dynamic> json) {
     return CompanyDto(
-      companyId: json['companyId'],
-      name: json['name'],
-      taxId: json['taxId'],
-      address: json['address'],
-      contact: json['contact'] != null ? int.tryParse(json['contact'].toString()) : null,
-      email: json['email'],
-      sector: json['sector'],
-      plan: json['plan'],
-      password: json['password'],
+      companyId:
+          json['companyId'] ?? '', // Garante um valor padrão caso esteja nulo
+      name: json['name'] ?? 'Unknown', // Valor padrão para nome
+      taxId: json['taxId'] ?? 0, // Valor padrão para taxId
+      address: json['address'] ??
+          'No address available', // Valor padrão para address
+      contact: json['contact'] != null
+          ? int.tryParse(json['contact'].toString())
+          : null,
+      email: json['email'] ?? 'No email provided', // Valor padrão para email
+      sector: json['sector'] ?? 'Unknown', // Valor padrão para setor
+      plan: SubscriptionPlan
+          .values[json['plan'] ?? 0], // Converte plano ou usa o padrão
+      password: json['password'] ?? '', // Valor padrão para senha
     );
   }
+
+
 
   factory CompanyDto.empty() {
     return CompanyDto(companyId: '', name: '',taxId: 0,address: "",contact: 0,email: "",sector: "",plan: SubscriptionPlan.none, password: "");

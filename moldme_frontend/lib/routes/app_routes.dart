@@ -3,6 +3,7 @@ import 'package:front_end_moldme/screens/employee/add_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/edit_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/employee_profile_screen.dart';
 import 'package:front_end_moldme/screens/employee/list_employee_screen.dart';
+import 'package:front_end_moldme/screens/home_page.dart';
 import 'package:front_end_moldme/screens/homescreen/homeScreen.dart';
 import 'package:front_end_moldme/screens/offer/offer_proposal_screen.dart';
 import 'package:front_end_moldme/screens/offer/offer_service_screen.dart';
@@ -25,7 +26,7 @@ import 'package:front_end_moldme/widgets/task_new_card.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
-    '/': (context) => const Homescreen(),
+    '/': (context) => HomePageCompany(),
     '/login': (context) => LoginScreen(),
     '/register': (context) => const RegisterScreen(),
     '/recoverPassword': (context) => RecoverPasswordScreen(),
@@ -58,7 +59,9 @@ class AppRoutes {
     '/add-employee': (context) => AddEmployeeScreen(
           companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
         ),
-    '/all-employees': (context) => AllEmployeesScreen(),
+    '/all-employees': (context) => AllEmployeesScreen(
+          isCompany: true,
+        ),
     '/edit-employee': (context) => EditEmployeeScreen(),
     '/available-projects': (context) => AvailableProjectsScreen(),
     '/propose-service': (context) => OfferServiceScreen(

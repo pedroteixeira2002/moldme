@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
-import 'package:front_end_moldme/screens/app_drawer.dart';
+import 'package:front_end_moldme/widgets/app_drawer.dart';
+import 'package:front_end_moldme/widgets/nav_bar.dart'; // Import your custom navigation bar
 
 class AddEmployeeScreen extends StatefulWidget {
   final String companyId;
@@ -36,8 +37,6 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
         "password": _passwordController.text,
       };
 
-      print("Payload enviado: $payload");
-
       try {
         final message =
             await _employeeService.addEmployee(widget.companyId, payload);
@@ -66,10 +65,8 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   Widget build(BuildContext context) {
     return AppDrawer(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Adicionar Funcionário"),
-          backgroundColor: Colors.blue.shade700,
-        ),
+        appBar:
+            const CustomNavigationBar(), // Use the custom navigation bar here
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(

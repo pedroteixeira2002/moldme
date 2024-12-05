@@ -84,19 +84,30 @@ Future<String> updateEmployee(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0OTY1MTkwLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.lxm_4MitOq8He7tYbfRDD_AoaZd2BROonvg5V5gIJZI', // Substitua pelo token correto
+        'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
+      final dynamic jsonData = json.decode(response.body);
 
-      // Verifica se a chave $values está presente e contém uma lista
-      final List<dynamic> employeeList = jsonData['\$values'] ?? [];
-      return employeeList
-          .map((e) => EmployeeDto.fromJson(e as Map<String, dynamic>))
-          .toList();
+      if (jsonData is List<dynamic>) {
+        // Trata diretamente como uma lista
+        return jsonData.map((e) {
+          final employeeData = e as Map<String, dynamic>;
+
+          // Conversão manual para garantir os tipos corretos
+          employeeData['nif'] =
+              int.tryParse(employeeData['nif']?.toString() ?? '0') ?? 0;
+          employeeData['contact'] =
+              int.tryParse(employeeData['contact']?.toString() ?? '0');
+
+          return EmployeeDto.fromJson(employeeData);
+        }).toList();
+      } else {
+        throw Exception(
+            "Formato inesperado para resposta da API: ${jsonData.runtimeType}");
+      }
     } else {
       throw Exception(
           "Erro na API: ${response.statusCode} - ${response.reasonPhrase}");

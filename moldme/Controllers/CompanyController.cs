@@ -230,7 +230,7 @@ namespace moldme.Controllers;
                 Name = company.Name,
                 TaxId = company.TaxId,
                 Address = company.Address,
-                Contact = company.Contact,
+                Contact = company.Contact, 
                 Email = company.Email,
                 Sector = company.Sector,
                 Plan = company.Plan,

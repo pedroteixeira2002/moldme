@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
-import 'package:front_end_moldme/screens/app_drawer.dart';
+import 'package:front_end_moldme/widgets/app_drawer.dart';
+import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
 
 class EditEmployeeScreen extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
 
     employee = args['employee'] as EmployeeDto;
     companyId = args['companyId'] as String;
-    employeeId = employee.employeeId!;              // Corrigido
+    employeeId = employee.employeeId!;
 
     // Preenche os campos com os dados do funcionário
     nameController.text = employee.name;
@@ -80,97 +81,100 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AppDrawer(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Editar Funcionário"),
-          backgroundColor: Colors.blue.shade700,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: [
-                Text(
-                  "Atualizar Informações",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+    return Scaffold(
+      body: Column(
+        children: [
+          const CustomNavigationBar(), // Adiciona a CustomNavigationBar no topo
+          Expanded(
+            child: AppDrawer(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: ListView(
+                    children: [
+                      Text(
+                        "Atualizar Informações",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _buildTextField("Nome", nameController),
+                      const SizedBox(height: 16),
+                      _buildTextField("Profissão", professionController),
+                      const SizedBox(height: 16),
+                      _buildTextField("Email", emailController),
+                      const SizedBox(height: 16),
+                      _buildTextField("Contato", contactController,
+                          keyboardType: TextInputType.number),
+                      const SizedBox(height: 16),
+                      _buildTextField("NIF", nifController,
+                          keyboardType: TextInputType.number),
+                      const SizedBox(height: 16),
+                      _buildTextField("Password", passwordController,
+                          isPassword: true),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey.shade400),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24.0, vertical: 12.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Text(
+                              "Cancelar",
+                              style: TextStyle(
+                                  color: Colors.grey.shade700, fontSize: 16),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton.icon(
+                            onPressed: updateEmployee,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade700,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24.0, vertical: 12.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            icon: Icon(Icons.save, color: Colors.white),
+                            label: Text(
+                              "Guardar alterações",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                _buildTextField("Nome", nameController),
-                const SizedBox(height: 16),
-                _buildTextField("Profissão", professionController),
-                const SizedBox(height: 16),
-                _buildTextField("Email", emailController),
-                const SizedBox(height: 16),
-                _buildTextField("Contato", contactController,
-                    keyboardType: TextInputType.number),
-                const SizedBox(height: 16),
-                _buildTextField("NIF", nifController,
-                    keyboardType: TextInputType.number),
-                const SizedBox(height: 16),
-                _buildTextField("Password", passwordController,
-                    isPassword: true),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.shade400),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 12.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      child: Text(
-                        "Cancelar",
-                        style: TextStyle(
-                            color: Colors.grey.shade700, fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton.icon(
-                      onPressed: updateEmployee,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade700,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24.0, vertical: 12.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                      icon: Icon(Icons.save, color: Colors.white),
-                      label: Text(
-                        "Guardar alterações",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
