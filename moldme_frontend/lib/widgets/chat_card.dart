@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import '../services/message_service.dart';
 import '../dtos/message_dto.dart';
 
+void main () {
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(title: Text('Chat Card')),
+      body: ChatCard(chatId: '1001'),
+    ),
+  ));
+}
 class ChatCard extends StatefulWidget {
   final String chatId;
 

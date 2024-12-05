@@ -62,6 +62,19 @@ void main() {
     expect(result.first.titleName, "Task 1");
   });
 
+ test('getTasksByProjectId throws exception on failure', () async {
+    const projectId = '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08';
+
+    // Mock the HTTP GET request
+    when(mockClient.get(
+      Uri.parse('http://localhost:5213/api/Task/project/$projectId/tasks'),
+      headers: anyNamed('headers'),
+    )).thenAnswer((_) async => http.Response('Not Found', 404));
+
+    // Perform the service call and expect an exception
+    expect(() async => await taskService.getTasksByProjectId(projectId), throwsException);
+  });
+
   test('createTask returns success message on success', () async {
     const projectId = '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08';
     const employeeId = '675943a6-6a50-40b9-a1c3-168b9dfc87a9';
@@ -87,6 +100,30 @@ void main() {
 
     // Assertions
     expect(result, 'Task created successfully');
+  });
+
+  test('createTask throws exception on failure', () async {
+    const projectId = '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08';
+    const employeeId = '675943a6-6a50-40b9-a1c3-168b9dfc87a9';
+    final createTaskDto = CreateTaskDto(
+      titleName: "New Task",
+      description: "New Task Description",
+      date: DateTime.now(),
+      status: 0,
+      fileContent: null,
+      fileName: null,
+      mimeType: null,
+    );
+
+    // Mock the HTTP POST request
+    when(mockClient.post(
+      Uri.parse('http://localhost:5213/api/Task/webTaskcreate?projectId=$projectId&employeeId=$employeeId'),
+      headers: anyNamed('headers'),
+      body: anyNamed('body'),
+    )).thenAnswer((_) async => http.Response('Internal Server Error', 500));
+
+    // Perform the service call and expect an exception
+    expect(() async => await taskService.createTask(createTaskDto, projectId, employeeId), throwsException);
   });
 
   test('deleteTask returns success message on success', () async {
@@ -138,5 +175,75 @@ void main() {
       headers: anyNamed('headers'),
       body: anyNamed('body'),
     )).called(1);
+  });
+
+test('deleteTask throws exception on failure', () async {
+    const taskId = '1';
+
+    // Mock the HTTP DELETE request
+    when(mockClient.delete(
+      Uri.parse('http://localhost:5213/api/Task/delete/$taskId'),
+      headers: anyNamed('headers'),
+    )).thenAnswer((_) async => http.Response('Internal Server Error', 500));
+
+    // Perform the service call and expect an exception
+    expect(() async => await taskService.deleteTask(taskId), throwsException);
+  });
+
+  test('updateTask returns success message on success', () async {
+    final taskDto = TaskDto(
+      taskId: "1",
+      titleName: "Updated Task",
+      description: "Updated Description",
+      date: DateTime.now().toIso8601String(),
+      status: 1,
+      projectId: "projectId",
+      employeeId: "employeeId",
+      fileContent: null,
+      fileName: null,
+      mimeType: null,
+    );
+
+    // Mock the HTTP PUT request
+    when(mockClient.put(
+      Uri.parse('http://localhost:5213/api/Task/updateTask/${taskDto.taskId}'),
+      headers: anyNamed('headers'),
+      body: anyNamed('body'),
+    )).thenAnswer((_) async => http.Response('Task updated successfully', 200));
+
+    // Perform the service call
+    await taskService.updateTask(taskDto);
+
+    // Verify the call
+    verify(mockClient.put(
+      Uri.parse('http://localhost:5213/api/Task/updateTask/${taskDto.taskId}'),
+      headers: anyNamed('headers'),
+      body: anyNamed('body'),
+    )).called(1);
+  });
+
+test('updateTask throws exception on failure', () async {
+    final taskDto = TaskDto(
+      taskId: "1",
+      titleName: "Updated Task",
+      description: "Updated Description",
+      date: DateTime.now().toIso8601String(),
+      status: 1,
+      projectId: "projectId",
+      employeeId: "employeeId",
+      fileContent: null,
+      fileName: null,
+      mimeType: null,
+    );
+
+    // Mock the HTTP PUT request
+    when(mockClient.put(
+      Uri.parse('http://localhost:5213/api/Task/updateTask/${taskDto.taskId}'),
+      headers: anyNamed('headers'),
+      body: anyNamed('body'),
+    )).thenAnswer((_) async => http.Response('Internal Server Error', 500));
+
+    // Perform the service call and expect an exception
+    expect(() async => await taskService.updateTask(taskDto), throwsException);
   });
 }

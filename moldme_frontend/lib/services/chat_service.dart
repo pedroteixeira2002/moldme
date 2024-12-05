@@ -4,10 +4,13 @@ import '../dtos/chat_dto.dart';
 
 class ChatService {
   static const String _baseUrl = 'https://localhost:5123/api/Chat';
+  final http.Client client;
+
+  ChatService({http.Client? client}) : client = client ?? http.Client();
 
   /// Creates a new chat associated with a project ID.
   Future<bool> createChat(String projectId) async {
-    final response = await http.post(
+    final response = await client.post(
       Uri.parse('$_baseUrl/createChat'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'ProjectId': projectId}),
@@ -18,7 +21,7 @@ class ChatService {
 
   /// Deletes a chat by its ID.
   Future<bool> deleteChat(String chatId) async {
-    final response = await http.delete(
+    final response = await client.delete(
       Uri.parse('$_baseUrl/deleteChat/$chatId'),
     );
 
@@ -27,7 +30,7 @@ class ChatService {
 
   /// Fetches a chat by its ID and returns a ChatDto.
   Future<ChatDto> getChat(String chatId) async {
-    final response = await http.get(
+    final response = await client.get(
       Uri.parse('$_baseUrl/get/$chatId'),
     );
 
