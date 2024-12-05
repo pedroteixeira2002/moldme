@@ -26,7 +26,7 @@ import 'package:front_end_moldme/widgets/task_new_card.dart';
 
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
-    '/': (context) => HomePageCompany(),
+    '/': (context) => const Homescreen(),
     '/login': (context) => LoginScreen(),
     '/register': (context) => const RegisterScreen(),
     '/recoverPassword': (context) => RecoverPasswordScreen(),
