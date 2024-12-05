@@ -15,7 +15,6 @@ class ChatMapper {
     );
   }
 
-
   /// Converts a Chat model to a ChatDto.
   static ChatDto toDto(Chat chat) {
     return ChatDto(

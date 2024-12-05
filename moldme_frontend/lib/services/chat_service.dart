@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../dtos/chat_dto.dart';
 
 class ChatService {
-  static const String _baseUrl = 'https://localhost:7168/api/Chat';
+  static const String _baseUrl = 'https://localhost:5123/api/Chat';
 
   /// Creates a new chat associated with a project ID.
   Future<bool> createChat(String projectId) async {

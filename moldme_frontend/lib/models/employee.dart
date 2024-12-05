@@ -11,7 +11,6 @@ class Employee {
   final String companyId;
   final Company company;
 
-
   Employee({
     required this.employeeId,
     required this.name,

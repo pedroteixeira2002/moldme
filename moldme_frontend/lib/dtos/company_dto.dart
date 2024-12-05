@@ -1,20 +1,22 @@
+import 'package:front_end_moldme/models/subscriptionPlan.dart';
+
 class CompanyDto {
-  final String companyId;
+  final String? companyId;
   final String name;
   final int taxId;
-  final String address;
-  final int contact;
+  final String? address;
+  final int? contact;
   final String email;
   final String sector;
-  final String plan; // Assuming SubscriptionPlan is a String here
+  final SubscriptionPlan plan; // Assuming SubscriptionPlan is a String here
   final String password;
 
   CompanyDto({
-    required this.companyId,
+    this.companyId,
     required this.name,
     required this.taxId,
-    required this.address,
-    required this.contact,
+    this.address,
+    this.contact,
     required this.email,
     required this.sector,
     required this.plan,
@@ -31,7 +33,7 @@ class CompanyDto {
       'contact': contact,
       'email': email,
       'sector': sector,
-      'plan': plan,
+      'plan': plan.index,
       'password': password,
     };
   }
@@ -43,11 +45,15 @@ class CompanyDto {
       name: json['name'],
       taxId: json['taxId'],
       address: json['address'],
-      contact: json['contact'],
+      contact: json['contact'] != null ? int.tryParse(json['contact'].toString()) : null,
       email: json['email'],
       sector: json['sector'],
       plan: json['plan'],
       password: json['password'],
     );
+  }
+
+  factory CompanyDto.empty() {
+    return CompanyDto(companyId: '', name: '',taxId: 0,address: "",contact: 0,email: "",sector: "",plan: SubscriptionPlan.none, password: "");
   }
 }

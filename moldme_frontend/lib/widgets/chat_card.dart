@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/message_service.dart';
 import '../dtos/message_dto.dart';
 
-void main() {
-  runApp(const MaterialApp(home: ChatCard(chatId: '1001')));
-}
-
 class ChatCard extends StatefulWidget {
   final String chatId;
 
@@ -30,7 +26,6 @@ class _ChatCardState extends State<ChatCard> {
   Future<void> _fetchMessages() async {
     setState(() => _isLoading = true);
     try {
-      // Fetch messages from the backend
       final messages = await _messageService.getMessages(widget.chatId);
       setState(() {
         _messages = messages;
@@ -49,11 +44,10 @@ class _ChatCardState extends State<ChatCard> {
     if (text.isEmpty) return;
 
     try {
-      // Send a message to the backend
       await _messageService.sendMessage(
           widget.chatId, '9d738649-8773-4bf2-b046-39ac3c6f3113', text);
       _messageController.clear();
-      _fetchMessages(); // Refresh the message list
+      _fetchMessages(); // Atualiza a lista de mensagens
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to send message: $e')),
@@ -64,30 +58,47 @@ class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Write an update',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              "Messages",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
-            Expanded(
+            Container(
+              height: 200, // Altura limitada para o card
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        final message = _messages[index];
-                        
-                        return _buildMessageItem(message);
-                      },
-                    ),
+                  : _messages.isEmpty
+                      ? const Center(
+                          child: Text(
+                            "No messages yet",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: _messages.length,
+                          itemBuilder: (context, index) {
+                            final message = _messages[index];
+                            return _buildMessageItem(message);
+                          },
+                        ),
             ),
-            const Divider(),
+            const SizedBox(height: 16),
             _buildMessageInput(),
           ],
         ),
@@ -101,14 +112,24 @@ class _ChatCardState extends State<ChatCard> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: Colors.blue,
+            child: Text(
+              message.employeeId.isNotEmpty
+                  ? message.employeeId[0].toUpperCase()
+                  : "?",
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Employee Name",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  "Employee: ${message.employeeId}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Text(message.text),
@@ -132,16 +153,12 @@ class _ChatCardState extends State<ChatCard> {
           child: TextField(
             controller: _messageController,
             decoration: InputDecoration(
-              hintText: 'Reply or post an update',
+              hintText: 'Type a message',
               filled: true,
               fillColor: Colors.grey.shade200,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
-              ),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.emoji_emotions),
-                onPressed: () {}, // Add emoji picker logic here
               ),
             ),
           ),

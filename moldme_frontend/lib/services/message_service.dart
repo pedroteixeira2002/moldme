@@ -8,20 +8,30 @@ class MessageService {
 
   // Get messages for a specific chat
 Future<List<MessageDto>> getMessages(String chatId) async {
-  final response = await http.get(Uri.parse('$_baseUrl/$chatId'));
+  final url = Uri.parse('$_baseUrl/$chatId');
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  );
 
   if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse is Map && jsonResponse.containsKey('\$values')) {
-        final List<dynamic> messagesJson = jsonResponse['\$values'];
-        return messagesJson.map((json) => MessageDto.fromJson(json)).toList();
-      } else {
-        throw Exception('Unexpected response format');
-      }
-    } else {
-      throw Exception('Failed to load messages');
+    try {
+      // Decodificar o JSON diretamente como uma lista
+      final List<dynamic> data = json.decode(response.body);
+
+      // Mapear os objetos para a DTO
+      return data.map((json) => MessageDto.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to parse messages: $e');
     }
+  } else {
+    throw Exception(
+        'Failed to fetch messages: ${response.statusCode} ${response.body}');
+  }
 }
+
 
   // Send a new message to a chat
   Future<MessageDto> sendMessage(String chatId, String employeeId, String text) async {

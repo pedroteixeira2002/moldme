@@ -10,7 +10,6 @@ class TaskService {
   Future<String> createTask(
       CreateTaskDto taskDto, String projectId, String employeeId) async {
     try {
-      
       final response = await _dio.post(
         '/webTaskcreate',
         queryParameters: {'projectId': projectId, 'employeeId': employeeId},
@@ -35,11 +34,6 @@ class TaskService {
       throw Exception("Failed to load tasks: $e");
     }
   }
-
-
-
-
-
 
   Future<TaskDto> getTaskById(String taskId) async {
     try {
