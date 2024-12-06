@@ -11,15 +11,6 @@ import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
 import 'package:front_end_moldme/screens/project/project_tasks_screen.dart';
 
-void main() {
-  runApp(const MaterialApp(
-      home: ProjectPage(
-    companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
-    projectId: '014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08',
-    currentUserId: '675943a6-6a50-40b9-a1c3-168b9dfc87a9',
-  )));
-}
-
 class ProjectPage extends StatefulWidget {
   final String companyId; // ID da empresa
   final String projectId; // ID do projeto
@@ -31,12 +22,9 @@ class ProjectPage extends StatefulWidget {
   _ProjectPageState createState() => _ProjectPageState();
 }
 
-class _ProjectPageState extends State<ProjectPage>
-    with SingleTickerProviderStateMixin {
-  final ProjectService _projectService =
-      ProjectService(); // Instância do serviço
-  bool _showEmployeeList =
-      false; // Controle de exibição da lista de funcionários
+class _ProjectPageState extends State<ProjectPage> with SingleTickerProviderStateMixin {
+  final ProjectService _projectService = ProjectService(); // Instância do serviço
+  bool _showEmployeeList = false; // Controle de exibição da lista de funcionários
   ProjectDto? _project; // Detalhes do projeto
   final bool _isLoading = true; // Controle de carregamento
   late TabController _tabController;
@@ -99,6 +87,8 @@ class _ProjectPageState extends State<ProjectPage>
     return Scaffold(
       appBar: const CustomNavigationBar(), // Usa a nova AppBar
       body: AppDrawer(
+        companyId: widget.companyId,
+        userId: widget.currentUserId,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -193,13 +183,13 @@ class _ProjectPageState extends State<ProjectPage>
                                   // Coluna da esquerda
 
                                   Expanded(
-                                    flex: 2,
+                                    flex: 1,
                                     child: Column(
                                       children: [
                                         Card(
                                           elevation: 2,
                                           child: Padding(
-                                            padding: const EdgeInsets.all(16.0),
+                                            padding: const EdgeInsets.all(50.0),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -262,7 +252,7 @@ class _ProjectPageState extends State<ProjectPage>
                                     ),
                                   ),
                                   const Expanded(
-                                    flex: 3,
+                                    flex: 1,
                                     child: Column(
                                       children: [
                                         ChatCard(

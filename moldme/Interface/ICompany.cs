@@ -69,5 +69,18 @@ namespace moldme.Interface
         /// - 404 Not Found: If the specified company is not found.
         /// </returns>
         IActionResult CancelSubscription(string companyId);
+        
+        /// <summary>
+        /// Gets a company by its unique identifier.
+        /// </summary>
+        /// <param name="companyId">The Unique Identification of the company.</param>
+        /// <returns>
+        /// Returns:
+        /// - 200 OK: If the company is found.
+        /// - 404 Not Found: If the specified company is not found.
+        /// - 400 Bad Request: If the company ID is invalid.
+        /// - 401 Unauthorized: If the user is not authorized.
+        /// </returns>
+        IActionResult CompanyGetById(string companyId);
     }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/home_page.dart';
 import 'package:front_end_moldme/services/authentication_service.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -83,11 +84,22 @@ class LoginScreen extends StatelessWidget {
                           const SizedBox(height: 24),
                           // Botão de login
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               // Ação do botão
                               final email = _emailController.text;
                               final password = _passwordController.text;
-                              _authenticationService.login(email, password);
+                              await _authenticationService.login(email, password);
+
+                              // Obtém o userId do usuário logado
+                              final userId = await _authenticationService.getUserId();
+
+                              // Navega para a Home Page 
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomePageCompany(userId: userId!),
+                                  ),
+                                );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue, // Cor do botão

@@ -9,7 +9,12 @@ class EmployeeListWidget extends StatefulWidget {
   final String projectId;
   final dynamic currentUserId;
 
-  const EmployeeListWidget({Key? key, required this.companyId, required this.projectId, required this.currentUserId}) : super(key: key);
+  const EmployeeListWidget(
+      {Key? key,
+      required this.companyId,
+      required this.projectId,
+      required this.currentUserId})
+      : super(key: key);
 
   @override
   _EmployeeListWidgetState createState() => _EmployeeListWidgetState();
@@ -134,14 +139,15 @@ class _EmployeeListWidgetState extends State<EmployeeListWidget> {
                       ],
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle, color: Colors.green),
-                    onPressed: () {
-                      if (employee.employeeId != null) {
-                        _assignEmployee(employee.employeeId!);
-                      }
-                    },
-                  ),
+                  if (widget.currentUserId == widget.companyId)
+                    IconButton(
+                      icon: const Icon(Icons.add_circle, color: Colors.green),
+                      onPressed: () {
+                        if (employee.employeeId != null) {
+                          _assignEmployee(employee.employeeId!);
+                        }
+                      },
+                    ),
                 ],
               ),
             );

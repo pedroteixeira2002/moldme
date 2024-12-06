@@ -3,6 +3,8 @@ import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
 
+/*
+
 class EmployeeProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class EmployeeProfileScreen extends StatelessWidget {
           const CustomNavigationBar(), // Adiciona a navbar no topo
           Expanded(
             child: AppDrawer(
+              userId: employee.id, // Add the required userId parameter
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
@@ -115,3 +118,4 @@ class EmployeeProfileScreen extends StatelessWidget {
     );
   }
 }
+*/

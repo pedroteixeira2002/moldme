@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
 import 'package:front_end_moldme/models/status.dart';
 import 'package:front_end_moldme/screens/project/project-page.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
+import 'package:front_end_moldme/services/employee_service.dart';
 import 'package:front_end_moldme/services/project_service.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
@@ -19,13 +21,37 @@ class ProjectsListWidget extends StatefulWidget {
 
 class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   final ProjectService _projectService = ProjectService();
+  final EmployeeService _employeeService = EmployeeService();
   late Future<List<ProjectDto>> _projects;
+  final AuthenticationService _authenticationService = AuthenticationService();
   
 
   @override
   void initState() {
     super.initState();
-    _projects = _projectService.listAllProjectsFromCompany(widget.companyId);
+    _initializeProjects();
+  }
+
+  Future<void> _initializeProjects() async {
+    String? companyId = widget.companyId;
+
+    if (companyId.isEmpty) {
+      final role = await _authenticationService.checkRole();
+      if (role == 'Company') {
+        companyId = widget.currentUserId;
+      } else if (role == 'Employee') {
+        var company = await _authenticationService.getCompanyById(widget.currentUserId);
+        companyId = company.companyId;
+      }
+    }
+
+    setState(() {
+      if (companyId == widget.currentUserId) {
+        _projects = _projectService.listAllProjectsFromCompany(companyId!);
+      } else {
+        _projects = _employeeService.getEmployeeProjects(widget.currentUserId) as Future<List<ProjectDto>>;
+      }
+    });
   }
 
   /// Converte o enum Status para texto amigável ao usuário.
@@ -87,13 +113,26 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   }
 
   /// Função para navegar para os detalhes do projeto.
-  void _openProject(String projectId) {
+  Future<void> _openProject(String projectId) async {
+    final role = await _authenticationService.checkRole();
+    String companyId;
+
+    if (role == 'Company') {
+      companyId = widget.currentUserId;
+    } else if (role == 'Employee') {
+      var company = await _authenticationService.getCompanyById(widget.currentUserId);
+      companyId = company.companyId!;
+    } else {
+      // Handle unexpected role
+      throw Exception('Unexpected role in project company list: $role');
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProjectPage(
           projectId: projectId,
-          companyId: widget.companyId,
+          companyId: companyId,
           currentUserId: widget.currentUserId,
         ),
       ),
@@ -105,6 +144,8 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
     return Scaffold(
       appBar: const CustomNavigationBar(), // Adiciona a CustomNavigationBar
       body: AppDrawer(
+        userId: widget.currentUserId,
+        companyId: widget.companyId,  
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: FutureBuilder<List<ProjectDto>>(

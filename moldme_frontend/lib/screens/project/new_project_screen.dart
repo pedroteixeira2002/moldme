@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import '../../services/project_service.dart';
 
 class NewProjectPage extends StatefulWidget {
-  final String companyId;
+  final String userId;
 
-  const NewProjectPage({Key? key, required this.companyId}) : super(key: key);
+  const NewProjectPage({Key? key, required this.userId}) : super(key: key);
 
   @override
   _NewProjectPageState createState() => _NewProjectPageState();
@@ -17,7 +17,7 @@ class NewProjectPage extends StatefulWidget {
 class _NewProjectPageState extends State<NewProjectPage> {
   final _formKey = GlobalKey<FormState>();
   final _service = ProjectService();
-  final String companyId ="bf498b3e-74df-4a7c-ac5a-b9b00d097498";
+  //final String companyId ="bf498b3e-74df-4a7c-ac5a-b9b00d097498";
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -25,6 +25,13 @@ class _NewProjectPageState extends State<NewProjectPage> {
   DateTime? _startDate;
   DateTime? _endDate;
   int _selectedStatus = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Imprime o userId assim que a tela é carregada
+    print('User ID: ${widget.userId}');
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -51,7 +58,7 @@ class _NewProjectPageState extends State<NewProjectPage> {
           
         );
         
-        await _service.addProject(companyId, newProject);
+        await _service.addProject(widget.userId, newProject);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Project created successfully!')),
@@ -111,6 +118,8 @@ class _NewProjectPageState extends State<NewProjectPage> {
                 SizedBox(
                   width: 250, // Largura fixa para o menu lateral
                   child: AppDrawer(
+                    userId: widget.userId,
+                    companyId: '', // Deixe o campo companyId vazio
                     child: Container(), // Deixe o menu fixo na lateral
                   ),
                 ),

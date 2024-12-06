@@ -4,7 +4,7 @@ import 'package:front_end_moldme/services/company_service.dart';
 import 'package:front_end_moldme/mappers/company_mapper.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
-
+/*
 class AvailableCompaniesScreen extends StatefulWidget {
   @override
   _AvailableCompaniesScreenState createState() =>
@@ -78,3 +78,4 @@ class _AvailableCompaniesScreenState extends State<AvailableCompaniesScreen> {
     );
   }
 }
+*/

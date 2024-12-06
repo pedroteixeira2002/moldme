@@ -3,7 +3,7 @@ import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
-
+/*
 class EditEmployeeScreen extends StatefulWidget {
   @override
   _EditEmployeeScreenState createState() => _EditEmployeeScreenState();
@@ -87,6 +87,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
           const CustomNavigationBar(), // Adiciona a CustomNavigationBar no topo
           Expanded(
             child: AppDrawer(
+              userId: employeeId, // Corrigir e verificar se passa o userId do Employee
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
@@ -197,3 +198,4 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     );
   }
 }
+*/

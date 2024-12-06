@@ -3,7 +3,7 @@ import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa o custom navigation bar
-
+/*
 class AllEmployeesScreen extends StatefulWidget {
   final bool isCompany;
 
@@ -143,3 +143,4 @@ class _AllEmployeesScreenState extends State<AllEmployeesScreen> {
     );
   }
 }
+*/

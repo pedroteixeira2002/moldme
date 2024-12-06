@@ -3,7 +3,7 @@ import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/services/company_service.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
-
+/*
 class CompanyProfileScreen extends StatelessWidget {
   final String companyId;
 
@@ -206,3 +206,4 @@ class CompanyProfileScreen extends StatelessWidget {
     );
   }
 }
+*/

@@ -239,8 +239,18 @@ namespace moldme.Controllers;
 
             return Ok(response);
         }
-
         
+        ///<inheritdoc cref="ICompany.CompanyGetById(string)"/>
+        public IActionResult CompanyGetById(string companyId)
+        {
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+
+            return Ok(existingCompany);
+        }
         
         /// <summary>
         ///  Update company password by email
