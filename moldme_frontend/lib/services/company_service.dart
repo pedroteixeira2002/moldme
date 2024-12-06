@@ -139,7 +139,7 @@ class CompanyService {
   /// Busca uma empresa pelo ID
 Future<CompanyDto> getCompanyById(String companyId) async {
     final url = Uri.parse(
-        'http://localhost:5213/api/Company/$companyId/getCompanyById');
+        '$_baseUrl/Company/$companyId/getCompanyById');
 
     try {
       final response = await http.get(
@@ -161,6 +161,30 @@ Future<CompanyDto> getCompanyById(String companyId) async {
       }
     } catch (e) {
       throw Exception("Error fetching company: $e");
+    }
+  }
+
+  Future<void> updateCompany(
+      String companyId, CompanyDto updatedCompany) async {
+    final url = Uri.parse('$_baseUrl/Company/$companyId/updateCompany');
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiIxQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNvbXBhbnkiLCJleHAiOjE3MzUxNjc5MzQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIxMyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIxMyJ9.7PwdTYUBjXHzMwa_UB4amJumPi-hs4ypNYaW-pK2I24',
+      },
+      body: jsonEncode(updatedCompany.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // Atualização bem-sucedida
+      print('Empresa atualizada com sucesso.');
+    } else {
+      // Falha na atualização, você pode obter mais detalhes da resposta
+      print('Falha ao atualizar empresa: ${response.body}');
+      throw Exception('Falha ao atualizar empresa');
     }
   }
 }

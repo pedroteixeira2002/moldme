@@ -15,10 +15,6 @@ class AuthenticationService {
       body: jsonEncode({"email": email, "password": password}),
     );
 
-    print(
-        "Response status: ${response.statusCode}"); // Log do status da resposta
-    print("Response body: ${response.body}");
-
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final token = data["access_token"]; // Verifique a chave correta do token

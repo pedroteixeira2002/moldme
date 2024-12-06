@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/dtos/employee_dto.dart';
+import 'package:front_end_moldme/models/subscriptionPlan.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
 
 class EmployeeProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Recupera os argumentos passados para a rota
-    final EmployeeDto? employee =
-        ModalRoute.of(context)?.settings.arguments as EmployeeDto?;
-
-    if (employee == null) {
-      // Caso o argumento seja nulo, mostre uma mensagem de erro
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Error"),
-        ),
-        body: Center(
-          child: Text("Erro: Nenhum funcionário selecionado."),
-        ),
-      );
-    }
+    // Dados estáticos do funcionário
+    final EmployeeDto employee = EmployeeDto(
+      name: "John Doe",
+      profession: "Software Engineer",
+      nif: 123456789,
+      email: "john.doe@example.com",
+      contact: 123456789,
+      company: CompanyDto(
+          name: "Tech Corp",
+          taxId: 999999999,
+          email: '',
+          sector: '',
+          plan: SubscriptionPlan.Basic,
+          password: '1234'),
+      password: '',
+      companyId: '',
+    );
 
     return Scaffold(
       body: Column(
@@ -50,8 +54,15 @@ class EmployeeProfileScreen extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 40,
-                            backgroundImage: NetworkImage(
-                                "https://via.placeholder.com/150"), // Placeholder image
+                            backgroundColor: Colors.lightBlueAccent,
+                            child: Text(
+                              employee.name[
+                                  0], // Mostra a primeira letra do nome do funcionário
+                              style: TextStyle(
+                                fontSize: 40,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(

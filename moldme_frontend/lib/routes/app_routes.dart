@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/company/edit_company_screen.dart';
 import 'package:front_end_moldme/screens/employee/add_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/edit_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/employee_profile_screen.dart';
 import 'package:front_end_moldme/screens/employee/list_employee_screen.dart';
-import 'package:front_end_moldme/screens/home_page.dart';
+import 'package:front_end_moldme/screens/Dash.dart';
 import 'package:front_end_moldme/screens/homescreen/homeScreen.dart';
 import 'package:front_end_moldme/screens/offer/offer_proposal_screen.dart';
-import 'package:front_end_moldme/screens/offer/offer_service_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/available_companies_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/available_projects_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/company_public_screen.dart';
@@ -27,6 +27,8 @@ import 'package:front_end_moldme/widgets/task_new_card.dart';
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     '/': (context) => const Homescreen(),
+    '/edit-company': (context) => UpdateCompanyScreen(),
+    '/dash': (context) => HomePageCompany(),
     '/login': (context) => LoginScreen(),
     '/register': (context) => const RegisterScreen(),
     '/recoverPassword': (context) => RecoverPasswordScreen(),
@@ -64,11 +66,10 @@ class AppRoutes {
         ),
     '/edit-employee': (context) => EditEmployeeScreen(),
     '/available-projects': (context) => AvailableProjectsScreen(),
-    '/propose-service': (context) => OfferServiceScreen(
-          projectId: 'example-project-id',
-          companyId: 'example-company-id',
+    '/proposal-details': (context) => ApplyToProjectPage(
+          companyId: 'fb467816-7ce9-4d8a-9acd-646ecda29bc3',
+          projectId: '196cb278-67a8-408c-9850-1783b1cc724d',
         ),
-    '/proposal-details': (context) => OfferProposalScreen(),
     '/public-employee': (context) => EmployeePublicScreen(),
     '/list-companies': (context) => AvailableCompaniesScreen(),
     '/company-profile': (context) {

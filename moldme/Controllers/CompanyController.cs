@@ -262,4 +262,60 @@ namespace moldme.Controllers;
 
             return Ok("Password updated successfully");
         }
+        /// <summary>
+        /// Update company details by companyId
+        /// </summary>
+        /// <param name="companyId">The company ID</param>
+        /// <param name="companyDto">The company data to update</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPut("{companyId}/updateCompany")]
+        public IActionResult UpdateCompany(string companyId, [FromBody] CompanyDto companyDto)
+        {
+            // Verificar se os dados fornecidos são válidos
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Buscar a empresa no banco de dados pelo companyId
+            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
+            if (existingCompany == null)
+            {
+                return NotFound("Company not found");
+            }
+
+            // Verificar se o e-mail fornecido já existe para outra empresa
+            if (_context.Companies.Any(c => c.Email == companyDto.Email && c.CompanyId != companyId))
+            {
+                return BadRequest("A company with this email already exists.");
+            }
+
+            // Atualizar os dados da empresa
+            existingCompany.Name = companyDto.Name;
+            existingCompany.TaxId = companyDto.TaxId;
+            existingCompany.Address = companyDto.Address;
+            existingCompany.Contact = companyDto.Contact;
+            existingCompany.Email = companyDto.Email;
+            existingCompany.Sector = companyDto.Sector;
+
+            // Atualiza o plano se necessário
+            if (Enum.IsDefined(typeof(SubscriptionPlan), companyDto.Plan))
+            {
+                existingCompany.Plan = companyDto.Plan;
+            }
+
+            // Atualiza a senha somente se uma nova senha for fornecida
+            if (!string.IsNullOrEmpty(companyDto.Password))
+            {
+                existingCompany.Password = _companyPasswordHasher.HashPassword(null, companyDto.Password);
+            }
+
+            _context.SaveChanges();
+
+            return Ok(new { Message = "Company updated successfully" });
+        }
+
+
+
     }
