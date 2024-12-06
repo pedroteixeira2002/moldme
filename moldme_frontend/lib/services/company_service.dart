@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import '../models/company.dart';
-//import '../models/payment.dart';
 import '../dtos/company_dto.dart';
 final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 

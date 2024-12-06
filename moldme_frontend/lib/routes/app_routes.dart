@@ -70,7 +70,9 @@ class AppRoutes {
           companyId: 'fb467816-7ce9-4d8a-9acd-646ecda29bc3',
           projectId: '196cb278-67a8-408c-9850-1783b1cc724d',
         ),
-    '/public-employee': (context) => EmployeePublicScreen(),
+    '/public-employee': (context) => EmployeePublicScreen(
+          employeeId: '1',
+        ),
     '/list-companies': (context) => AvailableCompaniesScreen(),
     '/company-profile': (context) {
       final String companyId =

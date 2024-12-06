@@ -116,7 +116,7 @@ Future<String> updateEmployee(
 
   /// Gets a single employee by ID.
   Future<EmployeeDto> getEmployeeById(String employeeId) async {
-    final url = Uri.parse('$baseUrl/api/Employee/getEmployeeById/$employeeId');
+    final url = Uri.parse('$baseUrl/getEmployeeById/$employeeId');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json',

@@ -5,8 +5,7 @@ import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavig
 import 'package:front_end_moldme/widgets/project_list_widget.dart'; // Importa o widget da lista de projetos
 import 'package:front_end_moldme/dtos/project_dto.dart'; // Certifique-se de importar os DTOs necessários
 import 'package:front_end_moldme/services/project_service.dart'; // Para carregar os projetos
-import 'package:front_end_moldme/dtos/payment_dto.dart';
-import 'package:front_end_moldme/services/payment_service.dart'; // Importa o serviço de pagamentos
+
 
 class HomePageCompany extends StatefulWidget {
   @override
@@ -16,7 +15,6 @@ class HomePageCompany extends StatefulWidget {
 class _HomePageCompanyState extends State<HomePageCompany>
     with SingleTickerProviderStateMixin {
   late Future<List<ProjectDto>> _projectsFuture;
-  late Future<List<PaymentDto>> _paymentsFuture;
   late TabController _tabController;
 
   final String companyId = ""; // Company ID fixo (pode ser dinâmico)
