@@ -4,7 +4,8 @@ import 'project_row_widget.dart';
 
 class ProjectListWidget extends StatelessWidget {
   final List<ProjectDto> projects;
-  final Function(String, String, String) onProjectTap;
+  final Function(String, String, String, String)
+      onProjectTap; // Alterado para incluir companyId
 
   const ProjectListWidget({
     Key? key,
@@ -25,11 +26,14 @@ class ProjectListWidget extends StatelessWidget {
             date: project.startDate.toLocal().toString().split(' ')[0],
             status: project.status.toString(),
             onTap: () {
+              // Passando companyId para o onProjectTap
               onProjectTap(
                 project.name,
                 project.startDate.toLocal().toString().split(' ')[0],
                 project.status.toString(),
+                project.companyId ?? '', // Passe apenas o companyId como string
               );
+
             },
           );
         },

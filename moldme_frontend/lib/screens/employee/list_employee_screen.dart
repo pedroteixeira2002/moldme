@@ -5,17 +5,13 @@ import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa o custom navigation bar
 
 class AllEmployeesScreen extends StatefulWidget {
-  final bool isCompany;
-
-  AllEmployeesScreen({required this.isCompany});
-
   @override
   _AllEmployeesScreenState createState() => _AllEmployeesScreenState();
 }
 
 class _AllEmployeesScreenState extends State<AllEmployeesScreen> {
   final EmployeeService employeeService = EmployeeService();
-  final String companyId = "bf498b3e-74df-4a7c-ac5a-b9b00d097498";
+  final String companyId = "fb467816-7ce9-4d8a-9acd-646ecda29bc3";
   List<EmployeeDto> employees = [];
   bool isLoading = true;
   String errorMessage = '';
@@ -23,10 +19,7 @@ class _AllEmployeesScreenState extends State<AllEmployeesScreen> {
   @override
   void initState() {
     super.initState();
-
-    if (widget.isCompany) {
-      fetchEmployees();
-    }
+    fetchEmployees();
   }
 
   Future<void> fetchEmployees() async {
@@ -53,21 +46,6 @@ class _AllEmployeesScreenState extends State<AllEmployeesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isCompany) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("Acesso Restrito"),
-          backgroundColor: Colors.red.shade700,
-        ),
-        body: Center(
-          child: Text(
-            "Esta página é exclusiva para empresas.",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       body: Column(
         children: [

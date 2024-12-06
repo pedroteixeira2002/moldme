@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:front_end_moldme/dtos/review_dto.dart';
 import 'package:front_end_moldme/dtos/employee_dto.dart';
+import 'package:front_end_moldme/screens/project/reviews_screen.dart';
 import 'package:front_end_moldme/services/review_service.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
 
@@ -43,7 +44,7 @@ class _EmployeePublicScreenState extends State<EmployeePublicScreen> {
     int stars = _stars; // A quantidade de estrelas selecionadas
 
     try {
-      await ReviewService().addReview(reviewerId, reviewedId, comment, stars);
+      await _reviewService.addReview(reviewerId, reviewedId, comment, stars);
       setState(() {
         _reviewsFuture = _reviewService
             .getReviews(widget.employeeId); // Recarregar as avaliações
@@ -234,27 +235,6 @@ class _EmployeePublicScreenState extends State<EmployeePublicScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ReviewCard extends StatelessWidget {
-  final ReviewDto review;
-  ReviewCard({required this.review});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(review.comment),
-        subtitle: Row(
-          children: [
-            ...List.generate(
-                review.stars, (index) => Icon(Icons.star, color: Colors.amber)),
-          ],
-        ),
-        trailing: Text(review.date?.toString() ?? 'No date'),
       ),
     );
   }

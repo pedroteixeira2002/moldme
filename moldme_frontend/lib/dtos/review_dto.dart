@@ -2,7 +2,7 @@ class ReviewDto {
   final String? reviewId;
   final String comment;
   final DateTime? date;
-  final int stars;
+  late final int stars;
   final String? reviewerId;
   final String? reviewedId;
 

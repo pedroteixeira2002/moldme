@@ -62,7 +62,7 @@ class AppRoutes {
           companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
         ),
     '/all-employees': (context) => AllEmployeesScreen(
-          isCompany: true,
+          
         ),
     '/edit-employee': (context) => EditEmployeeScreen(),
     '/available-projects': (context) => AvailableProjectsScreen(),
