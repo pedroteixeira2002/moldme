@@ -2,19 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:front_end_moldme/dtos/payment_dto.dart';
 import 'package:front_end_moldme/services/payment_service.dart';
 
-void main() {
-  runApp(MaterialApp(
-    title: 'MoldMe Payments',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-    ),
-    home: const PaymentsScreen(companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498'),
-  ));
-}
-
 class PaymentsScreen extends StatefulWidget {
   final String companyId;
+  
   const PaymentsScreen({super.key, required this.companyId});
 
   @override
@@ -30,8 +20,21 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
     _paymentsFuture = _fetchPayments();
   }
 
+  // Função para buscar os pagamentos
   Future<List<PaymentDto>> _fetchPayments() async {
     return await PaymentService().listPaymentHistory(widget.companyId);
+  }
+
+  // Forçar o FutureBuilder a atualizar quando o companyId mudar
+  @override
+  void didUpdateWidget(covariant PaymentsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.companyId != widget.companyId) {
+      // Se o companyId mudar, recriar o Future para forçar atualização
+      setState(() {
+        _paymentsFuture = _fetchPayments(); // Recarregar os pagamentos
+      });
+    }
   }
 
   @override

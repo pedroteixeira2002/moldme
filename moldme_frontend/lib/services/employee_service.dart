@@ -31,32 +31,32 @@ Future<String> addEmployee(
 
 
   /// Updates an existing employee in a company.
-Future<String> updateEmployee(
-      String companyId, String employeeId, EmployeeDto employeeDto) async {
-    final url = Uri.parse('$baseUrl/$companyId/editEmployee/$employeeId');
-    final body = json.encode(employeeDto.toJson());
+  Future<String> updateEmployee(
+        String companyId, String employeeId, EmployeeDto employeeDto) async {
+      final url = Uri.parse('$baseUrl/$companyId/editEmployee/$employeeId');
+      final body = json.encode(employeeDto.toJson());
 
-    print('Payload: $body');
+      print('Payload: $body');
 
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: body,
-    );
+      final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
 
-    if (response.statusCode == 200) {
-      // Verifica se o corpo da resposta não é JSON
-      if (response.body.startsWith('{') && response.body.endsWith('}')) {
-        final data = json.decode(response.body);
-        return data['Message'] ?? "Employee updated successfully";
+      if (response.statusCode == 200) {
+        // Verifica se o corpo da resposta não é JSON
+        if (response.body.startsWith('{') && response.body.endsWith('}')) {
+          final data = json.decode(response.body);
+          return data['Message'] ?? "Employee updated successfully";
+        } else {
+          return response.body; // Retorna a resposta diretamente se não for JSON
+        }
       } else {
-        return response.body; // Retorna a resposta diretamente se não for JSON
+        throw Exception(
+            json.decode(response.body)['error'] ?? "Failed to update employee");
       }
-    } else {
-      throw Exception(
-          json.decode(response.body)['error'] ?? "Failed to update employee");
     }
-  }
 
   /// Removes an employee from a company.
   Future<String> removeEmployee(String companyId, String employeeId) async {

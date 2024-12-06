@@ -4,8 +4,8 @@ import 'package:front_end_moldme/screens/employee/edit_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/employee_profile_screen.dart';
 import 'package:front_end_moldme/screens/employee/list_employee_screen.dart';
 import 'package:front_end_moldme/screens/homescreen/homeScreen.dart';
-import 'package:front_end_moldme/screens/offer/offer_proposal_screen.dart';
-import 'package:front_end_moldme/screens/offer/offer_service_screen.dart';
+//import 'package:front_end_moldme/screens/offer/offer_proposal_screen.dart';
+//import 'package:front_end_moldme/screens/offer/offer_service_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/available_companies_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/company_public_screen.dart';
 import 'package:front_end_moldme/screens/public_profiles/employee_public_screen.dart';
@@ -17,7 +17,6 @@ import 'package:front_end_moldme/screens/project/project-page.dart';
 import 'package:front_end_moldme/screens/project/project_company_list.dart';
 import 'package:front_end_moldme/screens/project/project_proposal.dart';
 import 'package:front_end_moldme/widgets/chat_card.dart';
-import 'package:front_end_moldme/widgets/employe_add.dart';
 import 'package:front_end_moldme/widgets/project_table.dart';
 import 'package:front_end_moldme/widgets/task_new_card.dart';
 
@@ -50,7 +49,7 @@ class AppRoutes {
     
 
     //'/edit-employee': (context) => EditEmployeeScreen(),
-    '/proposal-details': (context) => OfferProposalScreen(),
+    
     '/public-employee': (context) => EmployeePublicScreen(),
    // '/list-companies': (context) => AvailableCompaniesScreen(),
     /*

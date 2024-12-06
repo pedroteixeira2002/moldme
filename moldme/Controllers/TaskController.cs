@@ -248,4 +248,51 @@ public class TaskController : ControllerBase, ITask
         _context.SaveChanges();
         return Ok("Task deleted successfully");
     }
+    
+    [HttpGet("task/{taskId}/file/download")]
+    public IActionResult DownloadFile(string taskId)
+    {
+        if (taskId.IsNullOrEmpty())
+            return BadRequest("Task ID is null");
+
+        var task = _context.Tasks.FirstOrDefault(t => t.TaskId == taskId);
+        if (task == null || task.FileContent == null)
+            return NotFound("Task or file not found");
+
+        var fileContent = task.FileContent;
+        var fileName = task.FileName ?? "file";
+        var mimeType = task.MimeType ?? "application/octet-stream";
+
+        return File(fileContent, mimeType, fileName);
+    }
+
+    [HttpGet("project/{projectId}/files")]
+    public IActionResult TaskGetAllFiles(string projectId)
+    {
+        if (string.IsNullOrEmpty(projectId))
+            return BadRequest("Project ID is null");
+
+        var project = _context.Projects.FirstOrDefault(p => p.ProjectId == projectId);
+        if (project == null)
+            return NotFound("Project not found");
+
+        var tasks = _context.Tasks.Where(t => t.ProjectId == projectId).ToList();
+        var files = new List<FileDto>();
+
+        foreach (var task in tasks)
+        {
+            if (task.FileContent != null)
+            {
+                files.Add(new FileDto
+                {
+                    TaskId = task.TaskId, // Inclua o TaskId
+                    FileName = task.FileName,
+                    FileContent = task.FileContent,
+                    MimeType = task.MimeType
+                });
+            }
+        }
+
+        return Ok(files);
+    }
 }

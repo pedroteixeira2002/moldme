@@ -6,8 +6,7 @@ import 'package:front_end_moldme/screens/project/project_company_list.dart';
 import 'package:front_end_moldme/services/authentication_service.dart';
 
 class AppDrawer extends StatefulWidget {
-  final Widget
-      child; // O conteúdo principal da página será passado como um widget
+  final Widget child; // O conteúdo principal da página será passado como um widget
   final String userId;
   final String? companyId;
 
@@ -62,7 +61,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            HomePageCompany(userId: widget.userId),
+                            HomePageCompany(currentUserId: widget.userId),
                       ),
                     );
                   },

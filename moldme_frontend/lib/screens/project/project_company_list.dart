@@ -22,7 +22,7 @@ class ProjectsListWidget extends StatefulWidget {
 class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   final ProjectService _projectService = ProjectService();
   final EmployeeService _employeeService = EmployeeService();
-  late Future<List<ProjectDto>> _projects;
+  late Future<List<ProjectDto>> _projects = Future.value([]);
   final AuthenticationService _authenticationService = AuthenticationService();
   
 
@@ -217,10 +217,10 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
                                     final employeeCount = snapshot.data ?? 0;
                                     return Row(
                                       children: [
-                                        CircleAvatar(
+                                        const CircleAvatar(
                                           radius: 12,
-                                          backgroundImage: const AssetImage(
-                                              'lib/assets/avatar_placeholder.png'),
+                                          backgroundImage: AssetImage(
+                                              'lib/assets/app-icon-person.png'),
                                         ),
                                         const SizedBox(width: 4),
                                         Text("+$employeeCount"),

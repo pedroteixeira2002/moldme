@@ -162,4 +162,63 @@ public class OfferController : ControllerBase, IOffer
 
         return Ok(offers);
     }
+    
+    [Authorize]
+    [HttpGet("receivedOffers/{companyId}")]
+    public async Task<IActionResult> OfferReceived(string companyId)
+    {
+        if (string.IsNullOrEmpty(companyId))
+            return BadRequest("Company ID is required");
+
+        // Verifica se a empresa existe
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        if (company == null)
+            return NotFound("Company not found");
+
+        // Busca todos os projetos pertencentes à empresa
+        var projectIds = _context.Projects
+            .Where(p => p.CompanyId == companyId)
+            .Select(p => p.ProjectId)
+            .ToList();
+
+        if (!projectIds.Any())
+            return NotFound("No projects found for the specified company");
+
+        // Busca todas as ofertas associadas a esses projetos
+        var receivedOffers = await _context.Offers
+            .Where(o => projectIds.Contains(o.ProjectId))
+            .ToListAsync();
+
+        return Ok(receivedOffers);
+    }
+    [Authorize]
+    [HttpGet("company/{companyId}/accepted-offer-projects")]
+    public async Task<IActionResult> GetAcceptedProjectsByOffers(string companyId)
+    {
+        if (string.IsNullOrEmpty(companyId))
+            return BadRequest("Company ID is required");
+
+        // Verifica se a empresa existe
+        var company = await _context.Companies.FirstOrDefaultAsync(c => c.CompanyId == companyId);
+        if (company == null)
+            return NotFound("Company not found");
+
+        // Busca as ofertas aceitas associadas ao companyId
+        var acceptedOffers = await _context.Offers
+            .Where(o => o.CompanyId == companyId && o.Status == Status.ACCEPTED)
+            .Include(o => o.Project) // Inclui o projeto relacionado
+            .ToListAsync();
+
+        if (!acceptedOffers.Any())
+            return NotFound("No accepted projects found for this company");
+
+        // Extrai os projetos únicos das ofertas aceitas
+        var projects = acceptedOffers
+            .Where(o => o.Project != null) // Ignora ofertas sem projeto relacionado
+            .Select(o => o.Project)
+            .Distinct() // Evita duplicatas
+            .ToList();
+
+        return Ok(projects);
+    }
 }

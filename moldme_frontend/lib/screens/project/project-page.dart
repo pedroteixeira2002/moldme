@@ -16,15 +16,22 @@ class ProjectPage extends StatefulWidget {
   final String projectId; // ID do projeto
   final String currentUserId; // ID do usuário atual
 
-  const ProjectPage({super.key, required this.companyId, required this.projectId, required this.currentUserId});
+  const ProjectPage(
+      {super.key,
+      required this.companyId,
+      required this.projectId,
+      required this.currentUserId});
 
   @override
   _ProjectPageState createState() => _ProjectPageState();
 }
 
-class _ProjectPageState extends State<ProjectPage> with SingleTickerProviderStateMixin {
-  final ProjectService _projectService = ProjectService(); // Instância do serviço
-  bool _showEmployeeList = false; // Controle de exibição da lista de funcionários
+class _ProjectPageState extends State<ProjectPage>
+    with SingleTickerProviderStateMixin {
+  final ProjectService _projectService =
+      ProjectService(); // Instância do serviço
+  bool _showEmployeeList =
+      false; // Controle de exibição da lista de funcionários
   ProjectDto? _project; // Detalhes do projeto
   final bool _isLoading = true; // Controle de carregamento
   late TabController _tabController;
@@ -153,7 +160,6 @@ class _ProjectPageState extends State<ProjectPage> with SingleTickerProviderStat
                                 color: Colors.black54,
                               ),
                             ),
-
                             const SizedBox(height: 16),
                           ] else
                             // Indicador de carregamento enquanto os detalhes do projeto são buscados
@@ -177,104 +183,171 @@ class _ProjectPageState extends State<ProjectPage> with SingleTickerProviderStat
                           // Conteúdo principal
                           Expanded(
                             child: SingleChildScrollView(
-                              child: Row(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Coluna da esquerda
-
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      children: [
-                                        Card(
-                                          elevation: 2,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(50.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text(
-                                                  'Assign Employees',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 8),
-                                                // Botão para mostrar/ocultar a lista de funcionários
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      _showEmployeeList =
-                                                          !_showEmployeeList;
-                                                    });
-                                                  },
-                                                  child: Text(_showEmployeeList
-                                                      ? 'Close Employee List'
-                                                      : 'Show Employee List'),
-                                                ),
-                                                if (_showEmployeeList)
-                                                  const SizedBox(height: 16),
-                                                if (_showEmployeeList)
-                                                  Container(
-                                                    height: 500,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                    ),
-                                                    child:
-                                                        SingleChildScrollView(
-                                                      child: EmployeeListWidget(
-                                                        companyId:
-                                                            widget.companyId,
-                                                        projectId:
-                                                            widget.projectId,
-                                                        currentUserId:
-                                                            widget.currentUserId,
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Coluna da esquerda
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                          children: [
+                                            Card(
+                                              elevation: 2,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      'Assign Employees',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
-                                                  ),
-                                                const SizedBox(height: 16),
-                                                // Time do projeto
-                                                ProjectTeamWidget(
-                                                  projectId: widget.projectId,
+                                                    const SizedBox(height: 8),
+                                                    // Botão para mostrar/ocultar a lista de funcionários
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _showEmployeeList =
+                                                              !_showEmployeeList;
+                                                        });
+                                                      },
+                                                      child: Text(_showEmployeeList
+                                                          ? 'Close Employee List'
+                                                          : 'Show Employee List'),
+                                                    ),
+                                                    if (_showEmployeeList)
+                                                      const SizedBox(
+                                                          height: 16),
+                                                    if (_showEmployeeList)
+                                                      Container(
+                                                        height: 500,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                            color: Colors.grey,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      8.0),
+                                                        ),
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          child:
+                                                              EmployeeListWidget(
+                                                            companyId: widget
+                                                                .companyId,
+                                                            projectId: widget
+                                                                .projectId,
+                                                            currentUserId: widget
+                                                                .currentUserId,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    const SizedBox(height: 16),
+                                                    // Time do projeto
+                                                    ProjectTeamWidget(
+                                                      projectId:
+                                                          widget.projectId,
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      children: [
-                                        ChatCard(
-                                          chatId:
-                                              '1001', // Substitua pelo ID do chat apropriado
+                                      ),
+                                      const SizedBox(width: 16),
+                                      // Coluna da direita
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          children: [
+                                            Card(
+                                              elevation: 2,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      'Chat',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    // Área de chat
+                                                    Container(
+                                                      height: 200,
+                                                      child: ListView(
+                                                        children: const [
+                                                          ChatCard(
+                                                            chatId:
+                                                                '8554ddee-fdc5-4033-b267-dcbd882d94a8',
+                                                          ),
+                                                          // Adicione mais mensagens conforme necessário
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Card(
+                                              elevation: 2,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(16.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    const Text(
+                                                      'Tasks',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    // Lista de tarefas
+                                                    Container(
+                                                      height: 200,
+                                                      child: ListView(
+                                                        children: [
+                                                          CreateTaskCard(
+                                                            projectId: widget.projectId,
+                                                            employeeId: widget.currentUserId,
+                                                          ),
+                                                          // Adicione mais tarefas conforme necessário
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  // Coluna da direita
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      children: [
-                                        CreateTaskCard(
-                                          projectId: widget.projectId,
-                                          employeeId:
-                                              '9d738649-8773-4bf2-b046-39ac3c6f3113', // Ajuste conforme necessário
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

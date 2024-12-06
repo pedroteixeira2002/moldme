@@ -17,7 +17,6 @@ class NewProjectPage extends StatefulWidget {
 class _NewProjectPageState extends State<NewProjectPage> {
   final _formKey = GlobalKey<FormState>();
   final _service = ProjectService();
-  //final String companyId ="bf498b3e-74df-4a7c-ac5a-b9b00d097498";
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
