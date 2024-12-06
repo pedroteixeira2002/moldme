@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/employee/list_employee_screen.dart';
 import 'package:front_end_moldme/screens/home_page.dart';
 import 'package:front_end_moldme/screens/project/new_project_screen.dart';
 import 'package:front_end_moldme/screens/project/project_company_list.dart';
@@ -97,6 +98,13 @@ class _AppDrawerState extends State<AppDrawer> {
                     title: const Text("All Employees"),
                     onTap: () {
                       // Navega para a página de lista de funcionários
+                       Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AllEmployeesScreen(companyId: widget.userId),
+                        ), 
+                      );
                     },
                   ),
                 ] else if (_role == 'Employee') ...[

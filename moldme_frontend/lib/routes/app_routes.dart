@@ -40,38 +40,16 @@ class AppRoutes {
         */
     '/project-table': (context) => const ProjectTable(         // Achamos que não está a ser utilizado
           data: [],),
-     /* 
-    '/widget': (context) => const EmployeeListWidget(
-        companyId: "bf498b3e-74df-4a7c-ac5a-b9b00d097498",
-        projectId: "122749e9-f568-4c4b-b35b-6e8986442f21",
-        currentUserId: "675943a6-6a50-40b9-a1c3-168b9dfc87a9"),
-    */
-    /*
-    '/projects-list': (context) => const ProjectsListWidget(
-        companyId: "bf498b3e-74df-4a7c-ac5a-b9b00d097498",
-        currentUserId: "675943a6-6a50-40b9-a1c3-168b9dfc87a9"),
-    */
+
     '/chat': (context) => const ChatCard(chatId: '1001'),
     '/task': (context) => const CreateTaskCard(
           projectId: '122749e9-f568-4c4b-b35b-6e8986442f21',
           employeeId: '9d738649-8773-4bf2-b046-39ac3c6f3113',
         ),
     //'/employee-profile': (context) => EmployeeProfileScreen(),
-    /*
-    '/add-employee': (context) => AddEmployeeScreen(
-          companyId: 'bf498b3e-74df-4a7c-ac5a-b9b00d097498',
-        ),
-        */
-        /*
-    '/all-employees': (context) => AllEmployeesScreen(
-          isCompany: true,
-        ),
-        */
+    
+
     //'/edit-employee': (context) => EditEmployeeScreen(),
-    '/propose-service': (context) => OfferServiceScreen(
-          projectId: 'example-project-id',
-          companyId: 'example-company-id',
-        ),
     '/proposal-details': (context) => OfferProposalScreen(),
     '/public-employee': (context) => EmployeePublicScreen(),
    // '/list-companies': (context) => AvailableCompaniesScreen(),

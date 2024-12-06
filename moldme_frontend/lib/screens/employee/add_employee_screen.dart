@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front_end_moldme/services/employee_service.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Import your custom navigation bar
-/*
+
 class AddEmployeeScreen extends StatefulWidget {
   final String companyId;
 
@@ -64,6 +64,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppDrawer(
+      companyId: widget.companyId, // Add the required companyId argument
       userId: widget.companyId, // Add the required userId argument
       child: Scaffold(
         appBar:
@@ -174,4 +175,4 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     );
   }
 }
-*/
+
