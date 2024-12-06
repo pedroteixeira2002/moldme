@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthenticationService {
-  final String _baseUrl = "http://localhost:5213/api";
+  final String _baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api";
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   /// Logs in the user and saves the token

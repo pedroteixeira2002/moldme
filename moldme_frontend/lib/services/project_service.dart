@@ -6,8 +6,11 @@ import 'package:http/http.dart' as http;
 import '../dtos/project_dto.dart';
 
 class ProjectService {
-  final String baseUrl = "http://localhost:5213";
+  final String baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net";
   final AuthenticationService _authenticationService = AuthenticationService();
+  final http.Client client;
+
+  ProjectService({http.Client? client}) : client = client ?? http.Client();
 
   /// Adds a new project for a specific company.
   Future<String> addProject(String companyId, ProjectDto projectDto) async {
@@ -18,7 +21,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/addProject/$companyId');
-    final response = await http.post(
+    final response = await client.post(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +59,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/editProject/$projectId');
-    final response = await http.put(
+    final response = await client.put(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -94,7 +97,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/$companyId/getProjectById/$projectId');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -111,30 +114,30 @@ class ProjectService {
     }
   }
 
- Future<ProjectDto> projectView(String companyId, String projectId) async {
-    final String? token = await _authenticationService.getToken();
+  Future<ProjectDto> projectView(String companyId, String projectId) async {
+      final String? token = await _authenticationService.getToken();
 
-    if (token == null) {
-      throw Exception("Token not found");
+      if (token == null) {
+        throw Exception("Token not found");
+      }
+
+      final url = Uri.parse('$baseUrl/api/Project/viewProject/$projectId');
+      final response = await client.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return ProjectDto.fromJson(data);
+      } else {
+        throw Exception(
+            json.decode(response.body)['error'] ?? "Failed to fetch project");
+      }
     }
-
-    final url = Uri.parse('$baseUrl/api/Project/viewProject/$projectId');
-    final response = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": "Bearer $token",
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return ProjectDto.fromJson(data);
-    } else {
-      throw Exception(
-          json.decode(response.body)['error'] ?? "Failed to fetch project");
-    }
-  }
 
   Future<ProjectDto> projectView2(String projectId) async {
     final String? token = await _authenticationService.getToken();
@@ -144,7 +147,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/viewProject/$projectId');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +173,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/getChatByProject/$projectId');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -195,7 +198,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/RemoveProject/$projectId');
-    final response = await http.delete(
+    final response = await client.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -220,7 +223,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/$projectId/assignEmployee/$employeeId');
-    final response = await http.post(
+    final response = await client.post(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -247,7 +250,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/$projectId/removeEmployee/$employeeId');
-    final response = await http.delete(
+    final response = await client.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -283,7 +286,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/$companyId/listAllProjects');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -308,7 +311,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -345,7 +348,7 @@ class ProjectService {
     }
 
     final url = Uri.parse('$baseUrl/api/Project/$projectId/employees');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',

@@ -5,6 +5,15 @@ import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
 /*
 class EditEmployeeScreen extends StatefulWidget {
+  final String companyId;
+  final String currentUserId;
+
+  const EditEmployeeScreen({
+    Key? key,
+    required this.companyId,
+    required this.currentUserId,
+  }) : super(key: key);
+  
   @override
   _EditEmployeeScreenState createState() => _EditEmployeeScreenState();
 }
@@ -19,8 +28,6 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
   final TextEditingController nifController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  late String companyId;
-  late String employeeId;
   late EmployeeDto employee;
 
   @override
@@ -32,8 +39,6 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     employee = args['employee'] as EmployeeDto;
-    companyId = args['companyId'] as String;
-    employeeId = employee.employeeId!;
 
     // Preenche os campos com os dados do funcionário
     nameController.text = employee.name;
@@ -47,7 +52,7 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
     try {
       // Cria o objeto EmployeeDto atualizado
       final updatedEmployee = EmployeeDto(
-        employeeId: employeeId,
+        employeeId: employee.employeeId,
         name: nameController.text,
         profession: professionController.text,
         nif: int.tryParse(nifController.text) ?? employee.nif,
@@ -56,13 +61,13 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
         password: passwordController.text.isNotEmpty
             ? passwordController.text
             : employee.password,
-        companyId: companyId,
-        company: null,
+        companyId: employee.companyId,
+        company: employee.company,
       );
 
-      // Chama o serviço para atualizar o funcionário
+      // Chama o serviço para atualizar o funcionário pelo ID
       await employeeService.updateEmployee(
-          companyId, employeeId, updatedEmployee);
+          employee.employeeId!, updatedEmployee);
 
       // Mostra uma mensagem de sucesso
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,7 +92,8 @@ class _EditEmployeeScreenState extends State<EditEmployeeScreen> {
           const CustomNavigationBar(), // Adiciona a CustomNavigationBar no topo
           Expanded(
             child: AppDrawer(
-              userId: employeeId, // Corrigir e verificar se passa o userId do Employee
+              userId: widget.currentUserId,
+              companyId: widget.companyId,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(

@@ -3,7 +3,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../dtos/review_dto.dart';
 import '../services/employee_service.dart';
 import '../services/review_service.dart';
-
+/*
 void main () {
   runApp(const MaterialApp(
     home: ReviewCard(
@@ -141,3 +141,4 @@ class _ReviewCardState extends State<ReviewCard> {
     );
   }
 }
+*/

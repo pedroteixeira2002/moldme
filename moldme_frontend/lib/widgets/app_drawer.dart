@@ -3,6 +3,7 @@ import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/models/employee.dart';
 import 'package:front_end_moldme/screens/company/edit_company_screen.dart';
+import 'package:front_end_moldme/screens/employee/edit_employee_screen.dart';
 import 'package:front_end_moldme/screens/employee/list_employee_screen.dart';
 import 'package:front_end_moldme/screens/home_page.dart';
 import 'package:front_end_moldme/screens/offer/offer_received.dart';
@@ -205,14 +206,36 @@ class _AppDrawerState extends State<AppDrawer> {
                       }
                     },
                   ),
+                  /*
                   ListTile(
                     leading: const Icon(Icons.assignment_turned_in),
-                    title: const Text("Completed Tasks"),
-                    onTap: () {
-                      Navigator.pushReplacementNamed(
-                          context, '/completed-tasks');
+                    title: const Text("Edit Profile"),
+                    onTap: () async {
+                     final EmployeeDto? employee = await _employeeService.getEmployeeById(widget.userId);
+                      
+                      String? companyId = employee?.companyId;
+                      print('Company ID: $companyId');
+                
+                      if (companyId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditEmployeeScreen(
+                              currentUserId: widget.userId,
+                              companyId: companyId,
+                            ),
+                          ),
+                        );
+                    }else {
+                        // Exiba uma mensagem de erro se o companyId não for encontrado
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Failed to fetch company ID')),
+                        );
+                      }
                     },
                   ),
+                  */
                 ],
                 // Adicione um Spacer para empurrar o Sign Out para o fundo
                 Spacer(),

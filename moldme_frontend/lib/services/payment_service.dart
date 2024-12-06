@@ -5,7 +5,7 @@ import '../dtos/payment_dto.dart';
 import '../models/subscriptionPlan.dart';
 
 class PaymentService {
-  final String baseUrl = "http://localhost:5213/api/Company";
+  final String baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api/Company";
   final AuthenticationService _authenticationService = AuthenticationService();
   final http.Client client;
 

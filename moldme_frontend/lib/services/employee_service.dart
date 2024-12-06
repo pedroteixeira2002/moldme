@@ -5,9 +5,11 @@ import 'package:http/http.dart' as http;
 import '../dtos/employee_dto.dart';
 
 class EmployeeService {
-  final String baseUrl = "http://localhost:5213/api/Employee";
+  final String baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api/Employee";
   final AuthenticationService _authenticationService = AuthenticationService();
+  final http.Client client;
 
+  EmployeeService({http.Client? client}) : client = client ?? http.Client();
 
   /// Adds a new employee to a company.
   Future<String> addEmployee(String companyId, Map<String, dynamic> payload) async {
@@ -19,7 +21,7 @@ class EmployeeService {
 
     final url = Uri.parse('$baseUrl/$companyId/addEmployee');
 
-    final response = await http.post(
+    final response = await client.post(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -38,23 +40,22 @@ class EmployeeService {
 
 
   /// Updates an existing employee in a company.
-  Future<String> updateEmployee(String companyId, String employeeId, EmployeeDto employeeDto) async {
+  Future<String> updateEmployee(
+      String employeeId, EmployeeDto employeeDto) async {
     final String? token = await _authenticationService.getToken();
 
     if (token == null) {
       throw Exception("Token not found");
     }
 
-    final url = Uri.parse('$baseUrl/$companyId/editEmployee/$employeeId');
+    final url = Uri.parse('$baseUrl/editEmployee/$employeeId');
     final body = json.encode(employeeDto.toJson());
 
-    print('Payload: $body');
-
-    final response = await http.put(
+    final response = await client.put(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+        'Authorization': 'Bearer $token',
       },
       body: body,
     );
@@ -63,7 +64,7 @@ class EmployeeService {
       // Verifica se o corpo da resposta não é JSON
       if (response.body.startsWith('{') && response.body.endsWith('}')) {
         final data = json.decode(response.body);
-        return data['Message'] ?? "Employee updated successfully";
+        return data['message'] ?? "Employee updated successfully";
       } else {
         return response.body; // Retorna a resposta diretamente se não for JSON
       }
@@ -82,7 +83,7 @@ class EmployeeService {
     }
 
     final url = Uri.parse('$baseUrl/$companyId/removeEmployee/$employeeId');
-    final response = await http.delete(
+    final response = await client.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ class EmployeeService {
 
     final Uri url = Uri.parse("$baseUrl/$companyId/listAllEmployees");
 
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +151,7 @@ class EmployeeService {
     }
 
     final url = Uri.parse('$baseUrl/getEmployeeById/$employeeId');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ class EmployeeService {
     }
 
     final url = Uri.parse('$baseUrl/employees/$employeeId/projects');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -201,7 +202,7 @@ class EmployeeService {
     }
 
     final url = Uri.parse('$baseUrl/employees/$employeeId/projects');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -229,7 +230,7 @@ class EmployeeService {
     }
 
     final url = Uri.parse('$baseUrl/listAllEmployees');
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',

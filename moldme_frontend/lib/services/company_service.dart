@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:front_end_moldme/models/company.dart';
 import 'package:front_end_moldme/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,8 +8,13 @@ import '../dtos/company_dto.dart';
 final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
 class CompanyService {
-  final String _baseUrl = "http://localhost:5213/api";
+  final String _baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api";
   final AuthenticationService _authenticationService = AuthenticationService();
+
+  final http.Client client;
+
+  CompanyService({http.Client? client}) : client = client ?? http.Client();
+
   /// Registers a new company
   Future<void> registerCompany(CompanyDto companyDto) async {
     final url = Uri.parse('$_baseUrl/register');
@@ -20,7 +26,7 @@ class CompanyService {
     //print('Request Body: $body');
 
     try {
-      final response = await http.post(url, headers: headers, body: body);
+      final response = await client.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -50,7 +56,7 @@ class CompanyService {
     });
 
     try {
-      final response = await http.put(url, headers: headers, body: body);
+      final response = await client.put(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
         print('Response Status Code: ${response.statusCode}');
@@ -72,7 +78,7 @@ class CompanyService {
       throw Exception("Token not found");
     }
 
-    final response = await http.put(
+    final response = await client.put(
       Uri.parse("$_baseUrl/$companyId/upgradePlan"),
       headers: {
         "Content-Type": "application/json",
@@ -94,7 +100,7 @@ class CompanyService {
       throw Exception("Token not found");
     }
 
-    final response = await http.put(
+    final response = await client.put(
       Uri.parse("$_baseUrl/$companyId/cancelSubscription"),
       headers: {
         "Authorization": "Bearer $token",
@@ -114,7 +120,7 @@ class CompanyService {
       throw Exception("Token not found");
     }
 
-    final response = await http.get(
+    final response = await client.get(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +151,7 @@ class CompanyService {
     }
 
     try {
-      final response = await http.get(
+      final response = await client.get(
         url,
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +181,7 @@ class CompanyService {
       throw Exception("Token not found");
     }
 
-    final response = await http.put(
+    final response = await client.put(
       url,
       headers: {
         'Content-Type': 'application/json',

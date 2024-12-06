@@ -6,7 +6,7 @@ import 'package:front_end_moldme/dtos/offer_dto.dart';
 
 class OfferService {
   // URL base da API
-  final String baseUrl = "http://localhost:5213/api/offer";
+  final String baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api/offer";
   final AuthenticationService _authenticationService = AuthenticationService();
 
   // Enviar uma oferta

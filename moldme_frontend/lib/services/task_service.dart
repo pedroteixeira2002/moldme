@@ -5,7 +5,7 @@ import 'package:front_end_moldme/dtos/task_dto.dart';
 import 'package:http/http.dart' as http;
 
 class TaskService {
-  final String baseUrl = 'http://localhost:5213/api/Task';
+  final String baseUrl = 'https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api/Task';
   final http.Client client;
 
   TaskService({http.Client? client}) : client = client ?? http.Client();
