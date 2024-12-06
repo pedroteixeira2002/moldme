@@ -5,7 +5,6 @@ import 'package:front_end_moldme/widgets/nav_bar.dart';
 import 'package:front_end_moldme/services/offer_service.dart';
 import 'package:front_end_moldme/services/company_service.dart';
 import 'package:front_end_moldme/services/project_service.dart';
-import 'package:front_end_moldme/dtos/offer_dto.dart';
 import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
 
