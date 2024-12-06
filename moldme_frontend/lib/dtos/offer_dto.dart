@@ -5,7 +5,7 @@ import 'package:front_end_moldme/dtos/project_dto.dart';
 class OfferDto {
   final String offerId;
   final DateTime date;
-  final String status;
+  final int status;
   final String description;
   final String projectId;
   final String companyId;
@@ -26,14 +26,19 @@ class OfferDto {
   // Converts a JSON map into an OfferDto.
   factory OfferDto.fromJson(Map<String, dynamic> json) {
     return OfferDto(
-      offerId: json['offerId'],
-      date: DateTime.parse(json['date']),
-      status: json['status'],
-      description: json['description'],
-      projectId: json['projectId'],
-      companyId: json['companyId'],
-      company: CompanyDto.fromJson(json['company']),
-      project: ProjectDto.fromJson(json['project']),
+      offerId: json['offerId'] ?? '',
+      date:
+          json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      status: json['status'] ?? 0, // Default to 0
+      description: json['description'] ?? 'No description available',
+      projectId: json['projectId'] ?? '',
+      companyId: json['companyId'] ?? '',
+      company: json['company'] != null
+          ? CompanyDto.fromJson(json['company'])
+          : CompanyDto.empty(), // Handle null
+      project: json['project'] != null
+          ? ProjectDto.fromJson(json['project'])
+          : ProjectDto.empty(), // Handle null
     );
   }
 

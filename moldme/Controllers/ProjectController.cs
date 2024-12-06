@@ -50,7 +50,9 @@ public class ProjectController : ControllerBase, IProject
             //Company = company
         };
 
-
+        Chat chat = new Chat();
+        chat.ProjectId = project.ProjectId;
+        _context.Chats.Add(chat);
         _context.Projects.Add(project);
         _context.SaveChanges();
 
@@ -262,6 +264,22 @@ public class ProjectController : ControllerBase, IProject
 
         return Ok(employees);
     }
+    
+    [Authorize]
+    [HttpGet("{projectId}/chat")]
+    public IActionResult GetChatByProject(string projectId)
+    {
+        if (string.IsNullOrWhiteSpace(projectId))
+            return BadRequest("Project ID cannot be null or empty.");
 
+        var project = _context.Projects
+            .Include(p => p.Chat)
+            .FirstOrDefault(p => p.ProjectId == projectId);
+
+        if (project == null)
+            return NotFound("Project not found.");
+
+        return Ok(project.Chat);
+    }
     
 }

@@ -1,15 +1,22 @@
 import 'dart:convert';
+import 'package:front_end_moldme/dtos/chat_dto.dart';
 import 'package:front_end_moldme/dtos/employee_dto.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 import '../dtos/project_dto.dart';
 
 class ProjectService {
   final String baseUrl = "http://localhost:5213";
-  static const String token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA";
+  final AuthenticationService _authenticationService = AuthenticationService();
 
   /// Adds a new project for a specific company.
   Future<String> addProject(String companyId, ProjectDto projectDto) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/addProject/$companyId');
     final response = await http.post(
       url,
@@ -42,6 +49,12 @@ class ProjectService {
 
   /// Updates an existing project.
   Future<String> updateProject(String projectId, ProjectDto projectDto) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/editProject/$projectId');
     final response = await http.put(
       url,
@@ -74,8 +87,13 @@ class ProjectService {
 
   /// Fetches a specific project by ID.
   Future<ProjectDto> getProjectById(String companyId, String projectId) async {
-    final url =
-        Uri.parse('$baseUrl/api/Project/$companyId/getProjectById/$projectId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/$companyId/getProjectById/$projectId');
     final response = await http.get(
       url,
       headers: {
@@ -93,7 +111,13 @@ class ProjectService {
     }
   }
 
-  Future<ProjectDto> projectView(String companyId, String projectId) async {
+ Future<ProjectDto> projectView(String companyId, String projectId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/viewProject/$projectId');
     final response = await http.get(
       url,
@@ -112,8 +136,64 @@ class ProjectService {
     }
   }
 
+  Future<ProjectDto> projectView2(String projectId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/viewProject/$projectId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return ProjectDto.fromJson(data);
+    } else {
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to fetch project");
+    }
+  }
+
+  /// Fetches the chat associated with a specific project.
+  Future<ChatDto> getChatByProject(String projectId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (projectId.isEmpty) {
+      throw Exception("Project ID cannot be null or empty.");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/getChatByProject/$projectId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return ChatDto.fromJson(data);
+    } else {
+      throw Exception(json.decode(response.body)['error'] ?? "Failed to fetch chat for project");
+    }
+  }
+
   /// Removes a project by ID.
   Future<String> removeProject(String projectId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/RemoveProject/$projectId');
     final response = await http.delete(
       url,
@@ -130,11 +210,16 @@ class ProjectService {
           json.decode(response.body)['error'] ?? "Failed to remove project");
     }
   }
-
+  
   /// Assigns an employee to a project.
   Future<void> assignEmployee(String projectId, String employeeId) async {
-    final url =
-        Uri.parse('$baseUrl/api/Project/$projectId/assignEmployee/$employeeId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/$projectId/assignEmployee/$employeeId');
     final response = await http.post(
       url,
       headers: {
@@ -148,22 +233,25 @@ class ProjectService {
       return;
     } else {
       // Levanta uma exceção com a mensagem de erro apropriada
-      final errorMessage = json.decode(response.body)['error'] ??
-          "Failed to assign employee to project";
+      final errorMessage = json.decode(response.body)['error'] ?? "Failed to assign employee to project";
       throw Exception(errorMessage);
     }
   }
 
-  /// Removes an employee from a project.
+  //// Removes an employee from a project.
   Future<String> removeEmployee(String projectId, String employeeId) async {
-    final url =
-        Uri.parse('$baseUrl/api/Project/$projectId/removeEmployee/$employeeId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/$projectId/removeEmployee/$employeeId');
     final response = await http.delete(
       url,
       headers: {
         'Content-Type': 'application/json',
-        "Authorization":
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJsZW9uZWxAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNTEzOTEwNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.qzU2McQ9tpCCXKEHsoxyIGpni7fK1dwjsp3AmJnz7XA",
+        "Authorization": "Bearer $token",
       },
     );
 
@@ -188,6 +276,12 @@ class ProjectService {
 
   /// Lists all projects associated with a company.
   Future<List<ProjectDto>> listAllProjectsFromCompany(String companyId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/$companyId/listAllProjects');
     final response = await http.get(
       url,
@@ -201,17 +295,19 @@ class ProjectService {
       final data = json.decode(response.body) as List<dynamic>;
       return data.map((e) => ProjectDto.fromJson(e)).toList();
     } else {
-      throw Exception(json.decode(response.body)['error'] ??
-          "Failed to fetch projects for company");
+      throw Exception(json.decode(response.body)['error'] ?? "Failed to fetch projects for company");
     }
   }
 
-/// Lists all new projects.
+  /// Lists all new projects.
   Future<List<ProjectDto>> listAllNewProjects() async {
-    final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
-    const String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJsZW9uZWxAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29tcGFueSIsImV4cCI6MTczNTEzOTEwNiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjEzIn0.qzU2McQ9tpCCXKEHsoxyIGpni7fK1dwjsp3AmJnz7XA";
+    final String? token = await _authenticationService.getToken();
 
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/api/Project/listAllNewProjects');
     final response = await http.get(
       url,
       headers: {
@@ -235,14 +331,19 @@ class ProjectService {
         final errorData = json.decode(response.body);
         throw Exception(errorData['error'] ?? "Erro desconhecido na API");
       } catch (_) {
-        throw Exception(
-            "Falha ao buscar novos projetos: ${response.statusCode}");
+        throw Exception("Falha ao buscar novos projetos: ${response.statusCode}");
       }
     }
   }
 
   /// Fetches all employees assigned to a specific project.
   Future<List<EmployeeDto>> getEmployeesByProject(String projectId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/api/Project/$projectId/employees');
     final response = await http.get(
       url,
@@ -256,8 +357,7 @@ class ProjectService {
       final data = json.decode(response.body) as List<dynamic>;
       return data.map((e) => EmployeeDto.fromJson(e)).toList();
     } else {
-      throw Exception(json.decode(response.body)['error'] ??
-          "Failed to fetch employees for project");
+      throw Exception(json.decode(response.body)['error'] ?? "Failed to fetch employees for project");
     }
   }
 

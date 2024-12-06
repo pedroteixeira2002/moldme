@@ -10,7 +10,6 @@ import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavig
 
 class HomePageCompany extends StatefulWidget {
   final String currentUserId;
-  //final String companyAll;
 
   const HomePageCompany({Key? key, required this.currentUserId}) : super(key: key);
 
@@ -23,7 +22,7 @@ class _HomePageCompanyState extends State<HomePageCompany>
   late Future<List<Company>> _companiesFuture;
   late TabController _tabController;
   final AuthenticationService _authenticationService = AuthenticationService();
-  String? _role;
+  String? _role = '';
 
   @override
   void initState() {
@@ -38,7 +37,7 @@ class _HomePageCompanyState extends State<HomePageCompany>
     final dtos = await CompanyService().listAllCompanies();
     return dtos.map((dto) => CompanyMapper.fromDto(dto)).toList();
   }
-
+  // Função para carregar o papel do usuário
   Future<String> _loadUserRole() async {
     final role = await _authenticationService.checkRole();
     setState(() {
@@ -56,7 +55,7 @@ class _HomePageCompanyState extends State<HomePageCompany>
           const CustomNavigationBar(),
           Expanded(
             child: AppDrawer(
-              userId: widget.currentUserId, // Passa o ID do usuário atual
+              userId: widget.currentUserId, // Verificar depois se está funcional
               companyId: "", 
               child: Column(
                 children: [
@@ -103,7 +102,9 @@ class _HomePageCompanyState extends State<HomePageCompany>
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => CompanyProfileScreen(companyId: company.companyId!),
+                                          
+                                          // Passa o ID de qualquer empresa que está disponível na lista e abre a tela de perfil da empresa
+                                          builder: (context) => CompanyProfileScreen(companyId: company.companyId!), 
                                         ),
                                       );
                                     },

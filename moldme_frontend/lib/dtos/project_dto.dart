@@ -42,6 +42,20 @@ class ProjectDto {
     );
   }
 
+  static ProjectDto empty() {
+    return ProjectDto(
+      projectId: '',
+      name: '',
+      description: '',
+      status: 0,
+      budget: 0.0,
+      startDate: DateTime.now(),
+      endDate: DateTime.now(),
+      companyId: '',
+      company: CompanyDto.empty(),
+    );
+  } 
+
   /// Converts ProjectDto to a JSON map for API requests.
   Map<String, dynamic> toJson() {
     return {

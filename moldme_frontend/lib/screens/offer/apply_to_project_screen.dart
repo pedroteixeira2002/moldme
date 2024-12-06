@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/home_page.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
 
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart';
@@ -9,7 +11,7 @@ import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
 
 class ApplyToProjectPage extends StatefulWidget {
-  final String companyId;
+  final String companyId; // Recebe o ID da empresa do ecrã anterior
   final String projectId;
 
   const ApplyToProjectPage(
@@ -25,7 +27,7 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
 
   CompanyDto? company;
   ProjectDto? project;
-
+  late String userId;
   bool isLoading = true;
 
   OfferService offerService = OfferService();
@@ -36,6 +38,7 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
   void initState() {
     super.initState();
     _fetchData();
+    _loadUserId();
   }
 
   Future<void> _fetchData() async {
@@ -48,6 +51,13 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
         isLoading = false;
       });
     }
+  }
+
+    Future<void> _loadUserId() async {
+    userId = await AuthenticationService().getUserId() ?? '';
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> _getCompanyData() async {
@@ -107,11 +117,19 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
         widget.projectId,
       );
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(result)));
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
+        .showSnackBar(SnackBar(content: Text(result)));
+
+    // Redirecionar para a HomePageScreen após sucesso
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomePageCompany(currentUserId: userId),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Error: $e')));
+  }
   }
 
   @override
@@ -123,6 +141,8 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
           const CustomNavigationBar(),
           Expanded(
             child: AppDrawer(
+              userId: userId, // Replace with actual userId
+              companyId: "",
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : (company == null || project == null)
@@ -154,7 +174,7 @@ class ApplyToProjectPageState extends State<ApplyToProjectPage> {
                               _buildSectionTitle('Description'),
                               _buildTextField(),
                               SizedBox(height: 16),
-                              _buildSectionTitle('Upload Files'),
+                              
                               
                               const SizedBox(height: 24),
                               Center(

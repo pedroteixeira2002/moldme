@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/screens/project/project-page.dart';
 import 'package:front_end_moldme/services/offer_service.dart';
 import 'package:front_end_moldme/services/project_service.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
@@ -6,7 +7,8 @@ import 'package:front_end_moldme/dtos/project_dto.dart';
 class AcceptedOfferProjectsPage extends StatefulWidget {
   final String companyId;
 
-  const AcceptedOfferProjectsPage({Key? key, required this.companyId}) : super(key: key);
+  const AcceptedOfferProjectsPage({Key? key, required this.companyId})
+      : super(key: key);
 
   @override
   _AcceptedOfferProjectsPageState createState() =>
@@ -20,13 +22,8 @@ class _AcceptedOfferProjectsPageState extends State<AcceptedOfferProjectsPage> {
   @override
   void initState() {
     super.initState();
-    _acceptedProjects = _offerService.getAcceptedProjectsByOffers(widget.companyId);
-  }
-
-  void _enterProject(String projectId) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Entering project: $projectId')),
-    );
+    _acceptedProjects =
+        _offerService.getAcceptedProjectsByOffers(widget.companyId);
   }
 
   @override
@@ -57,7 +54,19 @@ class _AcceptedOfferProjectsPageState extends State<AcceptedOfferProjectsPage> {
                   title: Text(project.name),
                   subtitle: Text(project.description),
                   trailing: ElevatedButton(
-                    onPressed: () => _enterProject(project.projectId!), //A FAlTAR O NAVIGATE TOOOO
+                    // Navigate to project details
+                    onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProjectPage(
+                            projectId: project.projectId!,
+                            companyId: widget.companyId,
+                            currentUserId: widget.companyId,
+                          ),
+                        ),
+                      );
+                    },
                     child: const Text("Enter"),
                   ),
                 ),

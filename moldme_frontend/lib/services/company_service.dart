@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
-import '../models/company.dart';
-//import '../models/payment.dart';
+
 import '../dtos/company_dto.dart';
 final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
 class CompanyService {
   final String _baseUrl = "http://localhost:5213/api";
-
+  final AuthenticationService _authenticationService = AuthenticationService();
   /// Registers a new company
   Future<void> registerCompany(CompanyDto companyDto) async {
     final url = Uri.parse('$_baseUrl/register');
@@ -66,11 +66,17 @@ class CompanyService {
   
   /// Upgrades the subscription plan of a company
   Future<void> upgradePlan(String companyId, String subscriptionPlan) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final response = await http.put(
       Uri.parse("$_baseUrl/$companyId/upgradePlan"),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Authorization": "Bearer $token",
       },
       body: jsonEncode({"subscriptionPlan": subscriptionPlan}),
     );
@@ -82,10 +88,16 @@ class CompanyService {
 
   /// Cancels the subscription of a company
   Future<void> cancelSubscription(String companyId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final response = await http.put(
       Uri.parse("$_baseUrl/$companyId/cancelSubscription"),
       headers: {
-        "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+        "Authorization": "Bearer $token",
       },
     );
 
@@ -96,8 +108,11 @@ class CompanyService {
 
   Future<List<CompanyDto>> listAllCompanies() async {
     final url = Uri.parse('$_baseUrl/Company/listAllCompanies');
-    const String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."; // Substitua pelo token válido
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
 
     final response = await http.get(
       url,
@@ -120,18 +135,21 @@ class CompanyService {
     }
   }
 
-  /// Busca uma empresa pelo ID
+  /// Pesquisa uma empresa pelo ID
   Future<CompanyDto> getCompanyById(String companyId) async {
-    final url = Uri.parse(
-        'http://localhost:5213/api/Company/$companyId/getCompanyById');
+    final url = Uri.parse('$_baseUrl/Company/$companyId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
 
     try {
       final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-              'Bearer your_token_here', // Substitua pelo token válido
+          'Authorization': 'Bearer $token', // Usa o token obtido
         },
       );
 
@@ -148,27 +166,29 @@ class CompanyService {
     }
   }
 
-  Future<void> updateCompany(
-      String companyId, CompanyDto updatedCompany) async {
+  /// Atualiza uma empresa
+  Future<void> updateCompany(String companyId, CompanyDto updatedCompany) async {
     final url = Uri.parse('$_baseUrl/Company/$companyId/updateCompany');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
 
     final response = await http.put(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiIxQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNvbXBhbnkiLCJleHAiOjE3MzUxNjc5MzQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIxMyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIxMyJ9.7PwdTYUBjXHzMwa_UB4amJumPi-hs4ypNYaW-pK2I24',
+        'Authorization': 'Bearer $token', // Usa o token obtido
       },
       body: jsonEncode(updatedCompany.toJson()),
     );
 
     if (response.statusCode == 200) {
       // Atualização bem-sucedida
-
     } else {
       // Falha na atualização, você pode obter mais detalhes da resposta
-     
-      throw Exception('Falha ao atualizar empresa');
+      throw Exception('Failed to update company: ${response.body}');
     }
   }
 }

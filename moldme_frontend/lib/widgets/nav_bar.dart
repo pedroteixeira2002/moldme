@@ -24,33 +24,9 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
           ),
 
           // Links de navegação
-          Row(
+          const Row(
             children: [
-              TextButton(
-                onPressed: () {
-                  // Navegação para Projects
-                },
-                child: const Text(
-                  "Projects",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF1D3557), // Cor do texto
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              TextButton(
-                onPressed: () {
-                  // Navegação para Companies
-                },
-                child: const Text(
-                  "Companies",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF1D3557), // Cor do texto
-                  ),
-                ),
-              ),
+              // Outros links de navegação
             ],
           ),
 
@@ -86,10 +62,10 @@ class CustomNavigationBar extends StatelessWidget implements PreferredSizeWidget
                 },
               ),
               const SizedBox(width: 10),
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 20,
-                backgroundColor: const Color(0xFF1D9BF0),
-                child: const Text(
+                backgroundColor: Color(0xFF1D9BF0),
+                child: Text(
                   "S",
                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),

@@ -4,8 +4,9 @@ import '../dtos/message_dto.dart';
 
 class ChatCard extends StatefulWidget {
   final String chatId;
+  final String employeeId;
 
-  const ChatCard({super.key, required this.chatId});
+  const ChatCard({super.key, required this.chatId, required this.employeeId});
 
   @override
   _ChatCardState createState() => _ChatCardState();
@@ -45,7 +46,7 @@ class _ChatCardState extends State<ChatCard> {
 
     try {
       await _messageService.sendMessage(
-          widget.chatId, '9d738649-8773-4bf2-b046-39ac3c6f3113', text);
+          widget.chatId, widget.employeeId, text);
       _messageController.clear();
       _fetchMessages(); // Atualiza a lista de mensagens
     } catch (e) {

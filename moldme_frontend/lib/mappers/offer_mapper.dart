@@ -8,7 +8,6 @@ import 'project_mapper.dart';
 
 /// Maps between Offer and OfferDto.
 class OfferMapper {
-
   /// Converts an OfferDto to an Offer model.
   static Offer fromDto(OfferDto dto) {
     return Offer(
@@ -18,11 +17,10 @@ class OfferMapper {
       projectId: dto.projectId,
       project: ProjectMapper.fromDto(dto.project),
       date: dto.date,
-      status: Status.values.firstWhere((e) => e.name == dto.status),
+      status: Status.values[dto.status], // Converte o int para o enum Status
       description: dto.description,
     );
   }
-
 
   /// Converts an Offer model to an OfferDto.
   static OfferDto toDto(Offer offer) {
@@ -33,9 +31,8 @@ class OfferMapper {
       projectId: offer.projectId,
       project: ProjectMapper.toDto(offer.project),
       date: offer.date,
-      status: offer.status.toString().split('.').last, // Convert enum to string
+      status: offer.status.index, // Converte o enum Status para um int
       description: offer.description,
     );
   }
-
 }

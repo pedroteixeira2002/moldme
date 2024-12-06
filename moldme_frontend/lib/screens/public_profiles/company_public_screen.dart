@@ -20,16 +20,18 @@ class CompanyProfileScreen extends StatefulWidget {
 }
 
 class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
-  final AuthenticationService _authenticationService = AuthenticationService();
-  String? _role;
-  
+  //final AuthenticationService _authenticationService = AuthenticationService();
+  //String? _role;
+  late String userId;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadUserRole();
+    _loadUserId();
+    //_loadUserRole();
   }
-  
+/*
   Future<String> _loadUserRole() async {
     final role = await _authenticationService.checkRole();
     setState(() {
@@ -38,8 +40,15 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
     print('Role: $_role');
     return role;
   }
+*/
 
-  
+    Future<void> _loadUserId() async {
+    userId = await AuthenticationService().getUserId() ?? '';
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   Color _generateRandomColor() {
     final Random random = Random();
     return Color.fromRGBO(
@@ -59,7 +68,7 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
           Expanded(
             child: AppDrawer(
               companyId: " ",
-              userId: ,
+              userId: userId,     // Deve ser o Id da empresa ou employee logado
               child: FutureBuilder<CompanyDto>(
                 future: CompanyService().getCompanyById(widget.companyId),
                 builder: (context, snapshot) {
@@ -274,17 +283,27 @@ class _CompanyProfileScreenState extends State<CompanyProfileScreen> {
                         ],
                       ),
                       trailing: ElevatedButton(
-                        onPressed: () {
-                          // Não esquecer de adicionar condição que só a company pode enviar ofertas
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ApplyToProjectPage(
-                                companyId: widget.companyId,
-                                projectId: project.projectId ?? '',
+                        onPressed: () async {
+                          final role = await AuthenticationService().checkRole();
+                          if (role == 'Company') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ApplyToProjectPage(
+                                  companyId:
+                                      companyId, // Passa o ID da empresa selecionada na lista anterior
+                                  projectId: project.projectId ?? '',
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            // Exibe uma mensagem de erro ou feedback apropriado
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Apenas empresas podem enviar ofertas.')),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,

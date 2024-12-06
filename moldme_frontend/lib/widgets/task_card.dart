@@ -3,25 +3,6 @@ import 'package:universal_html/html.dart' as html;
 import '../dtos/task_dto.dart';
 import '../services/task_service.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  TaskDto task =
-      await TaskService().getTaskById("b3461c4e-c756-4996-a65c-80e680649c24");
-  runApp(MaterialApp(
-    home: Scaffold(
-      appBar: AppBar(title: const Text('Task Details')),
-      body: TaskCard(
-        onEdit: () {
-        },
-        onRemove: () {
-        },
-        task: task,
-        currentUserId: "1",
-      ),
-    ),
-  ));
-}
-
 class TaskCard extends StatelessWidget {
   final TaskDto task;
   final String currentUserId;

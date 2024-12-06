@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:front_end_moldme/dtos/company_dto.dart';
 import 'package:front_end_moldme/models/subscriptionPlan.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
 import 'package:front_end_moldme/services/company_service.dart';
 import 'package:front_end_moldme/widgets/app_drawer.dart';
 import 'package:front_end_moldme/widgets/nav_bar.dart'; // Importa a CustomNavigationBar
-/*
+
 class UpdateCompanyScreen extends StatefulWidget {
-  // Variável estática para armazenar o companyId
-  static String companyId = '1'; // Inicializa com um valor vazio
+  final String companyId; // Adiciona o companyId como parâmetro do widget
+
+  const UpdateCompanyScreen({
+    Key? key,
+    required this.companyId,
+  }) : super(key: key);
 
   @override
   _UpdateCompanyScreenState createState() => _UpdateCompanyScreenState();
@@ -41,9 +46,6 @@ class _UpdateCompanyScreenState extends State<UpdateCompanyScreen> {
 
     company = args['company'] as CompanyDto;
 
-    // Atribui o companyId da variável estática
-    UpdateCompanyScreen.companyId = args['companyId'] as String;
-
     // Preenche os campos com os dados da empresa
     nameController.text = company.name;
     addressController.text = company.address ?? '';
@@ -57,8 +59,7 @@ class _UpdateCompanyScreenState extends State<UpdateCompanyScreen> {
     try {
       // Cria o objeto CompanyDto atualizado
       final updatedCompany = CompanyDto(
-        companyId: UpdateCompanyScreen
-            .companyId, // Usa a variável estática para pegar o companyId
+        companyId: widget.companyId, // Usa o parâmetro passado para o widget
         name: nameController.text,
         address: addressController.text,
         contact: int.tryParse(contactController.text),
@@ -72,8 +73,7 @@ class _UpdateCompanyScreenState extends State<UpdateCompanyScreen> {
       );
 
       // Chama o serviço para atualizar a empresa
-      await companyService.updateCompany(
-          UpdateCompanyScreen.companyId, updatedCompany);
+      await companyService.updateCompany(widget.companyId, updatedCompany);
 
       // Mostra uma mensagem de sucesso
       ScaffoldMessenger.of(context).showSnackBar(
@@ -98,6 +98,8 @@ class _UpdateCompanyScreenState extends State<UpdateCompanyScreen> {
           const CustomNavigationBar(), // Adiciona a CustomNavigationBar no topo
           Expanded(
             child: AppDrawer(
+              userId: widget.companyId,
+              companyId: "", // Passa o companyId para o AppDrawer
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
@@ -210,4 +212,3 @@ class _UpdateCompanyScreenState extends State<UpdateCompanyScreen> {
     );
   }
 }
-*/

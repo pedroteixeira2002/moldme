@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using moldme.data;
 using moldme.Interface;
@@ -55,4 +56,18 @@ namespace moldme.Controllers;
 
             return Ok("Chat deleted successfully");
         }
+        
+        [HttpGet("getChatByProjectId/{projectId}")]
+        public async Task<ActionResult<Chat>> GetChatByProjectId(string projectId)
+        {
+            if (string.IsNullOrEmpty(projectId))
+                return BadRequest("Project ID is required");
+
+            var chat = await _context.Chats.FirstOrDefaultAsync(c => c.ProjectId == projectId);
+
+            if (chat == null)
+                return NotFound("Chat not found for the provided project ID");
+
+            return Ok(chat);
+        } 
     }

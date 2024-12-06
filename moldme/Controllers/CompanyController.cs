@@ -212,8 +212,9 @@ namespace moldme.Controllers;
             // Retorne as empresas como JSON
             return Ok(response);
         }
-        [HttpGet("{companyId}/getCompanyById")]
-        public IActionResult GetCompanyById(string companyId)
+        
+        [HttpGet("{companyId}")]
+        public IActionResult CompanyGetById(string companyId)
         {
             // Busca a empresa pelo ID no banco de dados
             var company = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
@@ -238,18 +239,6 @@ namespace moldme.Controllers;
             };
 
             return Ok(response);
-        }
-        
-        ///<inheritdoc cref="ICompany.CompanyGetById(string)"/>
-        public IActionResult CompanyGetById(string companyId)
-        {
-            var existingCompany = _context.Companies.FirstOrDefault(c => c.CompanyId == companyId);
-            if (existingCompany == null)
-            {
-                return NotFound("Company not found");
-            }
-
-            return Ok(existingCompany);
         }
         
         /// <summary>

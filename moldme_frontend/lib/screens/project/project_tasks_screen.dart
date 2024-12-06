@@ -3,14 +3,6 @@ import '../../dtos/task_dto.dart';
 import '../../services/task_service.dart';
 import '../../widgets/task_card.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    home: ProjectTasksScreen(
-        projectId: "014e3239-c98f-4ce4-b4e9-1a4d0cdfcd08",
-        currentUserId: "675943a6-6a50-40b9-a1c3-168b9dfc87a9"),
-  ));
-}
-
 class ProjectTasksScreen extends StatefulWidget {
   final String projectId;
   final String currentUserId;

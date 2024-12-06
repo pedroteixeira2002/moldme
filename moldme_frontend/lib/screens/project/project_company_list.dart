@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:front_end_moldme/dtos/employee_dto.dart';
 import 'package:front_end_moldme/dtos/project_dto.dart';
 import 'package:front_end_moldme/models/status.dart';
 import 'package:front_end_moldme/screens/project/project-page.dart';
@@ -24,6 +25,7 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   final EmployeeService _employeeService = EmployeeService();
   late Future<List<ProjectDto>> _projects = Future.value([]);
   final AuthenticationService _authenticationService = AuthenticationService();
+  late Future<List<ProjectDto>> _employeeProjects;
   
 
   @override
@@ -49,7 +51,7 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
       if (companyId == widget.currentUserId) {
         _projects = _projectService.listAllProjectsFromCompany(companyId!);
       } else {
-        _projects = _employeeService.getEmployeeProjects(widget.currentUserId) as Future<List<ProjectDto>>;
+        _employeeProjects = _employeeService.getEmployeeProjects2(widget.currentUserId);
       }
     });
   }
@@ -115,13 +117,14 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
   /// Função para navegar para os detalhes do projeto.
   Future<void> _openProject(String projectId) async {
     final role = await _authenticationService.checkRole();
-    String companyId;
+    String? companyId;
 
     if (role == 'Company') {
       companyId = widget.currentUserId;
     } else if (role == 'Employee') {
-      var company = await _authenticationService.getCompanyById(widget.currentUserId);
-      companyId = company.companyId!;
+       final EmployeeDto? employee = await _employeeService.getEmployeeById(widget.currentUserId);    
+      companyId = employee?.companyId;
+      print('Company ID: $companyId');
     } else {
       // Handle unexpected role
       throw Exception('Unexpected role in project company list: $role');
@@ -132,115 +135,209 @@ class _ProjectsListWidgetState extends State<ProjectsListWidget> {
       MaterialPageRoute(
         builder: (context) => ProjectPage(
           projectId: projectId,
-          companyId: companyId,
+          companyId: companyId!,
           currentUserId: widget.currentUserId,
         ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomNavigationBar(), // Adiciona a CustomNavigationBar
-      body: AppDrawer(
-        userId: widget.currentUserId,
-        companyId: widget.companyId,  
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder<List<ProjectDto>>(
-            future: _projects,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text("Error: ${snapshot.error}"));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("No projects found."));
-              }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: const CustomNavigationBar(), // Adiciona a CustomNavigationBar
+    body: AppDrawer(
+      userId: widget.currentUserId,
+      companyId: widget.companyId,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<String>(
+          future: _authenticationService.checkRole(),
+          builder: (context, roleSnapshot) {
+            if (roleSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (roleSnapshot.hasError) {
+              return Center(child: Text("Error: ${roleSnapshot.error}"));
+            } else if (!roleSnapshot.hasData) {
+              return const Center(child: Text("Role not found."));
+            }
 
-              final projects = snapshot.data!;
-              return SingleChildScrollView(
-                scrollDirection:
-                    Axis.horizontal, // Para permitir rolagem horizontal
-                child: SingleChildScrollView(
-                  child: Card(
-                    elevation: 3, // Adiciona uma elevação ao DataTable
-                    child: DataTable(
-                      columns: const [
-                        DataColumn(label: Text('Title')),
-                        DataColumn(label: Text('Status')),
-                        DataColumn(label: Text('Date')),
-                        DataColumn(label: Text('Employees on this Project')),
-                      ],
-                      rows: projects.map((project) {
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                              Text(project.name),
-                              onTap: () => _openProject(project.projectId!),
-                            ),
-                            DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 4.0),
-                                decoration: BoxDecoration(
-                                  color: _statusToColor(project.status)
-                                      .withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8.0),
+            final role = roleSnapshot.data!;
+            if (role == 'Company') {
+              return FutureBuilder<List<ProjectDto>>(
+                future: _projects,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("No projects found."));
+                  }
+
+                  final projects = snapshot.data!;
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal, // Para permitir rolagem horizontal
+                    child: SingleChildScrollView(
+                      child: Card(
+                        elevation: 3, // Adiciona uma elevação ao DataTable
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text('Title')),
+                            DataColumn(label: Text('Status')),
+                            DataColumn(label: Text('Date')),
+                            DataColumn(label: Text('Employees on this Project')),
+                          ],
+                          rows: projects.map((project) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                  Text(project.name),
+                                  onTap: () => _openProject(project.projectId!),
                                 ),
-                                child: Text(
-                                  _statusToString(project.status),
-                                  style: TextStyle(
-                                    color: _statusToColor(project.status),
-                                    fontWeight: FontWeight.bold,
+                                DataCell(
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      color: _statusToColor(project.status).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Text(
+                                      _statusToString(project.status),
+                                      style: TextStyle(
+                                        color: _statusToColor(project.status),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                  "${project.startDate.year}/${project.startDate.month.toString().padLeft(2, '0')}/${project.startDate.day.toString().padLeft(2, '0')}"),
-                            ),
-                            DataCell(
-                              FutureBuilder<int>(
-                                future: _fetchEmployeeCount(project.projectId!),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    return const Text("N/A");
-                                  } else {
-                                    final employeeCount = snapshot.data ?? 0;
-                                    return Row(
-                                      children: [
-                                        const CircleAvatar(
-                                          radius: 12,
-                                          backgroundImage: AssetImage(
-                                              'lib/assets/app-icon-person.png'),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text("+$employeeCount"),
-                                      ],
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                                DataCell(
+                                  Text("${project.startDate.year}/${project.startDate.month.toString().padLeft(2, '0')}/${project.startDate.day.toString().padLeft(2, '0')}"),
+                                ),
+                                DataCell(
+                                  FutureBuilder<int>(
+                                    future: _fetchEmployeeCount(project.projectId!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator(strokeWidth: 2);
+                                      } else if (snapshot.hasError) {
+                                        return const Text("N/A");
+                                      } else {
+                                        final employeeCount = snapshot.data ?? 0;
+                                        return Row(
+                                          children: [
+                                            const CircleAvatar(
+                                              radius: 12,
+                                              backgroundImage: AssetImage('lib/assets/app-icon-person.png'),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text("+$employeeCount"),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               );
-            },
-          ),
+            } else if (role == 'Employee') {
+              return FutureBuilder<List<ProjectDto>>(
+                future: _employeeProjects,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text("No projects found."));
+                  }
+
+                  final projects = snapshot.data!;
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal, // Para permitir rolagem horizontal
+                    child: SingleChildScrollView(
+                      child: Card(
+                        elevation: 3, // Adiciona uma elevação ao DataTable
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text('Title')),
+                            DataColumn(label: Text('Status')),
+                            DataColumn(label: Text('Date')),
+                            DataColumn(label: Text('Employees on this Project')),
+                          ],
+                          rows: projects.map((project) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                  Text(project.name),
+                                  onTap: () => _openProject(project.projectId!),
+                                ),
+                                DataCell(
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      color: _statusToColor(project.status).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Text(
+                                      _statusToString(project.status),
+                                      style: TextStyle(
+                                        color: _statusToColor(project.status),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  Text("${project.startDate.year}/${project.startDate.month.toString().padLeft(2, '0')}/${project.startDate.day.toString().padLeft(2, '0')}"),
+                                ),
+                                DataCell(
+                                  FutureBuilder<int>(
+                                    future: _fetchEmployeeCount(project.projectId!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return const CircularProgressIndicator(strokeWidth: 2);
+                                      } else if (snapshot.hasError) {
+                                        return const Text("N/A");
+                                      } else {
+                                        final employeeCount = snapshot.data ?? 0;
+                                        return Row(
+                                          children: [
+                                            const CircleAvatar(
+                                              radius: 12,
+                                              backgroundImage: AssetImage('lib/assets/app-icon-person.png'),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text("+$employeeCount"),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else {
+              return const Center(child: Text("Invalid role."));
+            }
+          },
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

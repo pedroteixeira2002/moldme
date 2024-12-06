@@ -1,15 +1,22 @@
 import 'dart:convert';
+import 'package:front_end_moldme/dtos/project_dto.dart';
+import 'package:front_end_moldme/services/authentication_service.dart';
 import 'package:http/http.dart' as http;
 import '../dtos/employee_dto.dart';
 
 class EmployeeService {
   final String baseUrl = "http://localhost:5213/api/Employee";
-  final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0aWFnb0BnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDb21wYW55IiwiZXhwIjoxNzM0NzM0OTUxLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMTMifQ.B4clMA8cuR4cH6YPs9WbYSbr6PQeb3TE8IaeH7_ixFA"; // Replace with actual token
+  final AuthenticationService _authenticationService = AuthenticationService();
 
 
   /// Adds a new employee to a company.
-Future<String> addEmployee(
-      String companyId, Map<String, dynamic> payload) async {
+  Future<String> addEmployee(String companyId, Map<String, dynamic> payload) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final url = Uri.parse('$baseUrl/$companyId/addEmployee');
 
     final response = await http.post(
@@ -31,41 +38,56 @@ Future<String> addEmployee(
 
 
   /// Updates an existing employee in a company.
-  Future<String> updateEmployee(
-        String companyId, String employeeId, EmployeeDto employeeDto) async {
-      final url = Uri.parse('$baseUrl/$companyId/editEmployee/$employeeId');
-      final body = json.encode(employeeDto.toJson());
+  Future<String> updateEmployee(String companyId, String employeeId, EmployeeDto employeeDto) async {
+    final String? token = await _authenticationService.getToken();
 
-      print('Payload: $body');
-
-      final response = await http.put(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      );
-
-      if (response.statusCode == 200) {
-        // Verifica se o corpo da resposta não é JSON
-        if (response.body.startsWith('{') && response.body.endsWith('}')) {
-          final data = json.decode(response.body);
-          return data['Message'] ?? "Employee updated successfully";
-        } else {
-          return response.body; // Retorna a resposta diretamente se não for JSON
-        }
-      } else {
-        throw Exception(
-            json.decode(response.body)['error'] ?? "Failed to update employee");
-      }
+    if (token == null) {
+      throw Exception("Token not found");
     }
+
+    final url = Uri.parse('$baseUrl/$companyId/editEmployee/$employeeId');
+    final body = json.encode(employeeDto.toJson());
+
+    print('Payload: $body');
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      // Verifica se o corpo da resposta não é JSON
+      if (response.body.startsWith('{') && response.body.endsWith('}')) {
+        final data = json.decode(response.body);
+        return data['Message'] ?? "Employee updated successfully";
+      } else {
+        return response.body; // Retorna a resposta diretamente se não for JSON
+      }
+    } else {
+      throw Exception(
+          json.decode(response.body)['error'] ?? "Failed to update employee");
+    }
+  }
 
   /// Removes an employee from a company.
   Future<String> removeEmployee(String companyId, String employeeId) async {
-    final url =
-        Uri.parse('$baseUrl/api/Employee/$companyId/removeEmployee/$employeeId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/$companyId/removeEmployee/$employeeId');
     final response = await http.delete(
       url,
-      headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
     );
 
     if (response.statusCode == 200) {
@@ -76,15 +98,20 @@ Future<String> addEmployee(
     }
   }
 
-  Future<List<EmployeeDto>> listAllEmployeesFromCompany(
-      String companyId) async {
+  Future<List<EmployeeDto>> listAllEmployeesFromCompany(String companyId) async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
     final Uri url = Uri.parse("$baseUrl/$companyId/listAllEmployees");
 
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
       },
     );
 
@@ -113,14 +140,22 @@ Future<String> addEmployee(
           "Erro na API: ${response.statusCode} - ${response.reasonPhrase}");
     }
   }
-
+  
   /// Gets a single employee by ID.
   Future<EmployeeDto> getEmployeeById(String employeeId) async {
-    final url = Uri.parse('$baseUrl/api/Employee/getEmployeeById/$employeeId');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/getEmployeeById/$employeeId');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
     );
 
     if (response.statusCode == 200) {
@@ -134,12 +169,19 @@ Future<String> addEmployee(
 
   /// Gets all projects associated with an employee.
   Future<List<dynamic>> getEmployeeProjects(String employeeId) async {
-    final url =
-        Uri.parse('$baseUrl/api/Employee/employees/$employeeId/projects');
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/employees/$employeeId/projects');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
     );
 
     if (response.statusCode == 200) {
@@ -150,13 +192,49 @@ Future<String> addEmployee(
     }
   }
 
-  /// Gets all employees.
-  Future<List<EmployeeDto>> getAllEmployees() async {
-    final url = Uri.parse('$baseUrl/api/Employee/listAllEmployees');
+  // Get all projects from employee by employee ID
+  Future<List<ProjectDto>> getEmployeeProjects2(String employeeId) async {
+    final String? token = await _authenticationService.getToken();
+    print('Token: $token');
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/employees/$employeeId/projects');
     final response = await http.get(
       url,
-      headers: {'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+
+      // Converte cada item da lista em um ProjectDto
+      return data.map((e) => ProjectDto.fromJson(e as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception("Failed to fetch companies");
+    }
+  }
+
+
+  /// Gets all employees.
+  Future<List<EmployeeDto>> getAllEmployees() async {
+    final String? token = await _authenticationService.getToken();
+
+    if (token == null) {
+      throw Exception("Token not found");
+    }
+
+    final url = Uri.parse('$baseUrl/listAllEmployees');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Adiciona o token no cabeçalho
+      },
     );
 
     if (response.statusCode == 200) {

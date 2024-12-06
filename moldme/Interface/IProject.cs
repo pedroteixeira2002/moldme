@@ -113,5 +113,11 @@ namespace moldme.Interface
         /// - 404 Not Found: If no projects are found.
         /// </returns>
         Task<IActionResult> ProjectGetAllNew();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        IActionResult GetChatByProject(string projectId);
     }
 }
