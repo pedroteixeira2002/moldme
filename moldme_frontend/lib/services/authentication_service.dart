@@ -6,7 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AuthenticationService {
   final String _baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api";
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
-  late final http.Client client;
+  final http.Client client = http.Client();
   
   /// Logs in the user and saves the token
   Future<void> login(String email, String password) async {
