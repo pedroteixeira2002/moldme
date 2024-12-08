@@ -6,11 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class AuthenticationService {
   final String _baseUrl = "https://moldme-ghh9b5b9c6azgfb8.canadacentral-01.azurewebsites.net/api";
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
-
+  late final http.Client client;
+  
   /// Logs in the user and saves the token
   Future<void> login(String email, String password) async {
     final url = Uri.parse("$_baseUrl/login");
-    final response = await http.post(
+    final response = await client.post(
       url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "password": password}),
